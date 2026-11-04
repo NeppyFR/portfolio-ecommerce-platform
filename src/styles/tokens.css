@@ -1,0 +1,59 @@
+:root{
+  color-scheme:light;
+  --ink:#0a1f63; --ink-2:#233a84; --ink-3:#46599e;           /* AAA, AA+, 6.6:1 on white */
+  --link:#1c4fdc; --solid:#2860ee; --solid-hover:#1f51d4;    /* white text on solid is 5.25:1 */
+  --blue:#2f6bff; --sky:#6fd3ff; --ice:#b9f3ff; --violet:#8c7bff; --white:#fff;
+  --line:#d8e4ff; --line-2:#b6cbfa; --line-3:#7286d0; --mist:#f4f8ff; --mist-2:#e9f1ff;
+  --rose:#b5234a; --rose-tint:#fdeaf0; --amber:#7f4600; --amber-tint:#fdf1dc; --ok:#1c4fdc; --ok-tint:#e9f1ff; --unknown:#5b48d6; --off:#46599e;
+  --green:#15803d; --green-tint:#e4f6ea; /* restrained: positive deltas and the Paid dot only */
+  --r-1:6px; --r-2:10px; --r-3:14px; --r-4:22px; --r-pill:999px;
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px; --s-7:32px; --s-8:40px; --s-9:56px; --s-10:80px; --s-11:120px;
+  --gutter:40px; --max:1360px;
+  --float:0 24px 60px -18px rgba(10,31,99,.35),0 2px 6px rgba(10,31,99,.08);
+  --ease:cubic-bezier(.2,.7,.2,1); --t-fast:140ms; --t-med:240ms; --t-slow:400ms;
+}
+@media (max-width:1099px){:root{--gutter:24px}} @media (max-width:719px){:root{--gutter:16px}}
+
+/* The admin: white cards on white, hairlines you barely see, deep ink text.
+   Scoped with :has, so the landing, /built/, the shop and the print sheets keep the set above,
+   while the jump box and toasts, which mount outside the shell, still match it. */
+:root:has(.dk-root){
+  --ink:#0f1730; --ink-2:#39425c; --ink-3:#5c6580;
+  --line:#eceef3; --line-2:#e1e4ec; --line-3:#868fa8; --mist:#f7f8fb; --mist-2:#f0f3f9;
+  --tint:#e8f0ff; --ok-tint:#e8f0ff; --off:#5c6580;
+  --r-1:7px; --r-2:10px; --r-3:16px; --r-4:22px;
+  --gutter:24px;
+  --ff-disp:var(--ff-ui);
+  --float:0 24px 60px -18px rgba(15,23,48,.28),0 2px 6px rgba(15,23,48,.06);
+}
+/* Only the IT area keeps the machine voice for ids and logs. Everywhere else numbers are the interface font, tabular. */
+:root:has(.dk-root:not([data-area="it"])){--ff-mono:var(--ff-ui)}
+@media (max-width:719px){:root:has(.dk-root){--gutter:16px}}
+
+/* Font stacks. The --ff-* variables come from next/font on <html>. */
+:root{
+  --font-disp:var(--ff-disp),system-ui,sans-serif;
+  --font-ui:var(--ff-ui),system-ui,sans-serif;
+  --font-mono:var(--ff-mono),ui-monospace,monospace;
+  --font-serif:var(--ff-serif),Georgia,serif;
+}
+
+/* Type scale. Layered, so a Tailwind utility can still override a colour or margin. */
+@layer components{
+  .type-display-xl{font-family:var(--font-disp);font-weight:660;font-size:clamp(40px,5.6vw,80px);line-height:1;font-stretch:92%;letter-spacing:-.026em}
+  .type-display-l{font-family:var(--font-disp);font-weight:650;font-size:clamp(30px,3.2vw,46px);line-height:1.05;font-stretch:92%;letter-spacing:-.02em}
+  .type-title{font-family:var(--font-disp);font-weight:640;font-size:clamp(24px,2.2vw,32px);line-height:1.12;font-stretch:94%;letter-spacing:-.018em;text-wrap:balance}
+  .type-h3{font-family:var(--font-disp);font-weight:650;font-size:20px;line-height:1.2}
+  .type-h4{font-family:var(--font-disp);font-weight:680;font-size:15px;line-height:1.25}
+  .type-stat{font-family:var(--font-disp);font-weight:660;font-size:28px;line-height:1;font-stretch:94%;font-variant-numeric:tabular-nums}
+  .type-body-l{font-family:var(--font-ui);font-weight:400;font-size:16px;line-height:1.5}
+  .type-body{font-family:var(--font-ui);font-weight:400;font-size:14px;line-height:1.45}
+  .type-small{font-family:var(--font-ui);font-weight:400;font-size:13px;line-height:1.4}
+  .type-label{font-family:var(--font-ui);font-weight:500;font-size:13px;line-height:1.3}
+  .type-mono{font-family:var(--font-mono);font-weight:500;font-size:13px;line-height:1.35;font-variant-numeric:tabular-nums}
+  .type-mono-s{font-family:var(--font-mono);font-weight:500;font-size:12px;line-height:1.35;font-variant-numeric:tabular-nums}
+  .type-shop-hero{font-family:var(--font-serif);font-weight:300;font-size:clamp(48px,8vw,128px);line-height:.98;letter-spacing:-.02em}
+  .type-shop-h2{font-family:var(--font-serif);font-weight:300;font-size:clamp(30px,3.4vw,52px);line-height:1.05}
+  .type-shop-quote{font-family:var(--font-serif);font-weight:300;font-style:italic;font-size:clamp(28px,3vw,44px);line-height:1.15}
+  .type-shop-name{font-family:var(--font-serif);font-weight:400;font-size:20px;line-height:1.2}
+}

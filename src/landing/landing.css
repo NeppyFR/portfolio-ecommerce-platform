@@ -1,0 +1,250 @@
+/* Landing and the rail it shares with /built/. Hero design space is 1440×900, scaled by --u. */
+
+.lp{background:var(--white);color:var(--ink)}
+.lp a{color:inherit;text-decoration:none}
+.lp h1,.lp h2,.lp p,.lp ul,.lp ol,.lp dl,.lp dd{margin:0;padding:0}
+.lp ul,.lp ol{list-style:none}
+
+/* Rail */
+.lp-skip{position:absolute;left:var(--s-4);top:-120px;z-index:60;padding:var(--s-2) var(--s-3);border-radius:var(--r-2);background:var(--white);color:var(--ink);font:500 14px/1.3 var(--font-ui);box-shadow:var(--float)}
+.lp-skip:focus{top:8px}
+.lp-rail{display:flex;align-items:center;gap:var(--s-5);min-height:64px;color:var(--ink)}
+.lp-rail a{color:inherit;text-decoration:none}
+.lp-brand{display:inline-flex;align-items:center;gap:9px;font:650 15px/1 var(--font-disp);letter-spacing:-.01em;white-space:nowrap}
+.lp-stops{position:relative;display:flex;align-items:center;gap:var(--s-4)}
+.lp-stops::before{content:"";position:absolute;left:12px;right:12px;top:50%;height:1.5px;background:var(--line-3)}
+.lp-stop{position:relative;display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border:1.5px solid var(--line-3);border-radius:var(--r-pill);background:var(--white);font:500 13px/1 var(--font-ui);white-space:nowrap;transition:background var(--t-fast) var(--ease)}
+.lp-stop:hover{background:var(--mist)}
+.lp-stop[aria-current="page"]{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.lp-rail-end{display:flex;align-items:center;gap:var(--s-3);margin-left:auto}
+.lp-rail-note{font:500 12px/1.2 var(--font-mono);color:var(--ink);white-space:nowrap}
+.lp-jump{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1.5px solid var(--line-3);border-radius:var(--r-2);background:var(--white);color:var(--ink);font:500 13px/1 var(--font-ui);cursor:pointer;white-space:nowrap}
+.lp-jump:hover{background:var(--mist)}
+.lp-jump-key{font:500 12px/1 var(--font-mono);color:var(--ink-3)}
+
+/*
+ * Hero: wide layout from 1280, where the map's drawn text can hold the 12 px floor (see the tier further down).
+ * The stage scales to the width and, on a short window, to the height too, so the whole map and the ledger
+ * are the first screen. .889 is the smallest scale the floor allows; the field behind it stays full bleed.
+ */
+.lp-hero-wrap{container-type:inline-size}
+.lp-hero,.lp-ledger{--u:max(min(min(100cqw,1760px)/1440,(100svh - 72px)/830),.889px)}
+.lp-hero{position:relative;overflow:clip}
+.lp-stage{position:relative;width:calc(1440*var(--u));height:calc(830*var(--u));margin-inline:auto}
+.lp-stage>.lp-rail{position:absolute;inset:0 calc(56*var(--u)) auto;height:calc(64*var(--u));z-index:4}
+.lp-copy{position:absolute;left:calc(56*var(--u));top:calc(78*var(--u));z-index:3;pointer-events:none;scroll-margin-top:80px}
+.lp-h1{display:flex;flex-direction:column;font-family:var(--font-disp);font-weight:660;font-size:calc(80*var(--u));line-height:1;letter-spacing:-.026em;font-stretch:92%;color:var(--ink)}
+.lp-h1 span,.lp-h1 em{display:block;width:fit-content;font-style:normal}
+.lp-h1 em{background:linear-gradient(90deg,#2f6bff,#8c7bff 200%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.08em;margin-bottom:-.08em}
+.lp-side{position:absolute;left:calc(1032*var(--u));top:calc(100*var(--u));width:calc(352*var(--u));z-index:3;color:var(--ink)}
+/* The German copy runs longer, so it starts higher and wider to stay clear of the order panel below it. */
+:root[lang="de"] .lp-side{left:calc(880*var(--u));top:calc(78*var(--u));width:calc(504*var(--u))}
+.lp-sentence{font:400 max(14px,calc(16*var(--u)))/1.42 var(--font-ui);text-wrap:pretty}
+.lp-honest{margin-top:calc(12*var(--u))!important;font:500 max(12px,calc(12*var(--u)))/1.45 var(--font-mono);text-wrap:pretty}
+.lp-cta{position:absolute;left:calc(56*var(--u));top:calc(708*var(--u));width:calc(240*var(--u));z-index:3}
+.lp-enter{display:none}
+.lp-chips{gap:6px!important}
+.lp-chips>span{flex-basis:100%}
+.lp-defs{position:absolute;width:0;height:0}
+.lp-map-wide{position:absolute;inset:0;z-index:2}
+.lp-map-low{display:none}
+.lp-panel-float{position:absolute;left:calc(1104*var(--u));width:calc(280*var(--u));bottom:calc(268*var(--u));z-index:3}
+
+/* Map skin on the public pages */
+.lp-map .ui-map-tile{fill:url(#lp-tile)}
+.lp-map .ui-map-icon{color:var(--white)}
+.lp-map .ui-map-node[data-kind="person"] .ui-map-tile{fill:var(--white)}
+.lp-map .ui-map-node[data-kind="person"] .ui-map-icon{color:var(--solid)}
+.lp-map .ui-map-pulse{stroke:var(--ink);stroke-width:2.5;transform-box:fill-box;transform-origin:center}
+.lp-map .ui-map-node[data-kind="person"] .ui-map-pulse{rx:30px}
+/* The phone map's boxes are 118 wide; the two long German names need the tighter setting */
+:root[lang="de"] .lp-map .ui-map[data-mode="phone"] .ui-map-node[data-kind="service"] .ui-map-name{font-size:12.4px;letter-spacing:-.02em}
+.lp-map .ui-map-node[data-interactive]{outline-offset:3px}
+.lp-map .ui-map-node[data-interactive]:focus-visible .ui-map-box{stroke:var(--ink);stroke-width:2}
+.lp-pk{fill:var(--blue);stroke:var(--white);stroke-width:1.5;opacity:0;will-change:transform}
+.lp-pk[data-slow]{fill:var(--violet)}
+.lp-hot{fill:none;stroke:var(--blue);stroke-width:3.25;opacity:0;transition:opacity var(--t-med) var(--ease);stroke-linecap:round}
+/* Same box as the wide map underneath, drawn over its labels; clicks fall through to the nodes */
+.lp-story{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.lp-star{opacity:0;will-change:transform}
+.lp-star circle{fill:var(--ink);stroke:var(--white);stroke-width:2.5}
+.lp-star .lp-star-halo{fill:var(--ink);stroke:none;opacity:.16}
+.lp-trail{fill:var(--ink);opacity:0;will-change:transform}
+
+/* Side panel */
+.lp-panel{display:flex;flex-direction:column;gap:calc(7*var(--u));padding:calc(12*var(--u)) calc(14*var(--u));background:var(--white);border-radius:var(--r-3);color:var(--ink)}
+.lp-panel-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s-2)}
+.lp-panel-head h2{font:680 max(14px,calc(15*var(--u)))/1.15 var(--font-disp);letter-spacing:-.01em}
+.lp-panel-id{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--font-mono);color:var(--ink-3)}
+.lp-panel-id i{width:7px;height:7px;border-radius:50%;background:var(--blue)}
+.lp-order{display:flex;align-items:center;gap:var(--s-2);min-height:44px;padding:4px 8px 4px 4px;border:1px solid var(--line);border-radius:var(--r-2);transition:background var(--t-fast) var(--ease)}
+.lp-order:hover{background:var(--mist)}
+.lp-order-glyph{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32px;height:32px;border-radius:var(--r-1);background:var(--mist-2)}
+.lp-order-glyph svg{width:28px;height:28px}
+.lp-order-no{font:500 13px/1 var(--font-mono);margin-right:auto}
+.lp-rail-stations{position:relative;display:flex;justify-content:space-between;touch-action:none;user-select:none}
+.lp-rail-stations::before{content:"";position:absolute;left:12px;right:16px;top:12px;height:1.5px;background:var(--line-3)}
+.lp-station{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 2px;border:0;background:none;cursor:pointer;color:var(--ink-3);font:500 12px/1.2 var(--font-ui)}
+.lp-station-dot{width:13px;height:13px;border-radius:50%;background:var(--white);border:1.5px solid var(--line-3);transition:transform var(--t-fast) var(--ease)}
+.lp-station[data-state="done"] .lp-station-dot{background:var(--blue);border-color:var(--blue)}
+.lp-station[data-state="now"]{color:var(--ink)}
+.lp-station[data-state="now"] .lp-station-dot{background:var(--ink);border-color:var(--ink);transform:scale(1.2)}
+.lp-station:hover{color:var(--ink)}
+.lp-log li{display:grid;grid-template-columns:auto 1fr;gap:var(--s-2);padding:calc(4*var(--u)) 0;border-top:1px solid var(--line);font:400 max(12px,calc(12.5*var(--u)))/1.28 var(--font-ui);color:var(--ink-2);animation:lp-rise var(--t-med) var(--ease)}
+.lp-log li:last-child{color:var(--ink);font-weight:550}
+.lp-log time{font:400 12px/1.36 var(--font-mono);color:var(--ink-3)}
+@keyframes lp-rise{from{opacity:0;transform:translateY(5px)}}
+
+/* Ledger */
+.lp-ledger{display:grid;grid-template-columns:repeat(11,auto);justify-content:space-between;max-width:calc(1440*var(--u));margin:0 auto!important;padding:calc(11*var(--u)) calc(56*var(--u))!important;background:var(--white)}
+.lp-ledger>div{display:flex;flex-direction:column;gap:4px;padding:2px 0 2px var(--s-3);border-left:1px solid var(--line)}
+.lp-ledger>div:first-child{border-left:0;padding-left:0}
+.lp-ledger dd{order:-1;font-family:var(--font-disp);font-weight:660;font-size:28px;line-height:1;font-stretch:94%;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.lp-ledger dt{font:400 12px/1.25 var(--font-ui);color:var(--ink-3);white-space:nowrap}
+
+/* Shop strip: the Newsreader voice */
+.lp-shop{padding-top:var(--s-10);background:var(--white)}
+.lp-shop-head{display:grid;grid-template-columns:1fr minmax(0,360px) auto;align-items:end;gap:var(--s-7);max-width:1760px;margin:0 auto;padding:0 var(--gutter) var(--s-7)}
+.lp-shop-line{font-family:var(--font-serif);font-weight:300;font-size:clamp(40px,6.6vw,104px);line-height:.98;letter-spacing:-.02em}
+.lp-shop-copy{font:400 14px/1.45 var(--font-ui);color:var(--ink-2)}
+.lp-shop-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;font:500 14px/1.2 var(--font-ui);color:var(--link)!important;text-decoration:underline!important;text-underline-offset:3px;text-decoration-thickness:1px!important;white-space:nowrap}
+.lp-shop-link svg{transition:transform var(--t-fast) var(--ease)}
+.lp-shop-link:hover svg{transform:translateX(3px)}
+.lp-band{display:grid;grid-template-columns:1.5fr 1fr 1.7fr .9fr 1.25fr 1fr;height:clamp(300px,31vw,520px)}
+.lp-band li{position:relative;overflow:hidden;min-width:0}
+.lp-band a{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.lp-band svg{width:auto;height:84%;max-width:92%;transition:transform var(--t-med) var(--ease)}
+.lp-band a:hover svg{transform:scale(1.02)}
+.lp-band a:focus-visible{outline-offset:-4px}
+
+/* Desk strip */
+.lp-desk{display:flex;flex-direction:column;gap:var(--s-6);max-width:1360px;margin:0 auto;padding:var(--s-10) var(--gutter)}
+.lp-desk-head{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:var(--s-9);row-gap:var(--s-2);align-items:end}
+.lp-eyebrow{grid-column:1/-1;font:500 12px/1.3 var(--font-mono);color:var(--ink)}
+.lp-desk-title{font-family:var(--font-disp);font-weight:650;font-size:clamp(30px,3.6vw,52px);line-height:1.04;letter-spacing:-.02em;font-stretch:92%;text-wrap:balance}
+.lp-desk-copy{font:400 14px/1.45 var(--font-ui);color:var(--ink-2)}
+.lp-rows{border-top:1px solid var(--line)}
+.lp-rows li{border-bottom:1px solid var(--line)}
+.lp-row{display:grid;grid-template-columns:90px 150px minmax(0,1fr) 110px 170px 110px;align-items:center;gap:var(--s-3);min-height:56px;padding:0 var(--s-2);transition:background var(--t-fast) var(--ease)}
+.lp-row:hover{background:var(--mist)}
+.lp-row-no{font:500 13px/1 var(--font-mono)}
+.lp-row-when{font:500 12px/1.2 var(--font-mono);color:var(--ink-3)}
+.lp-row-name{overflow:hidden;font:500 14px/1.3 var(--font-ui);white-space:nowrap;text-overflow:ellipsis}
+.lp-row-total{font:500 13px/1 var(--font-mono);text-align:right}
+.lp-desk-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s-3)}
+
+/* Receipt */
+.lp-receipt{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);align-items:center;gap:var(--s-9);padding:var(--s-10) max(var(--gutter),calc((100% - 1280px)/2))}
+.lp-receipt-copy{display:flex;flex-direction:column;gap:var(--s-3);max-width:560px}
+.lp-receipt-title{font-family:var(--font-disp);font-weight:660;font-size:clamp(36px,5vw,72px);line-height:1;letter-spacing:-.024em;font-stretch:92%;text-wrap:balance}
+.lp-receipt-text{font:400 16px/1.5 var(--font-ui);color:var(--ink);text-wrap:pretty}
+.lp-slip-edge{display:block;width:100%;height:12px;margin-bottom:-1px}
+.lp-slip-body{display:flex;flex-direction:column;gap:var(--s-2);padding:var(--s-5) var(--s-6) var(--s-5);background:var(--white);border-radius:0 0 var(--r-1) var(--r-1)}
+.lp-slip-head{font:650 20px/1.2 var(--font-disp)}
+.lp-slip-sub{font:500 12px/1.35 var(--font-mono);color:var(--ink-3)}
+.lp-slip-body dl{display:flex;flex-direction:column;margin-top:var(--s-3)!important}
+.lp-slip-body dl>div{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s-4);padding:7px 0;border-top:1px dashed var(--line-2);font:500 13px/1.35 var(--font-mono)}
+.lp-slip-body dd{white-space:nowrap}
+.lp-slip-body .lp-slip-total{margin-top:var(--s-1);padding-top:var(--s-3);border-top:1.5px solid var(--ink);font-weight:700;font-size:15px}
+
+/* Footer */
+.lp-foot{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-5);padding:var(--s-4) var(--gutter);border-top:1px solid var(--line)}
+.lp-foot-brand{display:inline-flex;align-items:center;gap:8px;font:650 14px/1 var(--font-disp)}
+.lp-foot-note{margin-right:auto;font:500 12px/1.35 var(--font-mono);color:var(--ink-3)}
+
+/* The map's drawn text is 12 to 13.2 units. At a scale under .96 that would be under 12 px, so it grows in units: 13.6 is 12.09 px at .889. */
+@media (min-width:1280px) and (max-width:1381px),(min-width:1280px) and (max-height:868px){
+  .lp-map .ui-map-label text,.lp-map .ui-map-name{font-size:13.6px}
+  .lp-map .ui-map-second,.lp-map .ui-map-node[data-kind="person"] .ui-map-second{font-size:13.6px;letter-spacing:-.022em}
+  :root[lang="de"] .lp-map .ui-map-second{letter-spacing:-.04em}
+  .lp-map .ui-map-label rect{transform:scaleX(1.07)}
+  .lp-panel-float{left:calc(1096*var(--u));width:calc(306*var(--u));bottom:calc(286*var(--u))}
+  .lp-side{left:calc(960*var(--u));top:calc(78*var(--u));width:calc(424*var(--u))}
+}
+
+/* Under 1280: the phone map keeps the drawn text at or above 12 px */
+@media (max-width:1279px){
+  .lp-hero,.lp-ledger{--u:1px}
+  .lp-hero{background-size:100% 100%}
+  .lp-stage{width:auto;height:auto;padding:0 var(--gutter) var(--s-6)}
+  .lp-stage>.lp-rail{position:static;height:auto;min-height:64px}
+  .lp-rail-note{display:none}
+  .lp-copy{position:static;padding-top:var(--s-3)}
+  .lp-h1{font-size:clamp(40px,6.6vw,72px)}
+  .lp-side,:root[lang="de"] .lp-side{position:static;width:auto;max-width:640px;margin-top:var(--s-4)}
+  .lp-sentence{font-size:16px}
+  .lp-honest{margin-top:var(--s-2)!important}
+  .lp-cta{position:static;width:auto;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3);margin-top:var(--s-4)}
+  .lp-chips>span{flex-basis:auto}
+  .lp-enter{display:inline-flex;align-items:center;gap:var(--s-2);min-height:44px;padding:0 var(--s-4);border-radius:var(--r-2);background:var(--solid);color:var(--white)!important;font:500 14px/1 var(--font-ui)}
+  .lp-enter:hover{background:var(--solid-hover)}
+  .lp-map-wide,.lp-panel-float{display:none}
+  .lp-map-low{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:var(--s-5);margin-top:var(--s-5)}
+  .lp-map-phone{min-width:0}
+  .lp-map-phone .ui-map{max-width:520px;margin-inline:auto}
+  .lp-low-side{position:sticky;top:var(--s-4);display:flex;flex-direction:column;gap:var(--s-3);min-width:0}
+  .lp-panel{gap:var(--s-2);padding:var(--s-4)}
+  .lp-log li{padding:5px 0}
+  .lp-ledger{grid-template-columns:repeat(6,minmax(0,1fr));justify-content:stretch;row-gap:var(--s-4);padding:var(--s-4) var(--gutter)!important}
+  .lp-ledger>div{border-left:0;padding-left:0}
+  .lp-ledger dt{white-space:normal}
+  .lp-all{background:var(--white);border-radius:var(--r-3);color:var(--ink)}
+  .lp-all summary{display:flex;align-items:center;min-height:48px;padding:0 var(--s-4);font:600 14px/1.2 var(--font-ui);cursor:pointer}
+  .lp-all-hint{padding:0 var(--s-4) var(--s-2)!important;font:400 13px/1.4 var(--font-ui);color:var(--ink-2)}
+  .lp-all ul{padding:0 var(--s-4) var(--s-3)!important}
+  .lp-all li{display:flex;flex-direction:column;gap:2px;padding:var(--s-2) 0;border-top:1px solid var(--line)}
+  .lp-all-route{font:500 13px/1.3 var(--font-ui)}
+  .lp-all-what{font:400 13px/1.35 var(--font-ui);color:var(--ink-2)}
+  .lp-row{grid-template-columns:90px minmax(0,1fr) auto auto}
+  .lp-row-when,.lp-row-glyphs{display:none}
+  .lp-shop-head{grid-template-columns:1fr auto;align-items:end}
+  .lp-shop-copy{grid-column:1;grid-row:2}
+  .lp-shop-link{grid-column:2;grid-row:1/3;align-self:end}
+}
+
+@media (max-width:719px){
+  .lp-brand span,.lp-stops{display:none}
+  .lp-jump{height:44px;padding:0 12px}
+  .lp-jump-key{display:none}
+  .lp-rail .ui-lang .ui-seg-cell{min-height:40px}
+  .lp-h1{font-size:40px}
+  .lp-cta{align-items:stretch;flex-direction:column}
+  .lp-enter{justify-content:center}
+  .lp-chips>span{flex-basis:100%}
+  .lp-map-low{display:flex;flex-direction:column;gap:var(--s-5);margin-inline:calc(-1*var(--gutter))}
+  .lp-map-phone{width:100%}
+  .lp-map-phone .ui-map{max-width:none}
+  .lp-low-side{position:static;width:100%;padding-inline:var(--gutter)}
+  .lp-ledger{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lp-ledger dd{font-size:28px}
+  .lp-shop{padding-top:var(--s-9)}
+  .lp-shop-head{grid-template-columns:1fr;gap:var(--s-3);padding-bottom:var(--s-5)}
+  .lp-shop-copy,.lp-shop-link{grid-column:auto;grid-row:auto}
+  .lp-band{grid-template-columns:repeat(6,1fr);grid-auto-rows:190px;height:auto}
+  .lp-band li:nth-child(1){grid-column:span 4}
+  .lp-band li:nth-child(2){grid-column:span 2}
+  .lp-band li:nth-child(3){grid-column:span 3}
+  .lp-band li:nth-child(4){grid-column:span 3}
+  .lp-band li:nth-child(5){grid-column:span 2}
+  .lp-band li:nth-child(6){grid-column:span 4}
+  .lp-desk{padding-block:var(--s-9)}
+  .lp-desk-head{grid-template-columns:1fr}
+  .lp-row{grid-template-columns:1fr auto;grid-template-areas:"no total" "name total" "track total";row-gap:4px;padding:var(--s-3) var(--s-1)}
+  .lp-row-no{grid-area:no}
+  .lp-row-name{grid-area:name}
+  .lp-row-track{grid-area:track}
+  .lp-row-total{grid-area:total;align-self:center}
+  .lp-receipt{grid-template-columns:1fr;gap:var(--s-6);padding-block:var(--s-9)}
+  .lp-foot-note{flex-basis:100%;order:3}
+  .lp-foot .ui-lang{margin-left:auto}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .lp-log li{animation:none}
+  .lp-hot{transition:none}
+}
+
+/* Between the phone rail and the wide one the stops and the controls do not fit on one line, so the controls take a second. */
+@media (min-width:720px) and (max-width:1099px){
+  .lp-rail{flex-wrap:wrap;row-gap:var(--s-2);padding-block:var(--s-2)}
+}

@@ -1,0 +1,36 @@
+{
+  "name": "commerce-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A static showcase of a clothing shop and its staff system, with invented data.",
+  "scripts": {
+    "dev": "next dev -p 4417",
+    "build": "next build && node scan/flatten-segments.mjs",
+    "typecheck": "tsc --noEmit --incremental false",
+    "typecheck:mine": "node scan/typecheck-mine.mjs",
+    "test": "vitest run",
+    "scan": "node scan/scan.mjs",
+    "deps": "node scan/deps.mjs",
+    "outcheck": "node scan/out-check.mjs",
+    "crawl": "node scan/crawl.mjs",
+    "gates": "node scan/gates.mjs"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "4.3.4",
+    "lucide-react": "1.66.0",
+    "motion": "14.9.0",
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwindcss": "4.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "axe-core": "4.14.0",
+    "playwright-core": "1.64.1",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  }
+}

@@ -1,0 +1,213 @@
+/* The Dashboard. Layout follows the width of its own column, so it holds up beside the sidebar and without it. */
+.db{--db-gap:18px;--db-pad:22px;--db-up:#137a47;--db-up-tint:#e6f6ec;--db-violet:#6a58ee;--db-violet-tint:#f0edff;--db-sky-tint:#e7f8ff;--db-sky:#1a8fc4;container:db/inline-size;display:grid;gap:var(--db-gap);min-width:0}
+.db-muted{color:var(--ink-3)}
+
+.db-card{min-width:0;background:var(--white);border:1px solid var(--line);border-radius:16px}
+.db-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s-3);min-height:28px}
+.db-title{font:650 17px/1.2 var(--font-disp);font-stretch:96%;letter-spacing:-.012em;color:var(--ink)}
+.db-more{position:relative;display:inline-flex;align-items:center;gap:5px;flex:none;color:var(--ink);font:500 13px/1.3 var(--font-ui);white-space:nowrap;border-radius:var(--r-1)}
+.db-more:hover{color:var(--link)}
+
+/* KPI row */
+.db-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--db-gap)}
+.db-kpis[data-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+.db-kpi{display:flex;gap:14px;padding:18px var(--db-pad);overflow:hidden}
+.db-kpi[data-accent]{background:radial-gradient(64% 130% at 100% 100%,rgba(140,123,255,.34) 0%,rgba(111,211,255,.24) 46%,rgba(185,243,255,0) 100%),var(--white)}
+.db-kpi-icon{flex:none;color:var(--ink);margin-top:1px}
+.db-kpi-body{min-width:0;display:grid;gap:7px;align-content:start}
+.db-kpi-label{font:500 14px/1.25 var(--font-ui);color:var(--ink)}
+.db-kpi-value{font:660 28px/1.05 var(--font-disp);font-stretch:94%;letter-spacing:-.018em;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.db-kpi-foot{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;margin-top:1px}
+.db-kpi-versus{font:400 13px/1.3 var(--font-ui);color:var(--ink-3)}
+.db-delta{display:inline-flex;align-items:center;gap:3px;font:600 14px/1.2 var(--font-ui);font-variant-numeric:tabular-nums;white-space:nowrap}
+.db-delta[data-tone="up"]{color:var(--db-up)}
+.db-delta[data-tone="down"]{color:var(--rose)}
+.db-delta[data-tone="flat"]{color:var(--ink-3)}
+
+/* Revenue and collections */
+.db-mid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:var(--db-gap)}
+.db-revenue{padding:20px var(--db-pad) 14px;display:flex;flex-direction:column;gap:6px}
+.db-revenue-head{display:grid;gap:6px}
+.db-revenue-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s-2)}
+.db-revenue-figure{display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px}
+.db-revenue-value{font:660 26px/1.1 var(--font-disp);font-stretch:94%;letter-spacing:-.018em;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.db-ranges{display:flex;gap:4px}
+.db-range{position:relative;min-width:44px;height:32px;padding:0 10px;border-radius:10px;font:500 13px/1 var(--font-ui);font-variant-numeric:tabular-nums;color:var(--ink-3);cursor:pointer;transition:background-color var(--t-fast) var(--ease),color var(--t-fast) var(--ease)}
+.db-range::after{content:"";position:absolute;inset:-6px 0}
+.db-range:hover{background:var(--mist);color:var(--ink)}
+.db-range[aria-pressed="true"]{background:var(--mist-2);color:var(--link);font-weight:600}
+
+.db-chart{position:relative;margin-top:auto;touch-action:pan-y;border-radius:var(--r-2);cursor:crosshair}
+.db-chart-svg{display:block;overflow:visible}
+.db-grid{stroke:var(--mist-2);stroke-width:1;shape-rendering:crispEdges}
+.db-axis{font:400 12px var(--font-ui);fill:var(--ink-3)}
+.db-guide{stroke:var(--line-2);stroke-width:1;stroke-dasharray:2 3}
+.db-dot{fill:var(--solid);stroke:var(--white);stroke-width:2}
+.db-chart-draw{animation:db-fade var(--t-med) var(--ease)}
+@keyframes db-fade{from{opacity:0}to{opacity:1}}
+.db-chart-empty{position:absolute;inset:0 0 28px 42px;display:grid;place-items:center;color:var(--ink-3);text-align:center;padding-inline:var(--s-4);pointer-events:none}
+.db-tip{position:absolute;left:0;top:0;display:grid;gap:3px;padding:9px 14px;border:1px solid var(--line);border-radius:12px;background:var(--white);box-shadow:0 10px 26px -12px rgba(10,31,99,.28),0 1px 3px rgba(10,31,99,.06);white-space:nowrap;pointer-events:none;transition:transform var(--t-fast) var(--ease)}
+.db-tip-when{font:400 12px/1.3 var(--font-ui);color:var(--ink-3)}
+.db-tip-value{font:650 14px/1.2 var(--font-ui);font-variant-numeric:tabular-nums;color:var(--ink)}
+
+.db-collections{padding:20px var(--db-pad);display:flex;flex-direction:column;gap:var(--s-3)}
+.db-collections .db-head{min-height:32px}
+.db-donut{flex:1 1 auto;display:grid;grid-template-columns:minmax(150px,184px) minmax(0,1fr);align-items:center;gap:var(--s-6)}
+.db-donut-ring{position:relative;aspect-ratio:1;width:100%}
+.db-donut-ring svg{display:block;width:100%;height:100%}
+.db-slice{transition:opacity var(--t-fast) var(--ease)}
+.db-slice[data-dim]{opacity:.32}
+.db-donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;pointer-events:none}
+.db-donut-value{font:660 24px/1.05 var(--font-disp);font-stretch:94%;letter-spacing:-.018em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.db-donut-unit{font:400 13px/1.2 var(--font-ui);color:var(--ink-3)}
+.db-legend-wrap{min-width:0;display:grid;gap:var(--s-4)}
+.db-legend{display:grid;gap:14px}
+.db-legend li{display:grid;grid-template-columns:14px minmax(0,1fr) auto;align-items:center;gap:var(--s-3);color:var(--ink);font:400 14px/1.25 var(--font-ui)}
+.db-swatch{width:14px;height:14px;border-radius:4px}
+.db-legend-share{font-variant-numeric:tabular-nums;font-weight:500}
+.db-note{font:400 12px/1.4 var(--font-ui);color:var(--ink-3)}
+
+/* Recent orders, stock, tasks */
+.db-low{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(0,1.18fr) minmax(0,1fr);gap:var(--db-gap)}
+.db-low[data-cols="2"]{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.db-low[data-cols="2"]:not([data-orders]){grid-template-columns:repeat(2,minmax(0,1fr))}
+.db-low[data-cols="1"]{grid-template-columns:minmax(0,1fr)}
+.db-orders,.db-stock,.db-tasks{padding:18px var(--db-pad) 14px;display:flex;flex-direction:column;gap:var(--s-3)}
+
+.db-table{display:grid;grid-template-columns:minmax(66px,.8fr) minmax(max-content,1fr) minmax(64px,.85fr) minmax(74px,.9fr) minmax(88px,max-content);column-gap:10px}
+.db-table-head,.db-table-body,.db-row{grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center}
+.db-table-head,.db-row{padding-inline:8px}
+.db-table-head{min-height:32px;border-radius:8px;background:var(--mist);color:var(--ink-3);font:400 13px/1.2 var(--font-ui)}
+.db-row{position:relative;min-height:40px;border-radius:8px;color:var(--ink);font:400 13.5px/1.25 var(--font-ui);transition:background-color var(--t-fast) var(--ease)}
+.db-row:hover{background:var(--mist)}
+.db-cell-number{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.db-row-link{color:inherit}
+.db-row-link::after{content:"";position:absolute;inset:0;border-radius:8px}
+.db-row-link:focus-visible{outline:none;box-shadow:none}
+.db-row-link:focus-visible::after{outline:2px solid #0a1f63;outline-offset:-2px}
+.db-cell-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.db-cell-total{font-variant-numeric:tabular-nums;white-space:nowrap}
+.db-cell-thumbs{display:flex;align-items:center;gap:4px}
+.db-thumb{display:inline-grid;place-items:center;flex:none;overflow:hidden;background:var(--mist)}
+.db-thumb svg{display:block;width:100%;height:100%}
+.db-thumb[data-tone="ice"],.db-thumb[data-tone="lilac"]{background:var(--mist-2)}
+.db-thumb[data-size="s"]{width:30px;height:30px;padding:2px;border-radius:7px}
+.db-thumb[data-size="l"]{width:52px;height:52px;padding:5px;border-radius:12px}
+.db-thumb-more{font:500 12px/1 var(--font-ui);color:var(--ink-3)}
+
+.db-chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:var(--r-pill);font:500 13px/1 var(--font-ui);color:var(--ink);white-space:nowrap;background:var(--mist)}
+.db-chip-dot{width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.db-chip[data-tone="paid"]{background:var(--db-up-tint)}
+.db-chip[data-tone="paid"] .db-chip-dot{background:var(--db-up)}
+.db-chip[data-tone="packed"]{background:var(--db-violet-tint)}
+.db-chip[data-tone="packed"] .db-chip-dot{background:var(--db-violet)}
+.db-chip[data-tone="shipped"]{background:var(--mist-2)}
+.db-chip[data-tone="shipped"] .db-chip-dot{background:var(--blue)}
+.db-chip[data-tone="delivered"]{background:var(--db-sky-tint)}
+.db-chip[data-tone="delivered"] .db-chip-dot{background:var(--db-sky)}
+.db-chip[data-tone="pending"]{background:var(--amber-tint)}
+.db-chip[data-tone="pending"] .db-chip-dot{background:var(--amber)}
+.db-chip[data-tone="refunded"]{background:var(--rose-tint)}
+.db-chip[data-tone="refunded"] .db-chip-dot{background:var(--rose)}
+.db-chip[data-tone="attention"]{background:var(--amber-tint);color:var(--amber)}
+
+.db-stock-list{display:grid;gap:4px}
+.db-stock-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px;margin-inline:-8px;border-radius:var(--r-2);transition:background-color var(--t-fast) var(--ease)}
+.db-stock-row:hover{background:var(--mist)}
+.db-stock-text{min-width:0;display:grid;gap:3px}
+.db-stock-name{font:600 14px/1.25 var(--font-ui);color:var(--ink)}
+.db-stock-sub{font:400 13px/1.25 var(--font-ui);color:var(--ink-3)}
+.db-left{height:24px;padding:0 9px;display:inline-flex;align-items:center;border-radius:var(--r-pill);background:var(--rose-tint);color:var(--rose);font:500 13px/1 var(--font-ui);white-space:nowrap}
+
+.db-plus{display:grid;place-items:center;width:32px;height:32px;margin:-2px -6px -2px 0;border-radius:var(--r-2);color:var(--ink);cursor:pointer;flex:none}
+.db-plus:hover{background:var(--mist)}
+.db-add-input{width:100%;height:36px;padding:0 10px;border:1.5px solid var(--line-3);border-radius:8px;background:var(--white);color:var(--ink);font:400 14px/1.3 var(--font-ui)}
+.db-add-input:focus{border-color:var(--blue)}
+.db-add-input::placeholder{color:var(--ink-3)}
+.db-task-list{display:grid;gap:2px}
+.db-task .ui-check{display:flex;align-items:flex-start;gap:12px;min-height:40px;padding-block:8px;width:100%}
+.db-task .ui-checkbox{width:22px;height:22px;border-radius:6px;margin-top:-1px}
+.db-task .ui-checkbox:checked::after{left:6.5px;top:2.5px;width:6px;height:11px}
+.db-task .ui-check-label{min-width:0;font:400 14px/1.3 var(--font-ui);color:var(--ink);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.db-task[data-done] .ui-check-label{color:var(--ink-3);text-decoration:line-through;text-decoration-thickness:1px}
+
+@media (prefers-reduced-motion:reduce){.db-chart-draw{animation:none}.db-tip,.db-slice,.db-row{transition:none}}
+
+/* With room to spare the cards get more height. */
+@container db (min-width:1300px){
+  .db-kpi{padding-block:26px;gap:18px}
+  .db-kpi-body{gap:9px}
+  .db-revenue{padding-top:22px;padding-bottom:16px}
+}
+/* Beside a wide sidebar on a small laptop: the same order, a little tighter. */
+@container db (max-width:1250px){
+  .db-low{grid-template-columns:minmax(0,1.56fr) minmax(0,.96fr) minmax(0,.96fr)}
+}
+/* The KPI foot stacks in every card, so the row stays even. */
+@container db (max-width:1100px){
+  .db-kpi-foot{flex-direction:column;align-items:flex-start}
+  .db-donut{grid-template-columns:150px minmax(0,1fr);gap:var(--s-5)}
+}
+/* Small laptops: still three cards in a row, so the order rows show one thumbnail and tighter columns. */
+@container db (min-width:960px) and (max-width:1100px){
+  .db-table{column-gap:8px;grid-template-columns:minmax(66px,.8fr) minmax(max-content,1fr) 56px minmax(74px,.8fr) max-content}
+  .db-cell-thumbs > :nth-child(n+2){display:none}
+}
+@container db (min-width:1050px) and (max-width:1100px){
+  .db-low{grid-template-columns:minmax(0,1.62fr) minmax(0,.95fr) minmax(0,.95fr)}
+}
+/* A 1280 px laptop: the order table keeps the room it needs, the other two cards draw tighter. */
+@container db (min-width:960px) and (max-width:1049px){
+  .db-low{grid-template-columns:minmax(474px,2.05fr) minmax(0,1fr) minmax(0,1fr)}
+  .db-orders,.db-stock,.db-tasks{padding-inline:16px}
+  .db-stock-row{gap:8px}
+  .db-stock .db-thumb[data-size="l"]{width:36px;height:36px;padding:3px;border-radius:9px}
+  /* The title takes the row, so the link keeps its arrow on screen and its words for assistive technology. */
+  .db-stock .db-more{font-size:0;min-width:24px;min-height:24px;justify-content:flex-end}
+}
+/* Orders take a full row, stock and tasks share the next: five columns no longer fit beside two other cards. */
+@container db (max-width:959px){
+  .db-low,.db-low[data-cols="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .db-orders{grid-column:1/-1}
+  .db-table{column-gap:12px;grid-template-columns:minmax(70px,.9fr) minmax(90px,1.2fr) minmax(90px,1fr) minmax(90px,1fr) minmax(100px,max-content)}
+}
+/* The icon sits above the figures. Revenue and the donut still share a row, with a smaller ring. */
+@container db (max-width:1040px){
+  .db-kpi{flex-direction:column;gap:10px;padding:16px 18px}
+  .db-kpi-value{font-size:26px}
+  .db-donut{grid-template-columns:124px minmax(0,1fr);gap:var(--s-4)}
+}
+/* Tablet: the revenue chart takes the whole width. */
+@container db (max-width:899px){
+  .db-mid{grid-template-columns:minmax(0,1fr)}
+  .db-donut{grid-template-columns:184px minmax(0,1fr);gap:var(--s-7)}
+}
+/* Phone: one column, the KPI cards two by two, order rows as two-line cards. */
+@container db (max-width:640px){
+  .db{--db-gap:12px;--db-pad:16px}
+  .db-kpis,.db-kpis[data-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .db-kpi{padding:14px}
+  .db-kpi-icon{width:24px;height:24px}
+  .db-kpi-value{font-size:24px}
+  .db-kpi-foot{flex-direction:column;align-items:flex-start}
+  .db-low,.db-low[data-cols="2"]{grid-template-columns:minmax(0,1fr)}
+  .db-donut{grid-template-columns:minmax(0,1fr);justify-items:center;gap:var(--s-5)}
+  .db-donut-ring{max-width:184px}
+  .db-legend-wrap{width:100%}
+  .db-table,.db-table-body{display:block}
+  .db-table-head{display:none}
+  .db-row{grid-template-columns:72px minmax(0,1fr) auto;align-items:center;grid-template-areas:"thumbs number total" "thumbs name status";column-gap:var(--s-3);row-gap:4px;padding:12px 8px;margin-inline:-8px;border-top:1px solid var(--line);border-radius:0}
+  .db-table-body .db-row:first-child{border-top:0}
+  .db-cell-number{grid-area:number}
+  .db-cell-name{grid-area:name;color:var(--ink-3)}
+  .db-cell-total{grid-area:total;justify-self:end;font-weight:500}
+  .db-cell-thumbs{grid-area:thumbs}
+  .db-cell-status{grid-area:status;justify-self:end}
+  .db-thumb[data-size="s"]{width:36px;height:36px}
+  .db-cell-thumbs{gap:0}
+  .db-cell-thumbs .db-thumb + .db-thumb{margin-left:-14px;box-shadow:0 0 0 2px var(--white)}
+  .db-thumb-more{margin-left:3px}
+  .db-plus{width:44px;height:44px;margin:-8px -10px -8px 0}
+  .db-task .ui-check{min-height:44px;align-items:center}
+  .db-more{min-height:44px}
+}

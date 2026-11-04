@@ -1,0 +1,99 @@
+/* Slip and labels live outside the desk shell. Screen shows them on mist; print has exact geometry. */
+.pr-page{min-height:100dvh;padding:var(--s-5) var(--gutter) var(--s-9);background:var(--mist);color:var(--ink)}
+.pr-missing{display:grid;place-items:center;min-height:50vh}
+@media screen{.pr-page.pr-missing{min-height:100dvh}}
+.pr-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2) var(--s-3);max-width:210mm;margin:0 auto var(--s-4)}
+.pr-toolbar .ui-btn-label{display:inline-flex;align-items:center;gap:6px}
+.pr-help{flex:1 1 280px;min-width:0;color:var(--ink-2)}
+.pr-warning{display:flex;flex:1 0 100%;align-items:center;gap:6px;padding:var(--s-2) var(--s-3);border-radius:var(--r-2);background:var(--amber-tint);color:var(--amber)}
+.pr-warning svg{flex:none}
+.pr-barcode{display:block;max-width:100%}
+
+/* A4 sheet */
+.pr-sheet{display:flex;flex-direction:column;gap:9mm;width:100%;max-width:210mm;min-height:297mm;margin-inline:auto;padding:16mm;border:1px solid var(--line);border-radius:var(--r-1);background:var(--white);font-family:var(--font-serif);font-size:15px;line-height:1.4}
+.pr-sheet-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:var(--s-4)}
+.pr-word{font:italic 400 24px/1.1 var(--font-serif)}
+.pr-title{margin-top:var(--s-2);font:300 40px/1.05 var(--font-serif);letter-spacing:-.015em}
+.pr-sheet-code{display:flex;flex-direction:column;align-items:flex-end;gap:4px;max-width:100%}
+.pr-sheet-meta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s-5)}
+.pr-facts{display:flex;flex-direction:column;gap:var(--s-2);margin:0}
+.pr-facts dt,.pr-label{font:500 12px/1.3 var(--font-ui);color:var(--ink-3)}
+.pr-facts dd{margin:2px 0 0}
+.pr-shipto address{margin-top:2px;font-style:normal}
+.pr-table{width:100%;border-collapse:collapse}
+.pr-table th{padding:0 var(--s-3) var(--s-2) 0;border-bottom:1.5px solid var(--ink);color:var(--ink-3);font:500 12px/1.3 var(--font-ui);text-align:left;white-space:nowrap}
+.pr-table td{padding:var(--s-3) var(--s-3) var(--s-3) 0;border-bottom:1px solid var(--line-2);vertical-align:middle}
+.pr-table [data-num]{padding-right:0;text-align:right}
+.pr-check{display:block;width:5mm;height:5mm;border:1.5px solid var(--ink)}
+.pr-item{min-width:0}
+.pr-item-name{display:block;font-size:17px;line-height:1.2}
+.pr-item-sub{display:block;margin-top:2px;color:var(--ink-3);font:400 13px/1.35 var(--font-ui)}
+.pr-sku{min-width:0}
+.pr-sku .type-mono-s{display:block;margin-top:3px}
+.pr-sheet-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s-3);margin-top:auto;padding-top:var(--s-4);border-top:1px solid var(--line-2)}
+.pr-thanks{font-style:italic}
+.pr-demo-note{flex:1 0 100%;color:var(--ink-3);font:400 11px/1.35 var(--font-ui)}
+
+/* Phone: the sheet is a real column, not a shrunk page. Print ignores this. */
+@media screen and (max-width:719px){
+  .pr-page{padding-inline:var(--gutter)}
+  .pr-toolbar .ui-btn{flex:1 1 auto}
+  .pr-sheet{gap:var(--s-5);min-height:0;padding:var(--s-4)}
+  .pr-title{font-size:32px}
+  .pr-sheet-meta{grid-template-columns:minmax(0,1fr)}
+  .pr-sheet-code{align-items:flex-start}
+  .pr-table thead{display:none}
+  .pr-table,.pr-table tbody{display:block}
+  .pr-table tr{display:grid;grid-template-columns:7mm minmax(0,1fr) auto;gap:var(--s-2);align-items:start;padding-block:var(--s-3);border-bottom:1px solid var(--line-2)}
+  .pr-table td{display:block;padding:0;border:0}
+  .pr-sku{grid-column:2 / -1;grid-row:2}
+  .pr-qty{grid-column:3;grid-row:1}
+}
+
+/* Labels */
+.pr-toolbar-labels{max-width:210mm;align-items:flex-end}
+.pr-labels-head{flex:1 0 100%;min-width:0}
+.pr-copies{flex:0 1 150px;min-width:0}
+.pr-layout{flex:1 1 220px;min-width:0}
+.pr-toolbar-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2);margin-left:auto}
+.pr-hint{flex:1 0 100%}
+.pr-pages{display:flex;flex-direction:column;align-items:center;gap:var(--s-5)}
+.pr-a4{display:grid;grid-template-columns:repeat(3,70mm);grid-auto-rows:37mm;width:210mm;height:297mm;padding-top:0;align-content:start;border:1px solid var(--line);background:var(--white)}
+.pr-roll{display:block;width:62mm;height:29mm;border:1px solid var(--line);background:var(--white)}
+.pr-label-card{display:flex;flex-direction:column;gap:1mm;min-width:0;height:100%;padding:3mm;overflow:hidden;background:var(--white)}
+.pr-a4 .pr-label-card{outline:1px dashed var(--line);outline-offset:-1px}
+.pr-label-card header{display:flex;align-items:baseline;justify-content:space-between;gap:2mm;min-width:0}
+.pr-label-name{min-width:0;overflow:hidden;font:400 13px/1.15 var(--font-serif);text-overflow:ellipsis;white-space:nowrap}
+.pr-label-word{flex:none;font:italic 400 12px/1.15 var(--font-serif)}
+.pr-label-meta{display:flex;justify-content:space-between;gap:2mm;min-width:0;font:400 12px/1.15 var(--font-ui)}
+.pr-label-meta span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr-label-price{flex:none;font:500 12px/1.15 var(--font-mono)}
+.pr-label-sku{font:500 12px/1.1 var(--font-mono)}
+.pr-label-card .pr-barcode{margin-top:auto}
+.pr-roll .pr-label-card{gap:.5mm;padding:2mm 3mm}
+
+/* Phone: labels as a list of true-size cards. The A4 grid only exists where it fits. */
+@media screen and (max-width:859px){
+  .pr-a4{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s-3);width:100%;height:auto;border:0;background:none}
+  .pr-a4 .pr-label-card{flex:none;width:70mm;height:37mm;max-width:100%;border:1px solid var(--line);border-radius:var(--r-1);outline:0}
+  .pr-pages{gap:var(--s-3)}
+  .pr-toolbar-actions{margin-left:0;flex:1 0 100%}
+  .pr-toolbar-actions .ui-btn{flex:1 1 auto}
+}
+
+@page{size:A4;margin:0}
+@page roll{size:62mm 29mm;margin:0}
+@media print{
+  html,body{min-height:0;background:var(--white)}
+  .pr-page{min-height:0;padding:0;background:var(--white)}
+  .pr-toolbar,.ui-toaster{display:none !important}
+  .pr-sheet{width:210mm;max-width:none;min-height:296mm;margin:0;border:0;border-radius:0}
+  .pr-pages{display:block}
+  .pr-a4{width:210mm;height:297mm;border:0;break-after:page;break-inside:avoid}
+  .pr-a4 .pr-label-card{outline:0}
+  .pr-roll{page:roll;border:0;break-after:page;break-inside:avoid}
+  .pr-a4:last-child,.pr-roll:last-child{break-after:auto}
+}
+
+.pr-nothing{padding-block:var(--s-5);color:var(--ink-2);font-style:italic}
+@media (max-width:719px){.pr-table tr:has(.pr-nothing){display:block}}

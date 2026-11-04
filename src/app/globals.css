@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/fields.css";
+@import "../styles/ui.css";
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-link: var(--link);
+  --color-solid: var(--solid);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-line-3: var(--line-3);
+  --color-mist: var(--mist);
+  --color-rose: var(--rose);
+  --color-amber: var(--amber);
+  --font-disp: var(--ff-disp), system-ui, sans-serif;
+  --font-ui: var(--ff-ui), system-ui, sans-serif;
+  --font-mono: var(--ff-mono), ui-monospace, monospace;
+  --font-serif: var(--ff-serif), Georgia, serif;
+  --breakpoint-md: 720px;
+  --breakpoint-lg: 1100px;
+}
+
+@layer base {
+  body {
+    background: var(--white);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  html[lang="de"] p {
+    hyphens: auto;
+  }
+}
+
+/* Unlayered on purpose: focus stays visible on every surface. */
+:focus-visible {
+  outline: 2px solid #0a1f63;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff;
+}

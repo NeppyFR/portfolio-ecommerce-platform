@@ -1,0 +1,58 @@
+/* Shared by the Inbox, Settings, Team and superUser screens. */
+.pp-page{container:pp / inline-size;min-width:0}
+.pp-panel{min-width:0;padding:var(--s-6);border:1px solid var(--line);border-radius:16px;background:var(--white)}
+.pp-panel-head{display:flex;align-items:center;gap:var(--s-2);margin-bottom:var(--s-4)}
+.pp-panel-head svg{flex:none;color:var(--ink-2)}
+/* White, with one soft corner of the palette. */
+.pp-corner{background:radial-gradient(75% 130% at 100% 0%,rgba(185,243,255,.62) 0%,rgba(185,243,255,0) 72%),radial-gradient(60% 110% at 100% 100%,rgba(140,123,255,.12) 0%,rgba(140,123,255,0) 70%),var(--white)}
+.pp-stack{display:flex;flex-direction:column;gap:var(--s-3)}
+.pp-prose{max-width:68ch}
+:lang(de) .pp-prose{hyphens:auto}
+.pp-muted{color:var(--ink-3)}
+.pp-link{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+.pp-link:hover{color:var(--ink)}
+
+/* Numbers side by side in one card, hairline separated, never boxed one by one. */
+.pp-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:0;border:1px solid var(--line);border-radius:16px;background:var(--white);margin:0}
+.pp-stat{display:flex;flex-direction:column;gap:var(--s-1);min-width:0;padding:var(--s-4) var(--s-5)}
+.pp-stat + .pp-stat{border-left:1px solid var(--line)}
+.pp-stat dt{color:var(--ink-3);font:400 13px/1.3 var(--font-ui)}
+.pp-stat dd{margin:0;font:660 28px/1 var(--font-disp);font-stretch:94%;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.pp-stat[data-tone="warn"] dd{color:var(--amber)}
+.pp-stat[data-tone="bad"] dd{color:var(--rose)}
+@container pp (max-width:560px){
+  .pp-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pp-stat:nth-child(odd){border-left:0}
+  .pp-stat:nth-child(n+3){border-top:1px solid var(--line)}
+}
+
+/* Markers and small chips */
+.pp-chip{display:inline-flex;align-items:center;gap:5px;min-height:22px;padding:1px var(--s-2);border-radius:var(--r-pill);background:var(--mist-2);color:var(--ink);font:500 12px/1.35 var(--font-mono);white-space:nowrap}
+.pp-chip svg{flex:none}
+.pp-chips{display:flex;flex-wrap:wrap;gap:var(--s-1) 6px}
+.pp-code{display:inline-block;padding:1px 7px;border-radius:var(--r-1);background:var(--mist-2);color:var(--ink);font:500 13px/1.45 var(--font-mono);overflow-wrap:anywhere}
+
+/* Boxes that need to be read */
+.pp-box{display:flex;align-items:flex-start;gap:var(--s-2);padding:var(--s-3);border-radius:var(--r-2);font:400 13px/1.45 var(--font-ui)}
+.pp-box svg{flex:none;margin-top:2px}
+.pp-box[data-tone="warn"]{background:var(--amber-tint);color:var(--amber)}
+.pp-box[data-tone="bad"]{background:var(--rose-tint);color:var(--rose)}
+.pp-box[data-tone="info"]{background:var(--mist);color:var(--ink-2)}
+
+/* Key and value */
+.pp-dl{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:var(--s-1) var(--s-4);margin:0}
+.pp-dl dt{color:var(--ink-3);font:400 13px/1.4 var(--font-ui)}
+.pp-dl dd{margin:0;font:400 13px/1.4 var(--font-ui);overflow-wrap:anywhere}
+.pp-counts{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px var(--s-4);margin:0}
+.pp-counts dt{color:var(--ink-2);font:400 13px/1.45 var(--font-ui)}
+.pp-counts dd{margin:0;text-align:right;font:500 13px/1.45 var(--font-mono);font-variant-numeric:tabular-nums}
+
+/* Own person, inactive person */
+.pp-avatar{position:relative;display:inline-grid}
+.pp-avatar[data-me] .dk-avatar{box-shadow:0 0 0 2px var(--white),0 0 0 4px var(--ink)}
+.pp-avatar[data-off] .dk-avatar{background:var(--mist-2);color:var(--ink-3)}
+.pp-avatar-word{display:inline-flex;align-items:center;gap:var(--s-2);min-width:0}
+
+@media (max-width:719px){
+  .pp-panel{padding:var(--s-4)}
+}

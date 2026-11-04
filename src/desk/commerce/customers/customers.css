@@ -1,0 +1,45 @@
+/* Customers. Shares helpers from orders.css. */
+.cu-tools{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s-4) var(--s-6);margin-bottom:var(--s-4)}
+.cu-stats{display:flex;gap:var(--s-6);flex-wrap:wrap}
+.cu-search{flex:0 1 360px;min-width:0}
+.cu-name{display:inline-flex;flex-wrap:wrap;align-items:center;gap:2px var(--s-2);min-width:0;font-weight:500}
+.cu-name[data-erased]{color:var(--ink-3);font-weight:400}
+.cu-email{overflow-wrap:anywhere}
+.cu-keep{white-space:nowrap}
+.cu-card{display:flex;flex-direction:column;gap:3px;min-width:0}
+
+/* The sheet */
+.cu-detail{display:flex;flex-direction:column;gap:var(--s-5);min-width:0}
+.cu-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:var(--s-3);padding:var(--s-4);border:1px solid var(--line);border-radius:16px;background:radial-gradient(62% 120% at 100% 0%,rgba(111,211,255,.24),rgba(111,211,255,0) 72%),var(--white)}
+.cu-head-text{flex:1 1 220px;min-width:0}
+.cu-spent{flex:none;text-align:right}
+.cu-banner{display:flex;align-items:flex-start;gap:var(--s-2);padding:var(--s-3);border-radius:var(--r-2);background:var(--amber-tint);color:var(--amber)}
+.cu-banner svg{flex:none;margin-top:1px}
+.cu-sec{display:flex;flex-direction:column;gap:var(--s-2);min-width:0}
+.cu-sec + .cu-sec{padding-top:var(--s-4);border-top:1px solid var(--line)}
+.cu-orders{display:flex;flex-direction:column;list-style:none;margin:0;padding:0}
+.cu-orders li + li{border-top:1px solid var(--line)}
+.cu-order{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(84px,auto);align-items:center;gap:var(--s-3);min-height:48px;padding-block:var(--s-1);border-radius:var(--r-1)}
+.cu-order:hover{background:var(--mist)}
+.cu-order > .ui-money{justify-self:end}
+.cu-order > :nth-child(2){justify-self:start}
+.cu-order-id{display:flex;flex-direction:column;min-width:0}
+.cu-notes{display:flex;flex-direction:column;gap:var(--s-2);list-style:none;margin:0;padding:0}
+.cu-notes li{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s-3)}
+.cu-notes li > div{min-width:0;overflow-wrap:anywhere}
+.cu-addresses{display:flex;flex-direction:column;gap:var(--s-3);list-style:none;margin:0;padding:0}
+.cu-tag{margin-left:var(--s-2);padding:1px 6px;border-radius:var(--r-1);background:var(--mist-2);color:var(--ink-2)}
+.cu-waitlist{display:flex;flex-direction:column;gap:var(--s-1);list-style:none;margin:0;padding:0}
+.cu-waitlist li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s-1) var(--s-3)}
+.cu-data-actions{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-1)}
+.cu-data-actions .ui-btn-label{display:inline-flex;align-items:center;gap:6px}
+.cu-why{display:flex;align-items:flex-start;gap:6px;color:var(--amber)}
+.cu-why svg{flex:none;margin-top:2px}
+@media (max-width:719px){
+  .cu-spent{text-align:left}
+  .cu-search{flex:1 1 100%}
+  .cu-order{grid-template-columns:minmax(0,1fr) auto;gap:2px var(--s-3)}
+  .cu-order > .ui-orderstatus{grid-column:1;grid-row:2}
+  .cu-order > .ui-money{grid-column:2;grid-row:1 / span 2}
+  .cu-data-actions .ui-btn{flex:1 1 100%}
+}

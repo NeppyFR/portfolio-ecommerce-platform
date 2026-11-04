@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Commerce Platform banner</title>
+<style>
+  :root{color-scheme:light;--ink:#0a1f63;--line:#7286d0}
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px;background:#fff;color:var(--ink);font:14px/1.45 system-ui,"Segoe UI",sans-serif}
+  h1{margin:0 0 4px;font-size:20px}
+  p{margin:0 0 16px}
+  .row{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+  .cell{max-width:100%;min-width:0}
+  .cell h2{margin:0 0 8px;font:500 12px/1.3 ui-monospace,Consolas,monospace}
+  .cp-root{width:var(--w,1214px);max-width:100%}
+  .cp-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;margin-top:10px;font-size:12px;line-height:1.3}
+  .cp-foot button{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border:1.5px solid currentColor;border-radius:999px;background:transparent;color:inherit;font:inherit;font-weight:500;cursor:pointer}
+  .ctl{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:24px;padding-top:16px;border-top:1px solid #d8e4ff}
+  .ctl input[type=range]{width:min(420px,100%)}
+  .ctl output{font:500 13px/1 ui-monospace,Consolas,monospace;min-width:5ch}
+  .ctl button,.ctl select{min-height:32px;padding:0 12px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:inherit;font:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid #0a1f63;outline-offset:2px}
+  .cp-root{container:cp/inline-size}.cp-stage{overflow:hidden;border-radius:16px;background:linear-gradient(135deg,#fff 0%,#b9f3ff 42%,#6fd3ff 100%)}.cp-w,.cp-c{width:100%;height:auto;overflow:visible}.cp-w{display:block;aspect-ratio:1200/420}.cp-c{display:none;aspect-ratio:480/300}@container cp (max-width:899.98px){.cp-w{display:none}.cp-c{display:block;max-width:520px;margin:auto}}
+</style>
+</head>
+<body>
+<h1>Commerce Platform banner</h1>
+<p>The same SVG and frame function as <code>CommercePreview.tsx</code>. Opens from disk with no dependencies. On the portfolio card it runs at 1214 px on a wide window, and at 246 to 276 px on a phone.</p>
+<div class="row">
+  <div class="cell"><h2 id="wa">1214 px</h2><div class="cp-root" id="a" style="--w:1214px" data-t="0"></div></div>
+  <div class="cell"><h2>263 px</h2><div class="cp-root" id="b" style="--w:263px" data-t="0"></div></div>
+</div>
+<div class="ctl">
+  <label for="width">Width</label>
+  <select id="width">
+    <option value="1214" selected>1214 px</option>
+    <option value="970">970 px</option>
+    <option value="781">781 px</option>
+    <option value="480">480 px</option>
+    <option value="276">276 px</option>
+    <option value="246">246 px</option>
+  </select>
+  <label for="scrub">Scrub</label>
+  <input id="scrub" type="range" min="0" max="12" step="0.05" value="0" />
+  <output id="time" for="scrub">0.00 s</output>
+  <button type="button" id="toggle">Pause</button>
+  <label><input id="reduced" type="checkbox" /> Reduced motion</label>
+  <label><input id="german" type="checkbox" /> Deutsch</label>
+</div>
+<script>
+(function () {
+  /* FRAME-START */
+const LOOP_S = 12;
+/** From this rendered width the 1200-unit art keeps its 16-unit text at 12 px or more. Narrower gets the compact art. */
+const WIDE_FROM = 900;
+/** Reduced motion: new row in, Paid chip, tooltip on, three packing dots filled. */
+const STILL_T = 9.45;
+const FAULT_T = 4.4;
+/** Reduced motion: what the button renders. */
+const FAULT_STILL_T = 5;
+const DOT_AT = [9, 9.15, 9.3, 9.45, 9.6];
+/** Decoration that always moves. It never counts as something happening. */
+const AMBIENT = ["w.au0", "w.au1", "w.au2", "w.bob", "w.pulse", "c.au0", "c.au1", "c.bob", "c.pulse"];
+const TAU = Math.PI * 2;
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+const smooth = (a, b, t) => {
+    const k = clamp01((t - a) / (b - a));
+    return k * k * (3 - 2 * k);
+};
+const ease = (k) => {
+    const c = clamp01(k);
+    return c < 0.5 ? 2 * c * c : 1 - (-2 * c + 2) ** 2 / 2;
+};
+const lerp = (a, b, k) => a + (b - a) * k;
+const env = (t, a, b, f) => smooth(a, a + f, t) * (1 - smooth(b - f, b, t));
+const part = (o = 1, x = 0, y = 0, s = 1, r = 0) => ({ o, x, y, s, r });
+/** Scale from 0 past 1.25 and back to 1. */
+const pop = (t, a, b) => {
+    const k = clamp01((t - a) / (b - a));
+    return k < 0.6 ? 1.25 * (k / 0.6) : 1.25 - 0.25 * ((k - 0.6) / 0.4);
+};
+const wash = (t, s) => smooth(s - 0.05, s + 0.05, t) * (1 - smooth(s + 0.2, s + 0.7, t));
+const ring = (t, s, ms, grow, peak) => {
+    if (t < s || t >= s + ms)
+        return { o: 0, s: 1 };
+    const p = (t - s) / ms;
+    return { o: (1 - p) * peak, s: 1 + grow * p };
+};
+/** Things that leave at the reset: fully gone by 11.1. */
+const leaves = (t) => 1 - smooth(10.6, 11.1, t);
+/** Things that swap at the reset: out by 11.05, back in at their first place from 11.15. */
+const dip = (t) => 1 - smooth(10.6, 11.05, t);
+const back = (t) => smooth(11.15, 11.6, t);
+/** Corner points to a dense polyline, with the same rounded corners the wire draws. */
+function sample(corners, r = 7) {
+    const pts = [corners[0]];
+    for (let i = 1; i < corners.length - 1; i++) {
+        const p = corners[i - 1];
+        const q = corners[i];
+        const n = corners[i + 1];
+        const l1 = Math.hypot(q[0] - p[0], q[1] - p[1]);
+        const l2 = Math.hypot(n[0] - q[0], n[1] - q[1]);
+        const rr = Math.min(r, l1 / 2, l2 / 2);
+        const a = [q[0] - ((q[0] - p[0]) / l1) * rr, q[1] - ((q[1] - p[1]) / l1) * rr];
+        const b = [q[0] + ((n[0] - q[0]) / l2) * rr, q[1] + ((n[1] - q[1]) / l2) * rr];
+        for (let s = 0; s <= 6; s++) {
+            const u = s / 6;
+            pts.push([(1 - u) ** 2 * a[0] + 2 * u * (1 - u) * q[0] + u ** 2 * b[0], (1 - u) ** 2 * a[1] + 2 * u * (1 - u) * q[1] + u ** 2 * b[1]]);
+        }
+    }
+    pts.push(corners[corners.length - 1]);
+    const cum = [0];
+    for (let i = 1; i < pts.length; i++)
+        cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    return { pts, cum, len: cum[cum.length - 1] };
+}
+function at(route, share) {
+    const d = clamp01(share) * route.len;
+    let i = 1;
+    while (i < route.cum.length - 1 && route.cum[i] < d)
+        i++;
+    const span = route.cum[i] - route.cum[i - 1] || 1;
+    const k = (d - route.cum[i - 1]) / span;
+    const a = route.pts[i - 1];
+    const b = route.pts[i];
+    return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
+}
+/** The height of a left-to-right cubic at x. */
+function curveY(c, x) {
+    let lo = 0;
+    let hi = 1;
+    const pt = (u, i) => (1 - u) ** 3 * c[0][i] + 3 * u * (1 - u) ** 2 * c[1][i] + 3 * u * u * (1 - u) * c[2][i] + u ** 3 * c[3][i];
+    for (let n = 0; n < 18; n++) {
+        const m = (lo + hi) / 2;
+        if (pt(m, 0) < x)
+            lo = m;
+        else
+            hi = m;
+    }
+    return pt((lo + hi) / 2, 1);
+}
+/** Width of a word pill. A formula, so a language change needs no measuring. */
+const pillW = (text, size) => Math.round(text.length * size * 0.54 + size * 1.06);
+const WORD_BEATS = [
+    ["paid", 2.75, 3.4],
+    ["stored", 3.65, 4.3],
+    ["retry", 4.5, 5.7],
+    ["sent", 6, 6.7],
+];
+function words(out, prefix, x, y, t) {
+    for (const [id, a, b] of WORD_BEATS) {
+        out[`${prefix}w.${id}`] = part(env(t, a, b, 0.12), x, y, 0.9 + 0.1 * smooth(a, a + 0.14, t));
+    }
+}
+/** One strip per digit. On reset the old digit fades in over the strip, which snaps back underneath at 11.6. */
+function rolls(out, prefix, items, lineH, t) {
+    const k = smooth(10.6, 11.6, t);
+    const swapping = t >= 10.6 && t < 11.6;
+    for (const [id, start] of items) {
+        out[`${prefix}${id}`] = part(swapping ? 1 - k : 1, 0, t >= 11.6 ? 0 : -lineH * ease((t - start) / 0.5));
+        out[`${prefix}${id}b`] = part(swapping ? k : 0);
+    }
+}
+/** The white cover over the chart's tail, its end dot and that dot's pulse. */
+function chart(out, prefix, c, x0, x1, t) {
+    const k = ease((t - 7.4) / 0.7);
+    out[`${prefix}cover`] = t < 10.6 ? part(1, (x1 - x0) * k) : part(smooth(10.6, 11.6, t));
+    const atStart = t >= 11.1;
+    const x = t >= 10.6 ? (atStart ? x0 : x1) : lerp(x0, x1, k);
+    const y = curveY(c, x);
+    const on = t < 10.6 ? 1 : atStart ? smooth(11.2, 11.6, t) : 1 - smooth(10.6, 11, t);
+    out[`${prefix}dot`] = part(on, x, y);
+    const p = (t % 2) / 2;
+    out[`${prefix}pulse`] = part(on * 0.55 * Math.sin(Math.PI * p), x, y, 1 + 1.7 * p);
+}
+/* The packet rests on each node's icon, so it never covers the name. */
+const W_L1 = sample([[342, 73], [427, 73], [427, 112]]);
+const W_L2 = sample([[427, 112], [427, 192]]);
+const W_L3 = sample([[427, 192], [427, 245]]);
+const W_L4 = sample([[427, 245], [427, 340], [484, 340], [700, 330]]);
+const W_CURVE = [[832, 238], [864, 224], [892, 226], [960, 216]];
+const C_CURVE = [[346, 168], [376, 154], [410, 156], [454, 146]];
+function widePacket(t) {
+    if (t < 3)
+        return at(W_L1, ease((t - 2.1) / 0.65));
+    if (t < 3.9)
+        return at(W_L2, ease((t - 3) / 0.65));
+    if (t < 6.2)
+        return at(W_L3, ease((t - 3.9) / 0.5));
+    return at(W_L4, ease((t - 6.2) / 0.7));
+}
+function wideFrame(t) {
+    const out = {};
+    const w = (TAU * t) / LOOP_S;
+    out["w.au0"] = part(1, 1040 + 36 * Math.cos(w), 430 + 26 * Math.sin(w));
+    out["w.au1"] = part(1, 520 + 30 * Math.sin(w), 470 + 20 * Math.cos(w));
+    out["w.au2"] = part(1, 170 + 24 * Math.cos(w + 1), 10 + 18 * Math.sin(w + 1));
+    out["w.bob"] = part(1, 205, 192 + 3 * Math.sin(2 * w), 2.65);
+    // The shopper
+    const curK = ease((t - 0.2) / 0.8);
+    const click = smooth(0.96, 1, t) * (1 - smooth(1, 1.25, t));
+    out["w.cur"] = part(smooth(0.15, 0.35, t) * (1 - smooth(1.35, 1.75, t)), lerp(300, 268, curK), lerp(420, 368, curK), 1 - 0.1 * click);
+    out["w.cta"] = part(1, 205, 368, 1 - 0.03 * click);
+    const rip = ring(t, 1, 0.55, 1, 0.55);
+    out["w.rip"] = part(rip.o, 268, 368, rip.s);
+    const mk = ease((t - 1.1) / 0.8);
+    out["w.mini"] = part(smooth(1.1, 1.2, t) * (1 - smooth(1.82, 1.92, t)), (1 - mk) ** 2 * 205 + 2 * mk * (1 - mk) * 300 + mk * mk * 342, (1 - mk) ** 2 * 192 + 2 * mk * (1 - mk) * 90 + mk * mk * 73, lerp(0.9, 0.3, mk));
+    out["w.bag"] = part(1, 342, 73, 1 + 0.18 * env(t, 1.85, 2.2, 0.12));
+    out["w.badge"] = part(smooth(1.84, 1.86, t) * leaves(t), 354, 62, pop(t, 1.85, 2.1));
+    // The wire
+    const unlit = 1 - smooth(10.6, 11.6, t);
+    out["w.l0"] = part(smooth(2.1, 2.75, t) * unlit);
+    out["w.l1"] = part(smooth(3, 3.65, t) * unlit);
+    out["w.l2"] = part(smooth(3.9, 4.4, t) * unlit);
+    out["w.l3"] = part(smooth(6.2, 6.65, t) * unlit);
+    const pk = widePacket(t);
+    out["w.pkt"] = part(smooth(2.05, 2.15, t) * (1 - smooth(6.82, 6.95, t)), pk[0], pk[1]);
+    const hits = [
+        ["pay", [427, 125], 2.75],
+        ["db", [427, 205], 3.65],
+        ["mail", [427, 285], 5.95],
+    ];
+    for (const [id, pos, s] of hits) {
+        const r = ring(t, s, 0.6, 0.2, 0.9);
+        out[`w.r.${id}`] = part(r.o, pos[0], pos[1], r.s);
+        out[`w.h.${id}`] = part(wash(t, s));
+    }
+    // The fault
+    out["w.mail"] = part(1 - 0.45 * env(t, 4.4, 5.95, 0.2));
+    const shake = t >= 4.55 && t < 4.85 ? 2.5 * Math.sin((TAU * (t - 4.55)) / 0.1) * (1 - (t - 4.55) / 0.3) : 0;
+    out["w.tri"] = part(smooth(4.4, 4.58, t) * (1 - smooth(5.7, 5.95, t)), 478 + shake, 262, lerp(0.4, 1, ease((t - 4.4) / 0.2)));
+    const hp = t >= 4.5 && t < 5.9 ? ((t - 4.5) % 0.7) / 0.7 : 0;
+    out["w.halo"] = part(t >= 4.5 && t < 5.9 ? (1 - hp) * 0.8 : 0, 427, 245, 1 + 1.1 * hp);
+    words(out, "w.", 427, 78, t);
+    // The dashboard: the new row
+    const shift = ease((t - 6.9) / 0.4);
+    const rowsBack = t >= 11.1;
+    out["w.o0"] = part(dip(t) + back(t), 0, 330 + (rowsBack ? 0 : 30 * shift));
+    out["w.o1"] = part(1 - smooth(6.9, 7.2, t) + back(t), 0, 360 + (rowsBack ? 0 : 30 * shift));
+    out["w.new"] = part(smooth(6.9, 7.2, t) * dip(t), 18 * (1 - shift), 330);
+    out["w.tint"] = part(t >= 11.1 ? 1 : 1 - 0.75 * clamp01((t - 9.7) / 0.95));
+    const chipP = t >= 11.1 ? 0 : smooth(9.8, 10.1, t);
+    const chipS = t >= 11.1 ? 0 : smooth(10.2, 10.5, t);
+    out["w.c.paid"] = part(1 - chipP, 1080, 0);
+    out["w.c.packed"] = part(chipP * (1 - chipS), 1080, 0, 1 + 0.08 * env(t, 9.8, 10.15, 0.12));
+    out["w.c.shipped"] = part(chipS, 1080, 0, 1 + 0.08 * env(t, 10.2, 10.55, 0.12));
+    // The numbers
+    rolls(out, "w.", [["k0.0", 7.2], ["k0.1", 7.3], ["k0.2", 7.4], ["k1.0", 7.3], ["k1.1", 7.4], ["k2.0", 7.4]], 29, t);
+    chart(out, "w.", W_CURVE, 900, 960, t);
+    const tipIn = smooth(7.7, 7.95, t);
+    out["w.tip"] = part(tipIn * (1 - smooth(10.6, 11, t)), 904, 217 + 6 * (1 - tipIn));
+    out["w.donut"] = part(1, 1066, 227, 1, 24 * ease((t - 7.4) / 0.7) * (1 - ease((t - 10.6) / 1)));
+    out["w.bell"] = part(smooth(7.99, 8.01, t) * leaves(t), 1098, 70, pop(t, 8, 8.2));
+    const mailIn = smooth(8, 8.2, t) * (1 - smooth(10.6, 11.6, t));
+    out["w.ib"] = part(1, 630, 301, 1 + 0.2 * env(t, 8, 8.35, 0.1));
+    out["w.i3"] = part(1 - mailIn);
+    out["w.i4"] = part(mailIn);
+    // Staff packs it
+    const vk = ease((t - 8.2) / 0.7);
+    const vClick = smooth(8.86, 8.9, t) * (1 - smooth(8.9, 9.1, t));
+    out["w.vcur"] = part(smooth(8.15, 8.35, t) * leaves(t), lerp(1130, 1116, vk), lerp(400, 333, vk), 1 - 0.1 * vClick);
+    const vr = ring(t, 8.9, 0.5, 1.2, 0.8);
+    out["w.vrip"] = part(vr.o, 1116, 333, vr.s);
+    out["w.dt"] = part(smooth(8.9, 9, t) * dip(t));
+    DOT_AT.forEach((a, i) => {
+        const k = smooth(a, a + 0.14, t);
+        out[`w.d${i}`] = part(k * dip(t), 910 + 20 * i, 330, 0.55 + 0.45 * k);
+    });
+    return out;
+}
+function compactPacket(t) {
+    if (t < 3) {
+        const k = ease((t - 2.4) / 0.6);
+        return k < 0.75 ? [lerp(88, 152, k / 0.75), 243] : [lerp(152, 174, (k - 0.75) / 0.25), lerp(243, 240, (k - 0.75) / 0.25)];
+    }
+    if (t < 6.2)
+        return [174, 240];
+    const k = ease((t - 6.2) / 0.7);
+    return [lerp(174, 229, k), lerp(240, 238, k)];
+}
+function compactFrame(t) {
+    const out = {};
+    const w = (TAU * t) / LOOP_S;
+    out["c.au0"] = part(1, 420 + 22 * Math.cos(w), 310 + 16 * Math.sin(w));
+    out["c.au1"] = part(1, 160 + 18 * Math.sin(w), 330 + 12 * Math.cos(w));
+    out["c.bob"] = part(1, 88, 116 + 2.5 * Math.sin(2 * w), 1.45);
+    const tp = t >= 0.2 && t < 1.25 ? ((t - 0.2) % 0.525) / 0.525 : 0;
+    out["c.tap"] = part(t >= 0.2 && t < 1.25 ? (1 - tp) * 0.8 : 0, 88, 243, 0.6 + 1.1 * tp);
+    const press = smooth(0.95, 1.05, t) * (1 - smooth(1.05, 1.3, t));
+    out["c.cta"] = part(1, 88, 243, 1 - 0.05 * press);
+    const mk = ease((t - 1.25) / 1.15);
+    out["c.mini"] = part(smooth(1.25, 1.35, t) * (1 - smooth(2.3, 2.4, t)), 88, lerp(116, 243, mk), lerp(0.8, 0.35, mk));
+    out["c.lit"] = part(smooth(2.4, 3, t) * (1 - smooth(10.6, 11.6, t)));
+    const pk = compactPacket(t);
+    out["c.pkt"] = part(smooth(2.35, 2.45, t) * (1 - smooth(6.82, 6.95, t)), pk[0], pk[1]);
+    const b1 = ring(t, 2.75, 0.9, 1, 0.8);
+    const b2 = ring(t, 3.65, 0.8, 1, 0.8);
+    const b3 = ring(t, 5.9, 0.4, 1, 0.8);
+    out["c.beat"] = part(Math.max(b1.o, b2.o, b3.o), 174, 240, t < 3.65 ? b1.s : t < 5 ? b2.s : b3.s);
+    const shake = t >= 4.55 && t < 4.85 ? 2.5 * Math.sin((TAU * (t - 4.55)) / 0.1) * (1 - (t - 4.55) / 0.3) : 0;
+    out["c.tri"] = part(smooth(4.4, 4.58, t) * (1 - smooth(5.7, 5.95, t)), 174 + shake, 205, lerp(0.4, 1, ease((t - 4.4) / 0.2)));
+    const hp = t >= 4.5 && t < 5.9 ? ((t - 4.5) % 0.7) / 0.7 : 0;
+    out["c.halo"] = part(t >= 4.5 && t < 5.9 ? (1 - hp) * 0.8 : 0, 174, 240, 1 + 1.1 * hp);
+    words(out, "c.", 174, 176, t);
+    const fresh = smooth(6.9, 7.3, t) * (1 - smooth(10.6, 11.6, t));
+    out["c.n0"] = part(1 - fresh);
+    out["c.n1"] = part(fresh);
+    out["c.tint"] = part(fresh * (1 - 0.6 * clamp01((t - 9.7) / 0.95)));
+    const rr = ring(t, 6.9, 0.6, 0.06, 0.9);
+    out["c.r.row"] = part(rr.o, 326, 238, rr.s);
+    rolls(out, "c.", [["k0.0", 7], ["k0.1", 7.1], ["k0.2", 7.2], ["k1.0", 7.1], ["k1.1", 7.2]], 31, t);
+    chart(out, "c.", C_CURVE, 400, 454, t);
+    const vp = t >= 8 && t < 9.75 ? ((t - 8) % 0.7) / 0.7 : 0;
+    out["c.vtap"] = part(t >= 8 && t < 9.75 ? (1 - vp) * 0.75 : 0, 266, 253, 0.6 + 1.1 * vp);
+    const packed = smooth(9.8, 10.1, t) * (1 - smooth(10.6, 11.6, t));
+    out["c.s.paid"] = part(1 - packed);
+    out["c.s.packed"] = part(packed);
+    return out;
+}
+/** Every moving part at time `t`. Pure, and t = 12 is exactly t = 0. */
+function frame(t, variant) {
+    const inLoop = ((t % LOOP_S) + LOOP_S) % LOOP_S;
+    return variant === "compact" ? compactFrame(inLoop) : wideFrame(inLoop);
+}
+const partTransform = (p) => `translate(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px) rotate(${p.r.toFixed(2)}deg) scale(${p.s.toFixed(3)})`;
+/* FRAME-END */
+
+  var LABELS = {
+  "en": {
+    "illustration": "Simplified illustration",
+    "fail": "Fail a step",
+    "alt": "An online shop beside its staff dashboard. Someone adds a hoodie to the bag, the order is paid and stored, the mail step fails once and passes on the second try, and the order lands on the dashboard as a new row, where staff pack and ship it.",
+    "onlineShop": "Online shop",
+    "shop": "Shop",
+    "staffSystem": "Staff system",
+    "addToBag": "Add to bag",
+    "payments": "Payments",
+    "database": "Database",
+    "mail": "Mail",
+    "navDashboard": "Dashboard",
+    "navProducts": "Products",
+    "navOrders": "Orders",
+    "navCustomers": "Customers",
+    "navFinances": "Finances",
+    "navInbox": "Inbox",
+    "navSettings": "Settings",
+    "totalRevenue": "Total Revenue",
+    "orders": "Orders",
+    "customers": "Customers",
+    "revenue": "Revenue",
+    "recentOrders": "Recent Orders",
+    "statusPaid": "Paid",
+    "statusPending": "Pending",
+    "statusPacked": "Packed",
+    "statusShipped": "Shipped",
+    "paid": "paid",
+    "stored": "stored",
+    "retry": "retry",
+    "sent": "rendered"
+  },
+  "de": {
+    "illustration": "Vereinfachte Darstellung",
+    "fail": "Fehler auslösen",
+    "alt": "Ein Onlineshop neben dem Dashboard des Teams. Jemand legt einen Hoodie in den Warenkorb, die Bestellung wird bezahlt und gespeichert, der Mailschritt scheitert einmal und klappt beim zweiten Versuch, und die Bestellung landet als neue Zeile auf dem Dashboard, wo das Team sie packt und versendet.",
+    "onlineShop": "Onlineshop",
+    "shop": "Shop",
+    "staffSystem": "Team-System",
+    "addToBag": "In den Warenkorb",
+    "payments": "Zahlung",
+    "database": "Datenbank",
+    "mail": "Mail",
+    "navDashboard": "Dashboard",
+    "navProducts": "Produkte",
+    "navOrders": "Bestellungen",
+    "navCustomers": "Kundschaft",
+    "navFinances": "Finanzen",
+    "navInbox": "Posteingang",
+    "navSettings": "Einstellungen",
+    "totalRevenue": "Gesamtumsatz",
+    "orders": "Bestellungen",
+    "customers": "Kundschaft",
+    "revenue": "Umsatz",
+    "recentOrders": "Neueste Bestellungen",
+    "statusPaid": "Bezahlt",
+    "statusPending": "Offen",
+    "statusPacked": "Gepackt",
+    "statusShipped": "Versendet",
+    "paid": "bezahlt",
+    "stored": "gespeichert",
+    "retry": "nochmals",
+    "sent": "gerendert"
+  }
+};
+  var SVG = `<svg class="cp-w" viewBox="0 0 1200 420" role="img" aria-label="An online shop beside its staff dashboard. Someone adds a hoodie to the bag, the order is paid and stored, the mail step fails once and passes on the second try, and the order lands on the dashboard as a new row, where staff pack and ship it."><defs><radialGradient id="__ID__wa1"><stop offset="0" stop-color="#8c7bff" stop-opacity=".75"></stop><stop offset="1" stop-color="#8c7bff" stop-opacity="0"></stop></radialGradient><radialGradient id="__ID__wa2"><stop offset="0" stop-color="#2f6bff" stop-opacity=".6"></stop><stop offset="1" stop-color="#2f6bff" stop-opacity="0"></stop></radialGradient><radialGradient id="__ID__wa3"><stop offset="0" stop-color="#fff" stop-opacity=".95"></stop><stop offset="1" stop-color="#fff" stop-opacity="0"></stop></radialGradient><radialGradient id="__ID__wcorner"><stop offset="0" stop-color="#8c7bff" stop-opacity=".38"></stop><stop offset=".6" stop-color="#6fd3ff" stop-opacity=".2"></stop><stop offset="1" stop-color="#6fd3ff" stop-opacity="0"></stop></radialGradient><linearGradient id="__ID__wtile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fbff"></stop><stop offset=".55" stop-color="#b9f3ff"></stop><stop offset="1" stop-color="#c9c1ff"></stop></linearGradient><linearGradient id="__ID__wgar" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6fd3ff"></stop><stop offset=".5" stop-color="#2f6bff"></stop><stop offset="1" stop-color="#8c7bff"></stop></linearGradient><linearGradient id="__ID__wcta" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2f6bff"></stop><stop offset="1" stop-color="#8c7bff"></stop></linearGradient><linearGradient id="__ID__warea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f6bff" stop-opacity=".34"></stop><stop offset="1" stop-color="#6fd3ff" stop-opacity=".02"></stop></linearGradient><clipPath id="__ID__wrows"><rect x="652" y="316" width="492" height="66"></rect></clipPath><clipPath id="__ID__wchart"><rect x="652" y="174" width="324" height="106"></rect></clipPath><clipPath id="__ID__wctaclip"><rect x="56" y="350" width="298" height="36" rx="18"></rect></clipPath><clipPath id="__ID__wk0"><rect x="652" y="102" width="156" height="62" rx="14"></rect></clipPath><clipPath id="__ID__wv0"><rect x="744" y="131" width="56" height="29"></rect></clipPath><clipPath id="__ID__wv1"><rect x="832" y="131" width="60" height="29"></rect></clipPath><clipPath id="__ID__wv2"><rect x="1014" y="131" width="40" height="29"></rect></clipPath></defs><g data-k="w.au0" style="opacity:1;transform:translate(1076.00px,430.00px) rotate(0.00deg) scale(1.000)"><circle r="380" fill="url(#__ID__wa1)"></circle></g><g data-k="w.au1" style="opacity:1;transform:translate(520.00px,490.00px) rotate(0.00deg) scale(1.000)"><circle r="330" fill="url(#__ID__wa2)"></circle></g><g data-k="w.au2" style="opacity:1;transform:translate(182.97px,25.15px) rotate(0.00deg) scale(1.000)"><circle r="300" fill="url(#__ID__wa3)"></circle></g><text x="40" y="40" font-size="22" font-weight="650" fill="#0a1f63" data-l="onlineShop">Online shop</text><text x="484" y="40" font-size="22" font-weight="650" fill="#0a1f63" data-l="staffSystem">Staff system</text><rect x="44" y="60" width="330" height="342" rx="18" fill="#0a1f63" opacity="0.07"></rect><rect x="40" y="54" width="330" height="342" rx="18" fill="#fff"></rect><text x="58" y="81" font-size="21" font-style="italic" font-family="Georgia,&#x27;Times New Roman&#x27;,serif" fill="#0a1f63">Aerloom</text><g data-k="w.bag" style="opacity:1;transform:translate(342.00px,73.00px) rotate(0.00deg) scale(1.000)"><g transform="translate(-11.5 -11.5) scale(0.9583333333333334)" fill="none" stroke="#0a1f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10a4 4 0 0 1-8 0"></path><path d="M3.103 6.034h17.794"></path><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"></path></g></g><rect x="56" y="96" width="298" height="186" rx="12" fill="url(#__ID__wtile)"></rect><g data-k="w.bob" style="opacity:1;transform:translate(205.00px,192.00px) rotate(0.00deg) scale(2.650)"><g><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="url(#__ID__wgar)"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="url(#__ID__wgar)"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><text x="56" y="308" font-size="19" font-weight="600" fill="#0a1f63">Essential Hoodie</text><text x="354" y="308" font-size="19" font-weight="600" fill="#0a1f63" text-anchor="end">CHF 89.00</text><g><rect x="56" y="318" width="34" height="24" rx="8" fill="#f1f5ff"></rect><text x="73" y="336" font-size="16" font-weight="600" fill="#0a1f63" text-anchor="middle">S</text></g><g><rect x="96" y="318" width="34" height="24" rx="8" fill="url(#__ID__wcta)"></rect><text x="113" y="336" font-size="16" font-weight="600" fill="#fff" text-anchor="middle">M</text></g><g><rect x="136" y="318" width="34" height="24" rx="8" fill="#f1f5ff"></rect><text x="153" y="336" font-size="16" font-weight="600" fill="#0a1f63" text-anchor="middle">L</text></g><g><rect x="176" y="318" width="34" height="24" rx="8" fill="#f1f5ff"></rect><text x="193" y="336" font-size="16" font-weight="600" fill="#0a1f63" text-anchor="middle">XL</text></g><g data-k="w.cta" style="opacity:1;transform:translate(205.00px,368.00px) rotate(0.00deg) scale(1.000)"><rect x="-149" y="-18" width="298" height="36" rx="18" fill="url(#__ID__wcta)"></rect><text y="6" font-size="18" font-weight="650" fill="#fff" text-anchor="middle" data-l="addToBag">Add to bag</text></g><g clip-path="url(#__ID__wctaclip)"><g data-k="w.rip" style="opacity:0;transform:translate(268.00px,368.00px) rotate(0.00deg) scale(1.000)"><circle r="34" fill="#fff"></circle></g></g><g data-k="w.badge" style="opacity:0;transform:translate(354.00px,62.00px) rotate(0.00deg) scale(0.000)"><circle r="9" fill="#2f6bff"></circle><text y="5.5" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">1</text></g><path d="M370 73 L420 73 Q427 73 427 80 L427 333 Q427 340 434 340 L484 340" fill="none" stroke="#fff" stroke-opacity="0.85" stroke-width="6"></path><path d="M370 73 L420 73 Q427 73 427 80 L427 333 Q427 340 434 340 L484 340" fill="none" stroke="#143bb0" stroke-width="1.6"></path><g data-k="w.l0" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><path d="M370 73 L420 73 Q427 73 427 80 L427 125" fill="none" stroke="#2f6bff" stroke-width="3.2"></path></g><g data-k="w.l1" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><path d="M427 125 L427 205" fill="none" stroke="#2f6bff" stroke-width="3.2"></path></g><g data-k="w.l2" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><path d="M427 205 L427 258" fill="none" stroke="#2f6bff" stroke-width="3.2"></path></g><g data-k="w.l3" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><path d="M427 258 L427 333 Q427 340 434 340 L484 340" fill="none" stroke="#2f6bff" stroke-width="3.2"></path></g><rect x="381" y="98" width="92" height="54" rx="14" fill="#fff" stroke="#dbe5fb"></rect><g data-k="w.h.pay" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="381" y="98" width="92" height="54" rx="14" fill="#b9f3ff"></rect></g><g transform="translate(418 105) scale(0.75)" fill="none" stroke="#2860ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line><path d="M6 14h2"></path></g><text x="427" y="143" font-size="16" font-weight="600" fill="#0a1f63" text-anchor="middle" data-l="payments">Payments</text><rect x="381" y="178" width="92" height="54" rx="14" fill="#fff" stroke="#dbe5fb"></rect><g data-k="w.h.db" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="381" y="178" width="92" height="54" rx="14" fill="#b9f3ff"></rect></g><g transform="translate(418 185) scale(0.75)" fill="none" stroke="#2860ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></g><text x="427" y="223" font-size="16" font-weight="600" fill="#0a1f63" text-anchor="middle" data-l="database">Database</text><rect x="381" y="258" width="92" height="54" rx="14" fill="#dff6ff"></rect><g data-k="w.mail" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="381" y="258" width="92" height="54" rx="14" fill="#fff" stroke="#dbe5fb"></rect><g data-k="w.h.mail" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="381" y="258" width="92" height="54" rx="14" fill="#b9f3ff"></rect></g><g transform="translate(418 265) scale(0.75)" fill="none" stroke="#2860ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></g><text x="427" y="303" font-size="16" font-weight="600" fill="#0a1f63" text-anchor="middle" data-l="mail">Mail</text></g><rect x="488" y="60" width="676" height="342" rx="18" fill="#0a1f63" opacity="0.07"></rect><rect x="484" y="54" width="676" height="342" rx="18" fill="#fff"></rect><path d="M496 86 Q509 66 522 86" fill="none" stroke="#2f6bff" stroke-width="2"></path><circle cx="496" cy="86" r="3.4" fill="#6fd3ff"></circle><circle cx="509" cy="76" r="3.4" fill="#2f6bff"></circle><circle cx="522" cy="86" r="3.4" fill="#8c7bff"></circle><text x="530" y="86" font-size="19" font-style="italic" font-family="Georgia,&#x27;Times New Roman&#x27;,serif" fill="#0a1f63">Aerloom</text><path d="M640 54 V396" stroke="#dbe5fb"></path><rect x="492" y="99" width="140" height="32" rx="10" fill="#e8f0ff"></rect><g><g transform="translate(500 106) scale(0.75)" fill="none" stroke="#2f6bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></g><text x="522" y="121" font-size="16" font-weight="650" fill="#143bb0" data-l="navDashboard">Dashboard</text></g><g><g transform="translate(500 143) scale(0.75)" fill="none" stroke="#0a1f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"></path><path d="M12 22V12"></path><polyline points="3.29 7 12 12 20.71 7"></polyline><path d="m7.5 4.27 9 5.15"></path></g><text x="522" y="158" font-size="16" font-weight="500" fill="#0a1f63" data-l="navProducts">Products</text></g><g><g transform="translate(500 180) scale(0.75)" fill="none" stroke="#0a1f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 16H8"></path><path d="M14 8H8"></path><path d="M16 12H8"></path><path d="M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z"></path></g><text x="522" y="195" font-size="16" font-weight="500" fill="#0a1f63" data-l="navOrders">Orders</text></g><g><g transform="translate(500 217) scale(0.75)" fill="none" stroke="#0a1f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></g><text x="522" y="232" font-size="16" font-weight="500" fill="#0a1f63" data-l="navCustomers">Customers</text></g><g><g transform="translate(500 254) scale(0.75)" fill="none" stroke="#0a1f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></g><text x="522" y="269" font-size="16" font-weight="500" fill="#0a1f63" data-l="navFinances">Finances</text></g><g><g transform="translate(500 291) scale(0.75)" fill="none" stroke="#0a1f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></g><text x="522" y="306" font-size="16" font-weight="500" fill="#0a1f63" data-l="navInbox">Inbox</text></g><g><g transform="translate(500 328) scale(0.75)" fill="none" stroke="#0a1f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></g><text x="522" y="343" font-size="16" font-weight="500" fill="#0a1f63" data-l="navSettings">Settings</text></g><g data-k="w.ib" style="opacity:1;transform:translate(630.00px,301.00px) rotate(0.00deg) scale(1.000)"><circle r="9" fill="#8c7bff"></circle><g data-k="w.i3" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text y="5.5" font-size="16" font-weight="700" fill="#0a1f63" text-anchor="middle">3</text></g><g data-k="w.i4" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text y="5.5" font-size="16" font-weight="700" fill="#0a1f63" text-anchor="middle">4</text></g></g><text x="652" y="88" font-size="25" font-weight="700" fill="#0a1f63" data-l="navDashboard">Dashboard</text><rect x="940" y="66" width="124" height="28" rx="14" fill="#fff" stroke="#dbe5fb"></rect><g transform="translate(950 72) scale(0.6666666666666666)" fill="none" stroke="#8ea3d6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></g><rect x="974" y="76" width="72" height="8" rx="4" fill="#e8eefc"></rect><g transform="translate(1077 69) scale(0.9166666666666666)" fill="none" stroke="#0a1f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></g><g data-k="w.bell" style="opacity:0;transform:translate(1098.00px,70.00px) rotate(0.00deg) scale(0.000)"><circle r="5" fill="#8c7bff" stroke="#fff" stroke-width="1.5"></circle></g><circle cx="1126" cy="80" r="15" fill="#e8f0ff"></circle><text x="1126" y="86" font-size="16" font-weight="650" fill="#0a1f63" text-anchor="middle">MK</text><g clip-path="url(#__ID__wk0)"><rect x="652" y="102" width="156" height="62" fill="#fff"></rect><circle cx="792" cy="118" r="46" fill="url(#__ID__wcorner)"></circle></g><rect x="652" y="102" width="156" height="62" rx="14" fill="none" stroke="#dbe5fb"></rect><text x="666" y="124" font-size="16" font-weight="500" fill="#51629c" data-l="totalRevenue">Total Revenue</text><text x="666" y="153" font-size="25" font-weight="700" fill="#0a1f63">CHF</text><text x="732" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text><text x="743" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">&#x27;</text><g clip-path="url(#__ID__wv0)"><g data-k="w.k0.0" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="754" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text><text x="754" y="182" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">3</text></g><g data-k="w.k0.0b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="754" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text></g><g data-k="w.k0.1" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="771" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">3</text><text x="771" y="182" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text></g><g data-k="w.k0.1b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="771" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">3</text></g><g data-k="w.k0.2" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="788" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">7</text><text x="788" y="182" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">6</text></g><g data-k="w.k0.2b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="788" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">7</text></g></g><rect x="820" y="102" width="156" height="62" rx="14" fill="#fff" stroke="#dbe5fb"></rect><text x="834" y="124" font-size="16" font-weight="500" fill="#51629c" data-l="orders">Orders</text><g clip-path="url(#__ID__wv1)"><g data-k="w.k1.0" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="842" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">1</text><text x="842" y="182" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text></g><g data-k="w.k1.0b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="842" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">1</text></g><g data-k="w.k1.1" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="859" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">9</text><text x="859" y="182" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">0</text></g><g data-k="w.k1.1b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="859" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">9</text></g></g><rect x="988" y="102" width="156" height="62" rx="14" fill="#fff" stroke="#dbe5fb"></rect><text x="1002" y="124" font-size="16" font-weight="500" fill="#51629c" data-l="customers">Customers</text><text x="1008" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">1</text><g clip-path="url(#__ID__wv2)"><g data-k="w.k2.0" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="1024" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">5</text><text x="1024" y="182" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">6</text></g><g data-k="w.k2.0b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="1024" y="153" font-size="25" font-weight="700" fill="#0a1f63" text-anchor="middle">5</text></g></g><rect x="652" y="174" width="324" height="106" rx="14" fill="#fff"></rect><path d="M666 256 C700 252 716 240 748 242 S800 252 832 238 S892 226 960 216 L960 272 L666 272Z" fill="url(#__ID__warea)"></path><path d="M666 256 C700 252 716 240 748 242 S800 252 832 238 S892 226 960 216" fill="none" stroke="#2f6bff" stroke-width="2.6"></path><g clip-path="url(#__ID__wchart)"><g data-k="w.cover" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="900" y="206" width="76" height="74" fill="#fff"></rect></g></g><rect x="652" y="174" width="324" height="106" rx="14" fill="none" stroke="#dbe5fb"></rect><text x="666" y="197" font-size="16" font-weight="650" fill="#0a1f63" data-l="revenue">Revenue</text><g><rect x="816" y="182" width="34" height="22" rx="11" fill="#e8f0ff"></rect><text x="833" y="198.5" font-size="16" font-weight="650" fill="#143bb0" text-anchor="middle">7D</text></g><g><text x="871" y="198.5" font-size="16" font-weight="500" fill="#51629c" text-anchor="middle">30D</text></g><g><text x="909" y="198.5" font-size="16" font-weight="500" fill="#51629c" text-anchor="middle">90D</text></g><g><text x="947" y="198.5" font-size="16" font-weight="500" fill="#51629c" text-anchor="middle">1Y</text></g><g data-k="w.pulse" style="opacity:0;transform:translate(900.00px,223.45px) rotate(0.00deg) scale(1.000)"><circle r="7" fill="none" stroke="#2f6bff" stroke-width="2"></circle></g><g data-k="w.dot" style="opacity:1;transform:translate(900.00px,223.45px) rotate(0.00deg) scale(1.000)"><circle r="5.5" fill="#2f6bff" stroke="#fff" stroke-width="2"></circle></g><g data-k="w.tip" style="opacity:0;transform:translate(904.00px,223.00px) rotate(0.00deg) scale(1.000)"><rect x="-42" y="-13" width="84" height="26" rx="8" fill="#0a1f63"></rect><text y="5.5" font-size="16" font-weight="650" fill="#fff" text-anchor="middle">+CHF 89</text></g><rect x="988" y="174" width="156" height="106" rx="14" fill="#fff" stroke="#dbe5fb"></rect><g data-k="w.donut" style="opacity:1;transform:translate(1066.00px,227.00px) rotate(0.00deg) scale(1.000)"><g transform="rotate(-90)" fill="none" stroke-width="13"><circle r="36" stroke="#2f6bff" stroke-dasharray="117.62122895040186 226.1946710584651"></circle><circle r="36" stroke="#6fd3ff" stroke-dasharray="63.33450789637023 226.1946710584651" stroke-dashoffset="-117.62122895040186"></circle><circle r="36" stroke="#8c7bff" stroke-dasharray="45.23893421169302 226.1946710584651" stroke-dashoffset="-180.95573684677208"></circle></g></g><rect x="652" y="290" width="492" height="94" rx="14" fill="#fff" stroke="#dbe5fb"></rect><text x="666" y="310" font-size="16" font-weight="650" fill="#0a1f63" data-l="recentOrders">Recent Orders</text><g clip-path="url(#__ID__wrows)"><g data-k="w.o0" style="opacity:1;transform:translate(0.00px,330.00px) rotate(0.00deg) scale(1.000)"><rect x="666" y="-12" width="24" height="24" rx="6" fill="#eef3ff"></rect><g transform="translate(678 0)"><g transform="scale(0.28)"><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="url(#__ID__wgar)"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="url(#__ID__wgar)"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><text x="700" y="6" font-size="16" font-weight="650" fill="#0a1f63">AL-1150</text><text x="800" y="6" font-size="16" font-weight="500" fill="#0a1f63">CHF 158.00</text><g transform="translate(1080 0)"><rect x="-56" y="-11" width="112" height="22" rx="11" fill="#e4f6ea"></rect><circle cx="-44" r="4" fill="#15803d"></circle><text x="-34" y="6" font-size="16" font-weight="600" fill="#0a1f63" data-l="statusPaid">Paid</text></g></g><g data-k="w.o1" style="opacity:1;transform:translate(0.00px,360.00px) rotate(0.00deg) scale(1.000)"><rect x="666" y="-12" width="24" height="24" rx="6" fill="#eef3ff"></rect><g transform="translate(678 0)"><g transform="scale(0.28)"><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="url(#__ID__wgar)"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="url(#__ID__wgar)"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><text x="700" y="6" font-size="16" font-weight="650" fill="#0a1f63">AL-1149</text><text x="800" y="6" font-size="16" font-weight="500" fill="#0a1f63">CHF 297.00</text><g transform="translate(1080 0)"><rect x="-56" y="-11" width="112" height="22" rx="11" fill="#fdf1dc"></rect><circle cx="-44" r="4" fill="#7f4600"></circle><text x="-34" y="6" font-size="16" font-weight="600" fill="#0a1f63" data-l="statusPending">Pending</text></g></g><g data-k="w.new" style="opacity:0;transform:translate(18.00px,330.00px) rotate(0.00deg) scale(1.000)"><g data-k="w.tint" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="658" y="-14" width="480" height="28" rx="8" fill="#eef4ff"></rect></g><rect x="666" y="-12" width="24" height="24" rx="6" fill="#eef3ff"></rect><g transform="translate(678 0)"><g transform="scale(0.28)"><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="url(#__ID__wgar)"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="url(#__ID__wgar)"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><text x="700" y="6" font-size="16" font-weight="650" fill="#0a1f63">AL-1151</text><text x="800" y="6" font-size="16" font-weight="500" fill="#0a1f63">CHF 89.00</text><g data-k="w.c.paid" style="opacity:1;transform:translate(1080.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="-56" y="-11" width="112" height="22" rx="11" fill="#e4f6ea"></rect><circle cx="-44" r="4" fill="#15803d"></circle><text x="-34" y="6" font-size="16" font-weight="600" fill="#0a1f63" data-l="statusPaid">Paid</text></g><g data-k="w.c.packed" style="opacity:0;transform:translate(1080.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="-56" y="-11" width="112" height="22" rx="11" fill="#ece9ff"></rect><circle cx="-44" r="4" fill="#5b48d6"></circle><text x="-34" y="6" font-size="16" font-weight="600" fill="#0a1f63" data-l="statusPacked">Packed</text></g><g data-k="w.c.shipped" style="opacity:0;transform:translate(1080.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="-56" y="-11" width="112" height="22" rx="11" fill="#e8f0ff"></rect><circle cx="-44" r="4" fill="#2f6bff"></circle><text x="-34" y="6" font-size="16" font-weight="600" fill="#0a1f63" data-l="statusShipped">Shipped</text></g></g><g data-k="w.dt" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><circle cx="910" cy="330" r="4" fill="#fff" stroke="#b6cbfa" stroke-width="1.5"></circle><circle cx="930" cy="330" r="4" fill="#fff" stroke="#b6cbfa" stroke-width="1.5"></circle><circle cx="950" cy="330" r="4" fill="#fff" stroke="#b6cbfa" stroke-width="1.5"></circle><circle cx="970" cy="330" r="4" fill="#fff" stroke="#b6cbfa" stroke-width="1.5"></circle><circle cx="990" cy="330" r="4" fill="#fff" stroke="#b6cbfa" stroke-width="1.5"></circle></g><g data-k="w.d0" style="opacity:0;transform:translate(910.00px,330.00px) rotate(0.00deg) scale(0.550)"><circle r="4" fill="#2860ee"></circle></g><g data-k="w.d1" style="opacity:0;transform:translate(930.00px,330.00px) rotate(0.00deg) scale(0.550)"><circle r="4" fill="#2860ee"></circle></g><g data-k="w.d2" style="opacity:0;transform:translate(950.00px,330.00px) rotate(0.00deg) scale(0.550)"><circle r="4" fill="#2860ee"></circle></g><g data-k="w.d3" style="opacity:0;transform:translate(970.00px,330.00px) rotate(0.00deg) scale(0.550)"><circle r="4" fill="#2860ee"></circle></g><g data-k="w.d4" style="opacity:0;transform:translate(990.00px,330.00px) rotate(0.00deg) scale(0.550)"><circle r="4" fill="#2860ee"></circle></g></g><g data-k="w.r.pay" style="opacity:0;transform:translate(427.00px,125.00px) rotate(0.00deg) scale(1.000)"><rect x="-46" y="-27" width="92" height="54" rx="14" fill="none" stroke="#2f6bff" stroke-width="2.5"></rect></g><g data-k="w.r.db" style="opacity:0;transform:translate(427.00px,205.00px) rotate(0.00deg) scale(1.000)"><rect x="-46" y="-27" width="92" height="54" rx="14" fill="none" stroke="#2f6bff" stroke-width="2.5"></rect></g><g data-k="w.r.mail" style="opacity:0;transform:translate(427.00px,285.00px) rotate(0.00deg) scale(1.000)"><rect x="-46" y="-27" width="92" height="54" rx="14" fill="none" stroke="#2f6bff" stroke-width="2.5"></rect></g><g data-k="w.mini" style="opacity:0;transform:translate(205.00px,192.00px) rotate(0.00deg) scale(0.900)"><g><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="url(#__ID__wgar)"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="url(#__ID__wgar)"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><g data-k="w.tri" style="opacity:0;transform:translate(478.00px,262.00px) rotate(0.00deg) scale(0.400)"><path d="M0 -13.2 L15 13.2 L-15 13.2Z" fill="#ffb020" stroke="#7f4600" stroke-width="2" stroke-linejoin="round"></path><path d="M0 -3.696 L0 4.224" stroke="#7f4600" stroke-width="3" stroke-linecap="round"></path><circle cy="8.448" r="1.7" fill="#7f4600"></circle></g><g data-k="w.halo" style="opacity:0;transform:translate(427.00px,245.00px) rotate(0.00deg) scale(1.000)"><circle r="13" fill="none" stroke="#ffb020" stroke-width="3"></circle></g><g data-k="w.pkt" style="opacity:0;transform:translate(342.00px,73.00px) rotate(0.00deg) scale(1.000)"><circle r="11" fill="#0a1f63" stroke="#fff" stroke-width="2"></circle><g transform="scale(0.2)"><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="#fff"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="#fff"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#0a1f63" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><g data-k="w.w.paid" style="opacity:0;transform:translate(427.00px,78.00px) rotate(0.00deg) scale(0.900)"><rect data-pill="paid" data-size="17" x="-27.5" y="-16" width="55" height="32" rx="16" fill="#0a1f63"></rect><text y="5.949999999999999" font-size="17" font-weight="650" fill="#fff" text-anchor="middle" data-l="paid">paid</text></g><g data-k="w.w.stored" style="opacity:0;transform:translate(427.00px,78.00px) rotate(0.00deg) scale(0.900)"><rect data-pill="stored" data-size="17" x="-36.5" y="-16" width="73" height="32" rx="16" fill="#0a1f63"></rect><text y="5.949999999999999" font-size="17" font-weight="650" fill="#fff" text-anchor="middle" data-l="stored">stored</text></g><g data-k="w.w.retry" style="opacity:0;transform:translate(427.00px,78.00px) rotate(0.00deg) scale(0.900)"><rect data-pill="retry" data-size="17" x="-32" y="-16" width="64" height="32" rx="16" fill="#0a1f63"></rect><text y="5.949999999999999" font-size="17" font-weight="650" fill="#fff" text-anchor="middle" data-l="retry">retry</text></g><g data-k="w.w.sent" style="opacity:0;transform:translate(427.00px,78.00px) rotate(0.00deg) scale(0.900)"><rect data-pill="sent" data-size="17" x="-45.5" y="-16" width="91" height="32" rx="16" fill="#0a1f63"></rect><text y="5.949999999999999" font-size="17" font-weight="650" fill="#fff" text-anchor="middle" data-l="sent">rendered</text></g><g data-k="w.cur" style="opacity:0;transform:translate(300.00px,420.00px) rotate(0.00deg) scale(1.000)"><path d="M0 0 L0 22 L6 17 L10 26 L14 24 L10 15 L18 15Z" fill="#0a1f63" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"></path></g><g data-k="w.vrip" style="opacity:0;transform:translate(1116.00px,333.00px) rotate(0.00deg) scale(1.000)"><circle r="13" fill="none" stroke="#8c7bff" stroke-width="2.5"></circle></g><g data-k="w.vcur" style="opacity:0;transform:translate(1130.00px,400.00px) rotate(0.00deg) scale(1.000)"><path d="M0 0 L0 22 L6 17 L10 26 L14 24 L10 15 L18 15Z" fill="#8c7bff" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"></path></g></svg><svg class="cp-c" viewBox="0 0 480 300" role="img" aria-label="An online shop beside its staff dashboard. Someone adds a hoodie to the bag, the order is paid and stored, the mail step fails once and passes on the second try, and the order lands on the dashboard as a new row, where staff pack and ship it."><defs><radialGradient id="__ID__ca1"><stop offset="0" stop-color="#8c7bff" stop-opacity=".75"></stop><stop offset="1" stop-color="#8c7bff" stop-opacity="0"></stop></radialGradient><radialGradient id="__ID__ca2"><stop offset="0" stop-color="#2f6bff" stop-opacity=".6"></stop><stop offset="1" stop-color="#2f6bff" stop-opacity="0"></stop></radialGradient><radialGradient id="__ID__ca3"><stop offset="0" stop-color="#fff" stop-opacity=".95"></stop><stop offset="1" stop-color="#fff" stop-opacity="0"></stop></radialGradient><radialGradient id="__ID__ccorner"><stop offset="0" stop-color="#8c7bff" stop-opacity=".38"></stop><stop offset=".6" stop-color="#6fd3ff" stop-opacity=".2"></stop><stop offset="1" stop-color="#6fd3ff" stop-opacity="0"></stop></radialGradient><linearGradient id="__ID__ctile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fbff"></stop><stop offset=".55" stop-color="#b9f3ff"></stop><stop offset="1" stop-color="#c9c1ff"></stop></linearGradient><linearGradient id="__ID__cgar" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6fd3ff"></stop><stop offset=".5" stop-color="#2f6bff"></stop><stop offset="1" stop-color="#8c7bff"></stop></linearGradient><linearGradient id="__ID__ccta" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2f6bff"></stop><stop offset="1" stop-color="#8c7bff"></stop></linearGradient><linearGradient id="__ID__carea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f6bff" stop-opacity=".34"></stop><stop offset="1" stop-color="#6fd3ff" stop-opacity=".02"></stop></linearGradient><clipPath id="__ID__cwin"><rect x="186" y="44" width="280" height="240" rx="18"></rect></clipPath><clipPath id="__ID__ck0"><rect x="198" y="56" width="124" height="66" rx="12"></rect></clipPath><clipPath id="__ID__cv0"><rect x="232" y="88" width="84" height="30"></rect></clipPath><clipPath id="__ID__cv1"><rect x="338" y="88" width="110" height="30"></rect></clipPath></defs><g data-k="c.au0" style="opacity:1;transform:translate(442.00px,310.00px) rotate(0.00deg) scale(1.000)"><circle r="210" fill="url(#__ID__ca1)"></circle></g><g data-k="c.au1" style="opacity:1;transform:translate(160.00px,342.00px) rotate(0.00deg) scale(1.000)"><circle r="170" fill="url(#__ID__ca2)"></circle></g><text x="16" y="32" font-size="24" font-weight="650" fill="#0a1f63" data-l="shop">Shop</text><text x="188" y="32" font-size="24" font-weight="650" fill="#0a1f63" data-l="staffSystem">Staff system</text><rect x="17" y="48" width="148" height="240" rx="18" fill="#0a1f63" opacity="0.07"></rect><rect x="14" y="44" width="148" height="240" rx="18" fill="#fff"></rect><rect x="24" y="54" width="128" height="120" rx="12" fill="url(#__ID__ctile)"></rect><g data-k="c.bob" style="opacity:1;transform:translate(88.00px,116.00px) rotate(0.00deg) scale(1.450)"><g><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="url(#__ID__cgar)"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="url(#__ID__cgar)"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><text x="24" y="203" font-size="24" font-weight="650" fill="#0a1f63">CHF 89</text><g data-k="c.cta" style="opacity:1;transform:translate(88.00px,243.00px) rotate(0.00deg) scale(1.000)"><rect x="-64" y="-27" width="128" height="54" rx="16" fill="url(#__ID__ccta)"></rect><g transform="translate(-18 -18) scale(1.5)" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10a4 4 0 0 1-8 0"></path><path d="M3.103 6.034h17.794"></path><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"></path></g></g><rect x="189" y="48" width="280" height="240" rx="18" fill="#0a1f63" opacity="0.07"></rect><rect x="186" y="44" width="280" height="240" rx="18" fill="#fff"></rect><g clip-path="url(#__ID__ck0)"><circle cx="312" cy="66" r="40" fill="url(#__ID__ccorner)"></circle></g><rect x="198" y="56" width="124" height="66" rx="12" fill="none" stroke="#dbe5fb"></rect><text x="208" y="79" font-size="24" font-weight="500" fill="#51629c" data-l="revenue">Revenue</text><text x="217" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text><text x="228" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">&#x27;</text><g clip-path="url(#__ID__cv0)"><g data-k="c.k0.0" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="240" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text><text x="240" y="142" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">3</text></g><g data-k="c.k0.0b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="240" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text></g><g data-k="c.k0.1" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="258" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">3</text><text x="258" y="142" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text></g><g data-k="c.k0.1b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="258" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">3</text></g><g data-k="c.k0.2" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="276" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">7</text><text x="276" y="142" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">6</text></g><g data-k="c.k0.2b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="276" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">7</text></g></g><rect x="332" y="56" width="122" height="66" rx="12" fill="none" stroke="#dbe5fb"></rect><g transform="translate(342 62) scale(0.9166666666666666)" fill="none" stroke="#0a1f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10a4 4 0 0 1-8 0"></path><path d="M3.103 6.034h17.794"></path><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"></path></g><g clip-path="url(#__ID__cv1)"><g data-k="c.k1.0" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="351" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">1</text><text x="351" y="142" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">2</text></g><g data-k="c.k1.0b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="351" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">1</text></g><g data-k="c.k1.1" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="369" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">9</text><text x="369" y="142" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">0</text></g><g data-k="c.k1.1b" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="369" y="111" font-size="26" font-weight="700" fill="#0a1f63" text-anchor="middle">9</text></g></g><path d="M198 186 C226 182 240 172 268 174 S316 182 346 168 S410 156 454 146 L454 196 L198 196Z" fill="url(#__ID__carea)"></path><path d="M198 186 C226 182 240 172 268 174 S316 182 346 168 S410 156 454 146" fill="none" stroke="#2f6bff" stroke-width="3"></path><g clip-path="url(#__ID__cwin)"><g data-k="c.cover" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="400" y="134" width="66" height="64" fill="#fff"></rect></g></g><g data-k="c.pulse" style="opacity:0;transform:translate(400.00px,154.78px) rotate(0.00deg) scale(1.000)"><circle r="8" fill="none" stroke="#2f6bff" stroke-width="2.5"></circle></g><g data-k="c.dot" style="opacity:1;transform:translate(400.00px,154.78px) rotate(0.00deg) scale(1.000)"><circle r="6" fill="#2f6bff" stroke="#fff" stroke-width="2"></circle></g><rect x="198" y="204" width="256" height="68" rx="12" fill="#fff"></rect><g data-k="c.tint" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><rect x="198" y="204" width="256" height="68" rx="12" fill="#eef4ff"></rect></g><rect x="198" y="204" width="256" height="68" rx="12" fill="none" stroke="#dbe5fb"></rect><rect x="208" y="217" width="42" height="42" rx="9" fill="#eef3ff"></rect><g transform="translate(229 238)"><g transform="scale(0.5)"><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="url(#__ID__cgar)"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="url(#__ID__cgar)"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><g data-k="c.n0" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="260" y="236" font-size="24" font-weight="650" fill="#0a1f63">AL-1150</text></g><g data-k="c.n1" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><text x="260" y="236" font-size="24" font-weight="650" fill="#0a1f63">AL-1151</text></g><g data-k="c.s.paid" style="opacity:1;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><circle cx="266" cy="253" r="5" fill="#15803d"></circle><text x="276" y="260" font-size="24" font-weight="600" fill="#0a1f63" data-l="statusPaid">Paid</text></g><g data-k="c.s.packed" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><circle cx="266" cy="253" r="5" fill="#5b48d6"></circle><text x="276" y="260" font-size="24" font-weight="600" fill="#0a1f63" data-l="statusPacked">Packed</text></g><path d="M152 243 L198 238" stroke="#fff" stroke-opacity="0.85" stroke-width="6"></path><path d="M152 243 L198 238" stroke="#143bb0" stroke-width="2"></path><g data-k="c.lit" style="opacity:0;transform:translate(0.00px,0.00px) rotate(0.00deg) scale(1.000)"><path d="M152 243 L198 238" stroke="#2f6bff" stroke-width="3.2"></path></g><g data-k="c.tap" style="opacity:0;transform:translate(88.00px,243.00px) rotate(0.00deg) scale(0.600)"><circle r="30" fill="none" stroke="#0a1f63" stroke-width="3"></circle></g><g data-k="c.vtap" style="opacity:0;transform:translate(266.00px,253.00px) rotate(0.00deg) scale(0.600)"><circle r="24" fill="none" stroke="#8c7bff" stroke-width="3"></circle></g><g data-k="c.r.row" style="opacity:0;transform:translate(326.00px,238.00px) rotate(0.00deg) scale(1.000)"><rect x="-128" y="-34" width="256" height="68" rx="12" fill="none" stroke="#2f6bff" stroke-width="3"></rect></g><g data-k="c.mini" style="opacity:0;transform:translate(88.00px,116.00px) rotate(0.00deg) scale(0.800)"><g><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="url(#__ID__cgar)"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="url(#__ID__cgar)"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><g data-k="c.tri" style="opacity:0;transform:translate(174.00px,205.00px) rotate(0.00deg) scale(0.400)"><path d="M0 -13.2 L15 13.2 L-15 13.2Z" fill="#ffb020" stroke="#7f4600" stroke-width="2" stroke-linejoin="round"></path><path d="M0 -3.696 L0 4.224" stroke="#7f4600" stroke-width="3" stroke-linecap="round"></path><circle cy="8.448" r="1.7" fill="#7f4600"></circle></g><g data-k="c.beat" style="opacity:0;transform:translate(174.00px,240.00px) rotate(0.00deg) scale(1.000)"><circle r="13" fill="none" stroke="#2f6bff" stroke-width="3"></circle></g><g data-k="c.halo" style="opacity:0;transform:translate(174.00px,240.00px) rotate(0.00deg) scale(1.000)"><circle r="13" fill="none" stroke="#ffb020" stroke-width="3"></circle></g><g data-k="c.pkt" style="opacity:0;transform:translate(88.00px,243.00px) rotate(0.00deg) scale(1.000)"><circle r="10" fill="#0a1f63" stroke="#fff" stroke-width="2"></circle><g transform="scale(0.18)"><path d="M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z" fill="#fff"></path><path d="M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z" fill="#fff"></path><path d="M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z" fill="#0a1f63" opacity="0.42"></path><path d="M-11 12 L11 12 L14 24 L-14 24Z" fill="#0a1f63" opacity="0.14"></path><path d="M-3-14 L-3-5 M3-14 L3-5" stroke="#0a1f63" stroke-width="1.4" stroke-linecap="round" opacity="0.8" fill="none"></path></g></g><g data-k="c.w.paid" style="opacity:0;transform:translate(174.00px,176.00px) rotate(0.00deg) scale(0.900)"><rect data-pill="paid" data-size="24" x="-38.5" y="-23" width="77" height="46" rx="23" fill="#0a1f63"></rect><text y="8.399999999999999" font-size="24" font-weight="650" fill="#fff" text-anchor="middle" data-l="paid">paid</text></g><g data-k="c.w.stored" style="opacity:0;transform:translate(174.00px,176.00px) rotate(0.00deg) scale(0.900)"><rect data-pill="stored" data-size="24" x="-51.5" y="-23" width="103" height="46" rx="23" fill="#0a1f63"></rect><text y="8.399999999999999" font-size="24" font-weight="650" fill="#fff" text-anchor="middle" data-l="stored">stored</text></g><g data-k="c.w.retry" style="opacity:0;transform:translate(174.00px,176.00px) rotate(0.00deg) scale(0.900)"><rect data-pill="retry" data-size="24" x="-45" y="-23" width="90" height="46" rx="23" fill="#0a1f63"></rect><text y="8.399999999999999" font-size="24" font-weight="650" fill="#fff" text-anchor="middle" data-l="retry">retry</text></g><g data-k="c.w.sent" style="opacity:0;transform:translate(174.00px,176.00px) rotate(0.00deg) scale(0.900)"><rect data-pill="sent" data-size="24" x="-64.5" y="-23" width="129" height="46" rx="23" fill="#0a1f63"></rect><text y="8.399999999999999" font-size="24" font-weight="650" fill="#fff" text-anchor="middle" data-l="sent">rendered</text></g></svg>`;
+  var ZAP = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>';
+  var motion = { reduced: window.matchMedia("(prefers-reduced-motion: reduce)").matches };
+
+  function mount(el, id) {
+    el.innerHTML = '<div class="cp-stage">' + SVG.split("__ID__").join(id) + '</div><div class="cp-foot"><span data-l="illustration"></span><button type="button">' + ZAP + '<span data-l="fail"></span></button></div>';
+    var parts = new Map();
+    el.querySelectorAll("[data-k]").forEach(function (n) { parts.set(n.getAttribute("data-k"), n); });
+    var written = new Map();
+    var time = 0, variant = "wide", raf = 0, last = 0, onScreen = false, playing = true;
+    function render(t) {
+      var f = frame(t, variant);
+      for (var key in f) {
+        var n = parts.get(key);
+        if (!n) continue;
+        var opacity = f[key].o.toFixed(3), transform = partTransform(f[key]), sig = opacity + "|" + transform;
+        if (written.get(key) === sig) continue;
+        written.set(key, sig);
+        n.style.opacity = opacity;
+        n.style.transform = transform;
+      }
+    }
+    function tick(now) {
+      raf = requestAnimationFrame(tick);
+      var delta = last === 0 ? 0 : Math.min(now - last, 64);
+      last = now;
+      time = (time + delta / 1000) % LOOP_S;
+      render(time);
+      if (api.onFrame) api.onFrame(time);
+    }
+    function sync() {
+      var run = playing && onScreen && !motion.reduced && document.visibilityState === "visible";
+      if (run && raf === 0) { last = 0; raf = requestAnimationFrame(tick); }
+      else if (!run && raf !== 0) { cancelAnimationFrame(raf); raf = 0; }
+    }
+    function setVariant(width) {
+      if (width <= 0) return;
+      var next = width < WIDE_FROM ? "compact" : "wide";
+      if (next === variant) return;
+      variant = next;
+      render(time);
+    }
+    var api = {
+      seek: function (t) { time = t; el.setAttribute("data-t", String(t)); render(t); },
+      play: function () { playing = true; sync(); },
+      pause: function () { playing = false; sync(); },
+      sync: sync,
+      get t() { return time; },
+      get variant() { return variant; },
+    };
+    el.querySelector(".cp-foot button").addEventListener("click", function () { api.seek(motion.reduced ? FAULT_STILL_T : FAULT_T); });
+    new ResizeObserver(function (entries) { entries.forEach(function (e) { setVariant(e.contentRect.width); }); }).observe(el);
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.intersectionRatio >= 0.5) onScreen = true;
+        else if (e.intersectionRatio === 0) onScreen = false;
+      });
+      sync();
+    }, { threshold: [0, 0.5] }).observe(el);
+    document.addEventListener("visibilitychange", sync);
+    setVariant(el.getBoundingClientRect().width);
+    render(0);
+    return api;
+  }
+
+  var a = mount(document.getElementById("a"), "a");
+  var b = mount(document.getElementById("b"), "b");
+  var all = [a, b];
+  var scrub = document.getElementById("scrub");
+  var time = document.getElementById("time");
+  var toggle = document.getElementById("toggle");
+  var playing = true;
+
+  function setLang(lang) {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-l]").forEach(function (n) { n.textContent = LABELS[lang][n.getAttribute("data-l")]; });
+    document.querySelectorAll('svg[role="img"]').forEach(function (n) { n.setAttribute("aria-label", LABELS[lang].alt); });
+    document.querySelectorAll("[data-pill]").forEach(function (n) {
+      var w = pillW(LABELS[lang][n.getAttribute("data-pill")], Number(n.getAttribute("data-size")));
+      n.setAttribute("width", String(w));
+      n.setAttribute("x", String(-w / 2));
+    });
+  }
+  function show(t) { scrub.value = String(t); time.textContent = Number(t).toFixed(2) + " s"; }
+  function setPlaying(on) {
+    playing = on;
+    toggle.textContent = on ? "Pause" : "Play";
+    all.forEach(function (api) { if (on) api.play(); else api.pause(); });
+  }
+  a.onFrame = show;
+  scrub.addEventListener("input", function () {
+    setPlaying(false);
+    var t = Number(scrub.value);
+    all.forEach(function (api) { api.seek(t); });
+    time.textContent = t.toFixed(2) + " s";
+  });
+  toggle.addEventListener("click", function () { setPlaying(!playing); });
+  var reduced = document.getElementById("reduced");
+  function applyMotion() {
+    motion.reduced = reduced.checked;
+    all.forEach(function (api) { if (motion.reduced) api.seek(STILL_T); api.sync(); });
+    if (motion.reduced) show(STILL_T);
+  }
+  reduced.checked = motion.reduced;
+  reduced.addEventListener("change", applyMotion);
+  applyMotion();
+  document.getElementById("german").addEventListener("change", function (e) { setLang(e.target.checked ? "de" : "en"); });
+  setLang("en");
+
+  function setWideWidth(px) {
+    document.getElementById("a").style.setProperty("--w", px + "px");
+    document.getElementById("wa").textContent = px + " px";
+  }
+  var width = document.getElementById("width");
+  width.addEventListener("change", function () { setWideWidth(Number(width.value)); });
+
+  window.previewApi = {
+    seek: function (t) { all.forEach(function (api) { api.seek(t); }); show(t); },
+    play: function () { setPlaying(true); },
+    pause: function () { setPlaying(false); },
+    get t() { return a.t; },
+    frame: frame,
+    instances: all,
+    setLang: setLang,
+    setWideWidth: setWideWidth,
+  };
+})();
+</script>
+</body>
+</html>

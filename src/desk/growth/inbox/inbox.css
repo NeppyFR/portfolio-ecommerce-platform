@@ -1,0 +1,85 @@
+.ib-stats{margin-bottom:var(--s-4)}
+.ib-panel{padding:var(--s-5) var(--s-6) var(--s-3)}
+.ib-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-4);margin-bottom:var(--s-3)}
+.ib-sub{flex:1 1 280px;min-width:0;color:var(--ink-2);display:flex;flex-direction:column;gap:2px}
+.ib-search{display:flex;align-items:center;gap:var(--s-2);flex:0 1 380px;min-width:0}
+.ib-search .ui-field{flex:1 1 auto;min-width:0}
+.ib-search .ui-field-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.ib-search input{border-radius:var(--r-pill);padding-inline:var(--s-4)}
+.ib-toggle{white-space:nowrap}
+.ib-toggle[aria-pressed="true"]{border-color:var(--ink);background:var(--mist-2)}
+.ib-tabs{margin-bottom:var(--s-2);border-bottom:1px solid var(--line)}
+.ib-count{font:500 12px/1 var(--font-mono);color:var(--ink-3)}
+.ui-tab[data-active] .ib-count{color:var(--ink)}
+.ib-panel .ui-table tbody tr:last-child td{border-bottom:0}
+
+.ib-pri{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 var(--s-2);border-radius:var(--r-pill);font:500 12px/1 var(--font-mono);white-space:nowrap}
+.ib-pri[data-p="P1"]{background:var(--rose-tint);color:var(--rose)}
+.ib-pri[data-p="P2"]{background:var(--ok-tint);color:var(--link)}
+.ib-pri[data-p="P3"]{background:var(--mist);color:var(--ink-2)}
+.ib-pri[data-p="none"]{border:1px dashed var(--line-3);color:var(--ink-3)}
+
+.ib-from{display:flex;flex-direction:column;min-width:0;max-width:200px}
+.ib-from b{font-weight:500}
+.ib-from span{color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.ib-subject{padding-block:var(--s-2)}
+.ib-subject-top{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-1) var(--s-2);font-weight:500}
+.ib-summary{margin-top:2px;color:var(--ink-2);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.ib-subject-cat{display:none;margin-top:2px;color:var(--ink-3);font:400 12px/1.35 var(--font-ui)}
+.ib-marker{display:inline-flex;align-items:center;gap:4px;color:var(--amber);font:500 12px/1.35 var(--font-ui);white-space:nowrap}
+.ib-marker svg{flex:none}
+.ib-review-dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}
+.ib-stamp{font:500 12px/1.35 var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ib-none{color:var(--ink-3)}
+
+.ib-card{display:flex;flex-direction:column;gap:var(--s-1)}
+.ib-card-top{display:flex;align-items:center;gap:var(--s-2);min-width:0}
+.ib-card-top b{flex:1 1 auto;min-width:0;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ib-card-subject{font-weight:500}
+.ib-card-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s-1) var(--s-3);color:var(--ink-3);font-size:13px}
+
+/* Sheet */
+.ib-sheet{display:flex;flex-direction:column;gap:var(--s-5)}
+.ib-sheet section{display:flex;flex-direction:column;gap:var(--s-3)}
+.ib-sender{color:var(--ink-2);overflow-wrap:anywhere}
+.ib-sorted{padding:var(--s-4) var(--s-5);border:1px solid var(--line);border-radius:16px}
+.ib-sorted h3{color:var(--ink-3)}
+.ib-sorted p{margin:0}
+.ib-next{font:500 14px/1.4 var(--font-ui)}
+.ib-next span{font-weight:400}
+.ib-prov{color:var(--ink-2)}
+.ib-prov-part{white-space:nowrap}
+@media (max-width:359px){.ib-prov-part{white-space:normal}}
+.ib-fired{display:flex;flex-direction:column;gap:var(--s-1);margin:0;padding:var(--s-3) 0 0;border-top:1px solid var(--line);list-style:none}
+.ib-fired .ui-rule{color:var(--ink)}
+.ib-assign{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:var(--s-3)}
+.ib-done-line{color:var(--ink-2)}
+.ib-resort{display:flex;flex-direction:column;gap:var(--s-3);padding:var(--s-4) var(--s-5);border:1px solid var(--line);border-radius:16px}
+.ib-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s-3)}
+.ib-body{max-height:50vh;overflow:auto;margin:0;padding:var(--s-3) var(--s-4);border-radius:var(--r-3);background:var(--mist);color:var(--ink);font:400 13px/1.5 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.ib-files{display:flex;flex-direction:column;gap:var(--s-1);margin:0;padding:0;list-style:none}
+.ib-files li{display:flex;align-items:center;gap:var(--s-2);font:400 13px/1.4 var(--font-ui)}
+.ib-files li span:last-child{margin-left:auto;color:var(--ink-3);font:500 12px/1.35 var(--font-mono)}
+
+.ib-how{margin-top:var(--s-4);padding:var(--s-4) var(--s-6);border:1px solid var(--line);border-radius:16px;background:var(--white)}
+.ib-how summary{cursor:pointer;font:680 15px/1.25 var(--font-disp)}
+.ib-how ol{display:flex;flex-direction:column;gap:var(--s-2);margin:var(--s-3) 0 0;padding:0 0 0 var(--s-5);font:400 13px/1.45 var(--font-ui)}
+.ib-how li::marker{font:500 12px/1 var(--font-mono);color:var(--ink-3)}
+
+/* With the sidebar beside it the table can get narrow: category moves under the subject, the address goes. */
+@container pp (max-width:1000px){
+  .ib-panel .ui-table th:nth-child(4),.ib-panel .ui-table td:nth-child(4){display:none}
+  .ib-subject-cat{display:block}
+}
+@container pp (max-width:820px){
+  .ib-from{max-width:140px}
+  .ib-from span{display:none}
+}
+@media (max-width:719px){
+  .ib-panel{padding:0;border:0;border-radius:0;background:transparent}
+  .ib-search{flex:1 1 100%}
+  .ib-toggle{min-height:44px}
+  .ib-assign{grid-template-columns:minmax(0,1fr)}
+  .ib-how{padding:var(--s-4)}
+  .ib-two{grid-template-columns:minmax(0,1fr)}
+}
