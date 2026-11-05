@@ -45,9 +45,34 @@ const STRIP: { slug: string; type: GarmentType; tone: GarmentTone; tile: string;
   { slug: "canvas-tote-cloud", type: "tote", tone: "ice", tile: "t-cob", en: "Canvas Tote, Cloud", de: "Canvas-Tasche, Wolke", printed: true },
 ];
 
-function Hero() {
+/** Every wire in words, closed until asked for. The drawing's labels only show under a pointer, so this is the way in without one. */
+function AllConnections({ className }: { className?: string }) {
   const t = useT(landing);
   const lang = useLang();
+  return (
+    <details className={`lp-all ${className ?? ""}`}>
+      <summary>{t.allConnections}</summary>
+      <p className="lp-all-hint">{t.connectionsHint}</p>
+      <ul>
+        {EDGES.map((e) => {
+          const a = nodeById(e.from);
+          const b = nodeById(e.to);
+          return (
+            <li key={e.id}>
+              <span className="lp-all-route">
+                {lang === "de" ? a.de : a.en} <span aria-hidden="true">→</span> {lang === "de" ? b.de : b.en}
+              </span>
+              <span className="lp-all-what">{lang === "de" ? e.de : e.en}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </details>
+  );
+}
+
+function Hero() {
+  const t = useT(landing);
   const router = useRouter();
   const clock = useRef(createClock()).current;
   const [sheet, setSheet] = useState<NodeId | null>(null);
@@ -70,6 +95,7 @@ function Hero() {
               <em>{t.headline3}</em>
             </h1>
           </div>
+          <StoryPanel clock={clock} className="lp-panel-float" />
           <div className="lp-side">
             <p className="lp-sentence">{t.sentence}</p>
             <p className="lp-honest">{t.honesty}</p>
@@ -83,31 +109,14 @@ function Hero() {
           </div>
           <MapDefs />
           <LiveMap mode="hero" viewBox={VIEWBOX.hero} onNode={onNode} clock={clock} className="lp-map lp-map-wide" ariaLabel={t.mapAria} />
+          <AllConnections className="lp-all-wide" />
           <div className="lp-map-low">
             <LiveMap mode="phone" labels={false} onNode={onNode} clock={clock} className="lp-map lp-map-phone" ariaLabel={t.mapAria} />
             <div className="lp-low-side">
               <StoryPanel clock={clock} className="lp-panel-flow" />
-              <details className="lp-all">
-                <summary>{t.allConnections}</summary>
-                <p className="lp-all-hint">{t.connectionsHint}</p>
-                <ul>
-                  {EDGES.map((e) => {
-                    const a = nodeById(e.from);
-                    const b = nodeById(e.to);
-                    return (
-                      <li key={e.id}>
-                        <span className="lp-all-route">
-                          {lang === "de" ? a.de : a.en} <span aria-hidden="true">→</span> {lang === "de" ? b.de : b.en}
-                        </span>
-                        <span className="lp-all-what">{lang === "de" ? e.de : e.en}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </details>
+              <AllConnections />
             </div>
           </div>
-          <StoryPanel clock={clock} className="lp-panel-float" />
         </div>
       </section>
       <dl className="lp-ledger" aria-label={t.ledgerAria}>

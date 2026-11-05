@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { EDGES, VIEWBOX, edgePath, type EdgeId, type MapMode } from "@/map/data";
-import { MapCanvas, WireWords } from "@/map/MapCanvas";
+import { EDGES, edgePath, type EdgeId, type MapMode } from "@/map/data";
+import { MapCanvas } from "@/map/MapCanvas";
 import {
   STORY_STEPS,
   advanceClock,
@@ -62,6 +62,9 @@ export function LiveMap({ mode, labels, onNode, viewBox, className, ariaLabel, c
   const samples = useRef<EdgeSamples | null>(null);
   const dots = useRef<(SVGCircleElement | null)[]>([]);
   const star = useRef<SVGGElement>(null);
+  const storyLayer = useRef<SVGGElement>(null);
+  const involved = useRef<ReadonlySet<EdgeId> | null>(null);
+  const hopEdge = useRef<EdgeId | null>(null);
   const trail = useRef<(SVGCircleElement | null)[]>([]);
   const hot = useRef<Partial<Record<EdgeId, SVGPathElement | null>>>({});
   const elapsed = useRef(0);
@@ -78,6 +81,22 @@ export function LiveMap({ mode, labels, onNode, viewBox, className, ariaLabel, c
     pulse?.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(1.06,1.22)" }], { duration: 400, easing: "ease-out" });
     el.animate([{ filter: "brightness(1.5)" }, { filter: "brightness(1)" }], { duration: 300, easing: "ease-out" });
   }, []);
+
+  /* While something is pointed at, a packet on a wire outside it falls back with its wire. */
+  const fadeStory = useCallback(() => {
+    const on = involved.current;
+    const fade = Boolean(on && hopEdge.current && !on.has(hopEdge.current));
+    storyLayer.current?.toggleAttribute("data-fade", fade);
+  }, []);
+
+  const onInvolved = useCallback(
+    (edges: ReadonlySet<EdgeId> | null) => {
+      involved.current = edges;
+      EDGES.forEach((e, i) => dots.current[i]?.toggleAttribute("data-fade", Boolean(edges && !edges.has(e.id))));
+      fadeStory();
+    },
+    [fadeStory],
+  );
 
   const drawAmbient = useCallback((ms: number, still: boolean) => {
     const s = samples.current;
@@ -110,6 +129,8 @@ export function LiveMap({ mode, labels, onNode, viewBox, className, ariaLabel, c
       });
       if (lastHop.current !== step) {
         lastHop.current = step;
+        hopEdge.current = hop.edge;
+        fadeStory();
         for (const id of STORY_EDGES) {
           const wire = hot.current[id];
           if (wire) wire.style.opacity = id === hop.edge ? "1" : "0";
@@ -121,7 +142,7 @@ export function LiveMap({ mode, labels, onNode, viewBox, className, ariaLabel, c
         lastHop.current = -1;
       }
     },
-    [],
+    [fadeStory],
   );
 
   useEffect(() => {
@@ -171,7 +192,18 @@ export function LiveMap({ mode, labels, onNode, viewBox, className, ariaLabel, c
   );
 
   const story = clock ? (
-    <>
+    <g ref={storyLayer} className="lp-story">
+      {STORY_EDGES.map((id) => (
+        <path
+          key={id}
+          ref={(el) => {
+            hot.current[id] = el;
+          }}
+          className="lp-hot"
+          data-hot={id}
+          d={paths[id]}
+        />
+      ))}
       {[0, 1, 2].map((i) => (
         <circle
           key={i}
@@ -186,24 +218,11 @@ export function LiveMap({ mode, labels, onNode, viewBox, className, ariaLabel, c
         <circle className="lp-star-halo" r={mode !== "phone" ? 15 : 12} />
         <circle r={mode !== "phone" ? 7 : 6} />
       </g>
-    </>
+    </g>
   ) : null;
 
   const packets = (
     <>
-      {clock
-        ? STORY_EDGES.map((id) => (
-            <path
-              key={id}
-              ref={(el) => {
-                hot.current[id] = el;
-              }}
-              className="lp-hot"
-              data-hot={id}
-              d={paths[id]}
-            />
-          ))
-        : null}
       {EDGES.map((e, i) => e.state ? null : (
         <circle
           key={e.id}
@@ -217,20 +236,13 @@ export function LiveMap({ mode, labels, onNode, viewBox, className, ariaLabel, c
           r={mode !== "phone" ? 4 : 3.4}
         />
       ))}
-      {mode !== "phone" ? null : story}
+      {story}
     </>
   );
 
   return (
     <div ref={root} className={className}>
-      <MapCanvas mode={mode} labels={labels} animated={!reduced} onNode={onNode} viewBox={viewBox} packets={packets} ariaLabel={ariaLabel} />
-      {/* Wide only: the App to Database wire is nearly all label, so under the labels the story packet would vanish. The words go back on top of it, or a bright packet would pass over white text. The phone map has no labels. */}
-      {mode !== "phone" && story ? (
-        <svg className="lp-story" viewBox={viewBox ?? VIEWBOX[mode]} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-          {story}
-          {labels === false ? null : <WireWords mode={mode} />}
-        </svg>
-      ) : null}
+      <MapCanvas mode={mode} labels={labels} animated={!reduced} onNode={onNode} viewBox={viewBox} packets={packets} ariaLabel={ariaLabel} hoverLabels={mode !== "phone"} onInvolved={onInvolved} />
     </div>
   );
 }

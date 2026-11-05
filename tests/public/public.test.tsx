@@ -40,13 +40,34 @@ describe("the public pages on black", () => {
     expect(page).toContain('id="lp-hub"');
     expect(read("src/landing/landing.css")).toMatch(/data-kind="hub"\],\[data-kind="person"\]\) \.ui-map-box\{fill:url\(#lp-hub\)/);
   });
-  it("redraws the wire words above the moving packet, in a layer hidden from readers", () => {
+  it("keeps the wire labels to hover on the wide map, with the packets under them in one drawing", () => {
     const page = html(<LandingScreen />);
-    const layer = page.slice(page.indexOf('class="lp-story"'));
-    const svg = layer.slice(0, layer.indexOf("</svg>"));
-    expect(svg).toContain('class="ui-map-label"');
-    expect(svg).not.toContain("<rect");
-    expect(page).toMatch(/<svg class="lp-story"[^>]*aria-hidden="true"/);
+    expect(page.match(/data-hover-labels/g)?.length).toBe(1);
+    expect(page.match(/data-label="/g)?.length).toBe(16);
+    expect(page).not.toContain('<svg class="lp-story"');
+    expect(page.indexOf('data-star="story"')).toBeLessThan(page.indexOf('data-layer="labels"'));
+    const css = read("src/styles/ui.css");
+    expect(css).toMatch(/\[data-hover-labels\] \.ui-map-label\{opacity:0;visibility:hidden;pointer-events:none/);
+    expect(css).toMatch(/prefers-reduced-motion:reduce\)\{\s*\.ui-map\[data-hover-labels\] \.ui-map-label/);
+  });
+  it("holds the map's text floor by the width the map really has, without squeezing the type or stretching the plates", () => {
+    const css = read("src/landing/landing.css");
+    expect(css).toMatch(/@media \(min-width:1280px\)\{\s*@container \(max-width:1439\.98px\)\{\s*\.lp-map \.ui-map-label text,\.lp-map \.ui-map-name\{font-size:13\.7px\}/);
+    expect(css).toContain(".lp-hero-wrap{container-type:inline-size}");
+    expect(read("src/built/built.css")).toContain(".bt-map-band{container-type:inline-size;");
+    expect(css).not.toMatch(/ui-map-second[^}]*letter-spacing/);
+    expect(css).not.toContain("scaleX(");
+  });
+  it("marks a focused wire along its own line, not with a rectangle around it", () => {
+    const css = read("src/app/globals.css").replace(/\s+/g, " ");
+    expect(css).toContain(".ui-map .ui-map-hit:focus-visible { outline: none; box-shadow: none; stroke: rgba(185, 243, 255, .22); }");
+  });
+  it("lists the connections in a closed section under the map on either layout, and moves the panel and chips out of the map", () => {
+    const page = html(<LandingScreen />);
+    expect(page.match(/<details class="lp-all/g)?.length).toBe(2);
+    expect(page).not.toMatch(/<details[^>]*\sopen/);
+    expect(page.indexOf('class="lp-all lp-all-wide"')).toBeGreaterThan(page.indexOf('data-mode="wide"'));
+    for (const block of ['lp-panel-float', 'class="lp-cta"']) expect(page.indexOf(block), block).toBeLessThan(page.indexOf('data-mode="wide"'));
   });
 });
 
@@ -81,7 +102,6 @@ describe("landing", () => {
     expect(page).not.toContain('data-packet="ghSb"');
     expect(page).not.toContain('data-packet="ghR2"');
     expect(page).toContain('data-star="story"');
-    expect(page.indexOf('data-star="story"')).toBeGreaterThan(page.indexOf('class="lp-story"'));
     expect(page).toContain('class="lp-story"');
     expect(page).toContain('id="lp-tile"');
   });

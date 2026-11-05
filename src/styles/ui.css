@@ -252,7 +252,7 @@
 
   /* Map */
   .ui-map{display:block;width:100%;height:auto}
-  .ui-map-casing{fill:none;stroke:#000;stroke-opacity:.9;stroke-width:4.5}
+  .ui-map-casing{fill:none;stroke:#000;stroke-opacity:.9;stroke-width:4.5;transition:opacity var(--t-med) var(--ease)}
   .ui-map-core{fill:none;stroke:var(--ice);stroke-width:1.5;transition:opacity var(--t-med) var(--ease)}
   .ui-map-core[data-dashed]{stroke-dasharray:6 5}
   .ui-map-core[data-state]{stroke-width:2;stroke-dasharray:.1 5.5;stroke-linecap:round}
@@ -260,6 +260,17 @@
   .ui-map-label rect{fill:var(--raised);stroke:var(--line-2);stroke-width:1}
   .ui-map-label text{font:500 12.5px var(--font-ui);fill:var(--ink)}
   .ui-map-label[data-dim]{opacity:.25}
+  /* Hover labels: nothing at rest, then only what is pointed at, while the rest falls back. */
+  .ui-map[data-hover-labels] .ui-map-label{opacity:0;visibility:hidden;pointer-events:none;transition:opacity 220ms var(--ease),visibility 220ms}
+  .ui-map[data-hover-labels] .ui-map-label[data-on]{opacity:1;visibility:visible}
+  .ui-map-casing[data-fade],.ui-map-core[data-fade]{opacity:.1}
+  .ui-map-node[data-fade]{opacity:.2}
+  .ui-map-core[data-on]{stroke-width:2.25}
+  .ui-map-core[data-state][data-on]{stroke-width:2.75}
+  .ui-map-hit{fill:none;stroke:transparent;stroke-width:18;pointer-events:stroke}
+  @media (prefers-reduced-motion:reduce){
+    .ui-map[data-hover-labels] .ui-map-label,.ui-map-casing,.ui-map-core,.ui-map-node{transition:none}
+  }
   .ui-map-ring{display:none;fill:none;stroke:#000;stroke-width:6}
   .ui-map-box{fill:var(--card);stroke:var(--line-2);stroke-width:1;transition:fill var(--t-fast) var(--ease),stroke var(--t-fast) var(--ease)}
   .ui-map-tile{fill:var(--mist-2)}

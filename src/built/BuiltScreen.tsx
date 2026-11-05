@@ -115,7 +115,7 @@ function MapSection() {
       </div>
       <div className="bt-map-band f-landing">
         <MapDefs />
-        <LiveMap mode="wide" viewBox={VIEWBOX.wide} onNode={onNode} className="lp-map lp-map-wide-k bt-map-wide" ariaLabel={t.mapAria} />
+        <LiveMap mode="hero" viewBox={VIEWBOX.hero} onNode={onNode} className="lp-map lp-map-wide-k bt-map-wide" ariaLabel={t.mapAria} />
         <LiveMap mode="phone" labels={false} onNode={onNode} className="lp-map bt-map-phone" ariaLabel={t.mapAria} />
       </div>
       <div className="bt-col">

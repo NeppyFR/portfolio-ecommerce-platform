@@ -1,4 +1,4 @@
-/* Landing and the rail it shares with /built/. Hero design space is 1440×900, scaled by --u. */
+/* Landing and the rail it shares with /built/. The hero's design space is 1440 wide, scaled by --u. */
 
 .lp{background:var(--page);color:var(--ink)}
 .lp a{color:inherit;text-decoration:none}
@@ -26,31 +26,43 @@
 
 /*
  * Hero: wide layout from 1280, where the map's drawn text can hold the 12 px floor (see the tier further down).
- * The stage scales to the width and, on a short window, to the height too, so the whole map and the ledger
- * are the first screen. .889 is the smallest scale the floor allows; the field behind it stays full bleed.
+ * The stage scales to the width and takes the height it needs, so the map may run past the first screen, with the ledger after it.
+ * Headline beside the order panel, then the intro beside the chips, then the map across the whole width.
+ * The field behind it stays full bleed.
  */
 .lp-hero-wrap{container-type:inline-size}
-.lp-hero,.lp-ledger{--u:max(min(min(100cqw,1760px)/1440,(100svh - 72px)/830),.889px)}
+.lp-hero,.lp-ledger{--u:calc(min(100cqw,1760px)/1440);--lp-right:calc(296*var(--u));--lp-apart:calc(40*var(--u))}
 .lp-hero{position:relative;overflow:clip}
-.lp-stage{position:relative;width:calc(1440*var(--u));height:calc(830*var(--u));margin-inline:auto}
-.lp-stage>.lp-rail{position:absolute;inset:0 calc(56*var(--u)) auto;height:calc(64*var(--u));z-index:4}
-.lp-copy{position:absolute;left:calc(56*var(--u));top:calc(78*var(--u));z-index:3;pointer-events:none;scroll-margin-top:80px}
+.lp-stage{position:relative;display:grid;grid-template-columns:minmax(0,1fr) var(--lp-right);column-gap:calc(48*var(--u));align-items:start;width:calc(1440*var(--u));margin-inline:auto;padding:0 calc(56*var(--u)) calc(40*var(--u))}
+.lp-stage>.lp-rail{grid-column:1/-1;height:calc(64*var(--u));z-index:4}
+.lp-copy{grid-column:1;grid-row:2;margin-top:calc(14*var(--u));position:relative;z-index:3;scroll-margin-top:80px}
 .lp-h1{display:flex;flex-direction:column;font-family:var(--font-disp);font-weight:660;font-size:calc(80*var(--u));line-height:1;letter-spacing:-.026em;font-stretch:92%;color:var(--ink)}
 .lp-h1 span,.lp-h1 em{display:block;width:fit-content;font-style:normal}
 .lp-h1 em{background:linear-gradient(90deg,#6fd3ff,#8c7bff);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.08em;margin-bottom:-.08em}
-.lp-side{position:absolute;left:calc(1032*var(--u));top:calc(100*var(--u));width:calc(352*var(--u));z-index:3;color:var(--ink)}
-/* The German copy runs longer, so it starts higher and wider to stay clear of the order panel below it. */
-:root[lang="de"] .lp-side{left:calc(880*var(--u));top:calc(78*var(--u));width:calc(504*var(--u))}
+/* The log's lines wrap differently from hop to hop. The panel holds the height of its longest hop, so the page under it stays still while the story runs. */
+.lp-panel-float{grid-column:2;grid-row:2;margin-top:calc(14*var(--u));min-height:calc(284*var(--u));position:relative;z-index:3}
+.lp-side{grid-column:1;grid-row:3;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);column-gap:var(--lp-apart);margin-top:var(--lp-apart);position:relative;z-index:3;color:var(--ink)}
 .lp-sentence{font:400 max(14px,calc(16*var(--u)))/1.42 var(--font-ui);text-wrap:pretty}
-.lp-honest{margin-top:calc(12*var(--u))!important;font:500 max(12px,calc(12*var(--u)))/1.45 var(--font-mono);text-wrap:pretty}
-.lp-cta{position:absolute;left:calc(56*var(--u));top:calc(708*var(--u));width:calc(240*var(--u));z-index:3}
+.lp-honest{font:500 max(12px,calc(12*var(--u)))/1.5 var(--font-mono);text-wrap:pretty}
+.lp-cta{grid-column:2;grid-row:3;margin-top:var(--lp-apart);position:relative;z-index:3}
 .lp-enter{display:none}
 .lp-chips{gap:6px!important}
 .lp-chips>span{flex-basis:100%}
 .lp-defs{position:absolute;width:0;height:0}
-.lp-map-wide{position:absolute;inset:0;z-index:2}
+.lp-map-wide{grid-column:1/-1;grid-row:4;margin:var(--lp-apart) calc(-56*var(--u)) 0;position:relative;z-index:2}
 .lp-map-low{display:none}
-.lp-panel-float{position:absolute;left:calc(1104*var(--u));width:calc(280*var(--u));bottom:calc(268*var(--u));z-index:3}
+
+/* The connections in words, under the map: closed until asked for. */
+.lp-all-wide{grid-column:1/-1;grid-row:5;margin-top:var(--lp-apart);position:relative;z-index:3}
+.lp-all{background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-3);color:var(--ink)}
+.lp-all summary:hover{background:var(--mist);border-radius:var(--r-3)}
+.lp-all summary{display:flex;align-items:center;min-height:48px;padding:0 var(--s-4);font:600 14px/1.2 var(--font-ui);cursor:pointer}
+.lp-all-hint{padding:0 var(--s-4) var(--s-2)!important;font:400 13px/1.4 var(--font-ui);color:var(--ink-2)}
+.lp-all ul{padding:0 var(--s-4) var(--s-3)!important}
+.lp-all li{display:flex;flex-direction:column;gap:2px;padding:var(--s-2) 0;border-top:1px solid var(--line);break-inside:avoid}
+.lp-all-route{font:500 13px/1.3 var(--font-ui)}
+.lp-all-what{font:400 13px/1.35 var(--font-ui);color:var(--ink-2)}
+.lp-all-wide ul{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--s-6)}
 
 /* Map skin on the public pages: dark cards with a lit tile, hubs and people filled so they stand out, and everything that moves bright. */
 .lp-map .ui-map-tile{fill:url(#lp-tile)}
@@ -66,11 +78,11 @@
 /* The halo is a translucent stroke, not a filter, so a moving packet costs no repaint of what lies under it. */
 .lp-pk{fill:var(--ice);stroke:rgba(111,211,255,.45);stroke-width:4;opacity:0;will-change:transform}
 .lp-pk[data-slow]{fill:#c9c1ff;stroke:rgba(140,123,255,.55)}
+/* Its opacity is written every frame, so a packet on a wire that fell back fades through its paint instead. */
+.lp-pk[data-fade]{fill-opacity:.1;stroke-opacity:.06}
 .lp-hot{fill:none;stroke:var(--sky);stroke-width:3.25;opacity:0;transition:opacity var(--t-med) var(--ease);stroke-linecap:round}
-/* Same box as the wide map underneath, drawn over its labels; clicks fall through to the nodes */
-.lp-story{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
-/* The words go back on top of the packet, with a black edge that cuts them out of it as it passes. */
-.lp-story .ui-map-label text{paint-order:stroke;stroke:#000;stroke-width:3px;stroke-linejoin:round}
+.lp-story{transition:opacity var(--t-med) var(--ease)}
+.lp-story[data-fade]{opacity:.12}
 .lp-star{opacity:0;will-change:transform}
 .lp-star circle{fill:var(--ink);stroke:var(--sky);stroke-width:2.5}
 .lp-star .lp-star-halo{fill:var(--sky);stroke:none;opacity:.34}
@@ -162,33 +174,36 @@
 .lp-foot-brand{display:inline-flex;align-items:center;gap:8px;font:650 14px/1 var(--font-disp)}
 .lp-foot-note{margin-right:auto;font:500 12px/1.35 var(--font-mono);color:var(--ink-3)}
 
-/* The map's drawn text is 12 to 13.2 units. At a scale under .96 that would be under 12 px, so it grows in units: 13.6 is 12.09 px at .889. */
-@media (min-width:1280px) and (max-width:1381px),(min-width:1280px) and (max-height:868px){
-  .lp-map .ui-map-label text,.lp-map .ui-map-name{font-size:13.6px}
-  .lp-map .ui-map-second,.lp-map .ui-map-node[data-kind="person"] .ui-map-second{font-size:13.6px;letter-spacing:-.022em}
-  :root[lang="de"] .lp-map .ui-map-second{letter-spacing:-.04em}
-  .lp-map .ui-map-label rect{transform:scaleX(1.07)}
-  .lp-panel-float{left:calc(1096*var(--u));width:calc(306*var(--u));bottom:calc(286*var(--u))}
-  .lp-side{left:calc(960*var(--u));top:calc(78*var(--u));width:calc(424*var(--u))}
+/*
+ * The map's drawn text is 12 to 13.2 units. At a scale under 1 that would be under 12 px, so it grows in units: 13.7 is 12.01 px at .877,
+ * the wide layout's narrowest scale, a 1280 window with a 17 px scrollbar. This asks the width the map really has, which a scrollbar takes from and the window's does not.
+ */
+@media (min-width:1280px){
+  @container (max-width:1439.98px){
+    .lp-map .ui-map-label text,.lp-map .ui-map-name{font-size:13.7px}
+    .lp-map .ui-map-second,.lp-map .ui-map-node[data-kind="person"] .ui-map-second{font-size:13.7px}
+    .lp-hero{--lp-right:calc(320*var(--u))}
+    .lp-panel-float{min-height:max(calc(306*var(--u)),284px)}
+  }
 }
 
 /* Under 1280: the phone map keeps the drawn text at or above 12 px */
 @media (max-width:1279px){
   .lp-hero,.lp-ledger{--u:1px}
   .lp-hero{background-size:100% 100%}
-  .lp-stage{width:auto;height:auto;padding:0 var(--gutter) var(--s-6)}
-  .lp-stage>.lp-rail{position:static;height:auto;min-height:64px}
+  .lp-stage{display:block;width:auto;height:auto;padding:0 var(--gutter) var(--s-6)}
+  .lp-stage>.lp-rail{height:auto;min-height:64px}
   .lp-rail-note{display:none}
-  .lp-copy{position:static;padding-top:var(--s-3)}
+  .lp-copy{margin-top:0;padding-top:var(--s-3)}
   .lp-h1{font-size:clamp(40px,6.6vw,72px)}
-  .lp-side,:root[lang="de"] .lp-side{position:static;width:auto;max-width:640px;margin-top:var(--s-4)}
+  .lp-side{display:block;max-width:640px;margin-top:var(--s-4)}
   .lp-sentence{font-size:16px}
   .lp-honest{margin-top:var(--s-2)!important}
-  .lp-cta{position:static;width:auto;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3);margin-top:var(--s-4)}
+  .lp-cta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3);margin-top:var(--s-4)}
   .lp-chips>span{flex-basis:auto}
   .lp-enter{display:inline-flex;align-items:center;gap:var(--s-2);min-height:44px;padding:0 var(--s-4);border-radius:var(--r-2);background:var(--solid);color:var(--on-solid)!important;font:500 14px/1 var(--font-ui)}
   .lp-enter:hover{background:var(--solid-hover)}
-  .lp-map-wide,.lp-panel-float{display:none}
+  .lp-map-wide,.lp-panel-float,.lp-all-wide{display:none}
   .lp-map-low{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:var(--s-5);margin-top:var(--s-5)}
   .lp-map-phone{min-width:0}
   .lp-map-phone .ui-map{max-width:520px;margin-inline:auto}
@@ -198,14 +213,6 @@
   .lp-ledger{grid-template-columns:repeat(6,minmax(0,1fr));justify-content:stretch;row-gap:var(--s-4);padding:var(--s-4) var(--gutter)!important}
   .lp-ledger>div{border-left:0;padding-left:0}
   .lp-ledger dt{white-space:normal}
-  .lp-all{background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-3);color:var(--ink)}
-  .lp-all summary:hover{background:var(--mist);border-radius:var(--r-3)}
-  .lp-all summary{display:flex;align-items:center;min-height:48px;padding:0 var(--s-4);font:600 14px/1.2 var(--font-ui);cursor:pointer}
-  .lp-all-hint{padding:0 var(--s-4) var(--s-2)!important;font:400 13px/1.4 var(--font-ui);color:var(--ink-2)}
-  .lp-all ul{padding:0 var(--s-4) var(--s-3)!important}
-  .lp-all li{display:flex;flex-direction:column;gap:2px;padding:var(--s-2) 0;border-top:1px solid var(--line)}
-  .lp-all-route{font:500 13px/1.3 var(--font-ui)}
-  .lp-all-what{font:400 13px/1.35 var(--font-ui);color:var(--ink-2)}
   .lp-row{grid-template-columns:90px minmax(0,1fr) auto auto}
   .lp-row-when,.lp-row-glyphs{display:none}
   .lp-shop-head{grid-template-columns:1fr auto;align-items:end}
@@ -252,7 +259,7 @@
 
 @media (prefers-reduced-motion:reduce){
   .lp-log li{animation:none}
-  .lp-hot{transition:none}
+  .lp-hot,.lp-story{transition:none}
 }
 
 /* Between the phone rail and the wide one the stops and the controls do not fit on one line, so the controls take a second. */

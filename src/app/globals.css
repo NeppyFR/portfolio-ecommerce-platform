@@ -59,6 +59,12 @@
 .ui-map .ui-map-node[data-interactive]:focus-visible .ui-map-ring {
   display: block;
 }
+/* The box of a wire would be a rectangle across half the map, so a focused wire gets a soft band along its own line. */
+.ui-map .ui-map-hit:focus-visible {
+  outline: none;
+  box-shadow: none;
+  stroke: rgba(185, 243, 255, .22);
+}
 .paper :focus-visible {
   outline-color: #000;
   box-shadow: 0 0 0 2px #fff;

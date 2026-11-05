@@ -28,7 +28,7 @@
 
 /* Map */
 .bt-map{padding-bottom:var(--s-9)}
-.bt-map-band{margin-bottom:var(--s-6)}
+.bt-map-band{container-type:inline-size;margin-bottom:var(--s-6)}
 /* The band sits between two black sections, so it fades at the top as well. */
 .bt-map-band.f-landing{background:linear-gradient(0deg,transparent calc(100% - min(120px,24%)),#000),linear-gradient(180deg,transparent calc(100% - min(140px,30%)),#000),var(--f-sky),#000}
 .bt-map-wide{max-width:1760px;margin-inline:auto}

@@ -1,7 +1,7 @@
 import type { NodeId } from "@/store/types";
 
 export type NodeKind = "person" | "hub" | "service";
-/** `hero` is the wide drawing on the landing, where the order panel takes the top right. */
+/** `hero` is the roomy drawing on the public pages, whose labels show on hover. `wide` is the desk's. */
 export type MapMode = "wide" | "hero" | "phone";
 export type Point = [number, number];
 export type EdgeId =
@@ -84,17 +84,49 @@ export const EDGES: MapEdge[] = [
 /** Offsets that keep the two parallel wires apart on the phone map. */
 export const PHONE_SHIFT: Partial<Record<EdgeId, Point>> = { vSt: [0, -9], stV: [0, 9], cSt: [-10, 0], rsC: [10, 0], ghSb: [0, 0] };
 
-export const VIEWBOX: Record<MapMode, string> = { wide: "0 340 1440 500", hero: "0 0 1440 830", phone: "0 0 390 490" };
+export const VIEWBOX: Record<MapMode, string> = { wide: "0 340 1440 500", hero: "0 0 1440 620", phone: "0 0 390 490" };
 
-/** On the landing the inbox task sits under the order panel, so it and its two wires are drawn lower. */
-const HERO_NODE_Y: Partial<Record<NodeId, number>> = { inbox: 640 };
-const HERO_EDGES: Partial<Record<EdgeId, { pts: Point[]; at: Point }>> = {
-  clMb: { pts: [[1290, 666], [1290, 744]], at: [1290, 705] },
-  clSb: { pts: [[1178, 640], [1136, 640], [1092, 600]], at: [1104, 652] },
+/**
+ * The public pages' drawing, on a four-column grid:
+ * column centres 141, 456, 862 and 1264; rows 92, 222, 352 and 522, with a wire channel above and below.
+ * The third row is the spine, DNS to App host to Database, and every wire runs on the grid, with one crossing in all.
+ */
+const HERO_NODES: Record<NodeId, Point> = {
+  customers: [141, 222],
+  staff: [141, 522],
+  mail: [456, 92],
+  dns: [456, 352],
+  code: [456, 522],
+  payments: [862, 92],
+  app: [862, 352],
+  files: [862, 522],
+  database: [1264, 352],
+  inbox: [1264, 222],
+  mailbox: [1264, 92],
 };
 
-/** The landing lays the map over a 1440×900 design space, so its coordinates match the page. */
-export const WIDE_FRAME = "0 0 1440 900";
+/** Under a scale of 1 the second lines grow to hold 12 px. These boxes are wider here so that the longest of them, in either language, keeps its air on the right. */
+const HERO_WIDTHS: Partial<Record<NodeId, number>> = { customers: 170, staff: 170, payments: 236, app: 216, database: 200, inbox: 240, mailbox: 164 };
+
+/** The wires on that grid. `at` is where a wire's label sits: on its own wire, clear of every box and of the labels that show with it. */
+const HERO_EDGES: Record<EdgeId, { pts: Point[]; at: Point }> = {
+  cDns: { pts: [[226, 222], [456, 222], [456, 326]], at: [340, 222] },
+  pDns: { pts: [[141, 492], [141, 352], [376, 352]], at: [258, 352] },
+  dnsV: { pts: [[536, 352], [754, 352]], at: [625, 352] },
+  vSb: { pts: [[970, 352], [1164, 352]], at: [1067, 352] },
+  vR2: { pts: [[900, 378], [900, 496]], at: [900, 417] },
+  pR2: { pts: [[141, 552], [141, 586], [862, 586], [862, 548]], at: [340, 586] },
+  vSt: { pts: [[800, 326], [800, 118]], at: [800, 180] },
+  cSt: { pts: [[100, 192], [100, 24], [862, 24], [862, 66]], at: [480, 24] },
+  stV: { pts: [[924, 118], [924, 326]], at: [924, 264] },
+  vRs: { pts: [[754, 336], [715, 336], [715, 92], [536, 92]], at: [625, 92] },
+  rsC: { pts: [[376, 92], [168, 92], [168, 192]], at: [272, 92] },
+  ghV: { pts: [[426, 496], [426, 412], [800, 412], [800, 378]], at: [615, 412] },
+  ghSb: { pts: [[486, 496], [486, 456], [1264, 456], [1264, 378]], at: [1072, 456] },
+  ghR2: { pts: [[536, 522], [782, 522]], at: [659, 522] },
+  clMb: { pts: [[1264, 196], [1264, 118]], at: [1264, 157] },
+  clSb: { pts: [[1264, 248], [1264, 326]], at: [1264, 287] },
+};
 
 const BY_ID = new Map<NodeId, MapNode>(NODES.map((n) => [n.id, n]));
 export function nodeById(id: NodeId): MapNode {
@@ -107,7 +139,7 @@ export type NodeBox = { x: number; y: number; w: number; h: number };
 
 export function nodeBox(node: MapNode, mode: MapMode): NodeBox {
   if (mode === "wide") return { x: node.x, y: node.y, w: node.w, h: node.h };
-  if (mode === "hero") return { x: node.x, y: HERO_NODE_Y[node.id] ?? node.y, w: node.w, h: node.h };
+  if (mode === "hero") return { x: HERO_NODES[node.id][0], y: HERO_NODES[node.id][1], w: HERO_WIDTHS[node.id] ?? node.w, h: node.h };
   const person = node.kind === "person";
   return { x: node.px, y: node.py, w: person ? 178 : 118, h: person ? 56 : 46 };
 }
@@ -145,10 +177,13 @@ export function rounded(pts: Point[], r = 12): string {
   return `${d} L${e[0]} ${e[1]}`;
 }
 
+/** The wire's corner points on the hero drawing, for checks that need its straight runs. */
+export const heroPoints = (id: EdgeId): Point[] => HERO_EDGES[id].pts;
+
 /** The wire's path data in either geometry. The packets sample this same path. */
 export function edgePath(edge: MapEdge, mode: MapMode): string {
   if (mode === "wide") return rounded(edge.pts);
-  if (mode === "hero") return rounded(HERO_EDGES[edge.id]?.pts ?? edge.pts);
+  if (mode === "hero") return rounded(HERO_EDGES[edge.id].pts, 14);
   if (edge.id === "pR2") return rounded([[290, 40], [350, 40], [384, 74], [384, 256], [360, 280]], 10);
   /* The inbox and the mailbox sit either side of the database, so this wire runs under it. */
   if (edge.id === "clMb") return rounded([[66, 430], [66, 474], [324, 474], [324, 430]], 10);
@@ -160,7 +195,7 @@ export function edgePath(edge: MapEdge, mode: MapMode): string {
 
 /** Where a wire's label sits on a drawing with labels. */
 export function labelAt(edge: MapEdge, mode: MapMode): Point {
-  return mode === "hero" ? (HERO_EDGES[edge.id]?.at ?? edge.at) : edge.at;
+  return mode === "hero" ? HERO_EDGES[edge.id].at : edge.at;
 }
 
 export type StoryHop = { edge: EdgeId; en: string; de: string };
