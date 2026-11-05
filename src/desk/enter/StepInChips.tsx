@@ -43,7 +43,7 @@ export function StepInChips({ profiles = ["owner", "finance", "warehouse"], clas
           onClick={() => {
             if (setProfile(profile).ok) router.push("/desk/");
           }}
-          className="type-label h-11 rounded-[var(--r-pill)] border-[1.5px] border-line-3 bg-white px-3 text-ink hover:bg-mist md:h-8"
+          className="type-label h-11 rounded-[var(--r-pill)] border-[1.5px] border-line-3 bg-[var(--white)] px-3 text-ink hover:bg-[var(--mist-2)] md:h-8"
         >
           {identityOf(profile).label}
         </button>

@@ -23,7 +23,7 @@ function ProfileRow({ profile, current, note, onPick }: { profile: Profile; curr
       type="button"
       disabled={!me.isActive}
       onClick={() => onPick(profile)}
-      className="flex w-full items-center gap-3.5 rounded-[var(--r-3)] px-4 py-3.5 text-left hover:bg-mist focus-visible:relative focus-visible:z-10 disabled:cursor-not-allowed disabled:opacity-45"
+      className="flex w-full items-center gap-3.5 rounded-[var(--r-3)] px-4 py-3.5 text-left hover:bg-[var(--mist-2)] focus-visible:relative focus-visible:z-10 disabled:cursor-not-allowed disabled:opacity-45"
     >
       <Avatar profile={profile} size="lg" />
       <span className="min-w-0 flex-1">

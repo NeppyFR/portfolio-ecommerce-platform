@@ -1,18 +1,19 @@
-/* Files. White hairline cards. Gradients stay inside the small file previews, never behind the list. */
+/* Files. Hairline cards. Gradients stay inside the small file previews, never behind the list. */
 .wf-where{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);gap:0;margin-bottom:var(--s-5);border:1px solid var(--line);border-radius:16px;background:var(--white);overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
 .wf-where::-webkit-scrollbar{display:none}
 .wf-where-cell{display:flex;align-items:center;gap:var(--s-2);min-width:0;min-height:64px;padding:var(--s-2) var(--s-3);border:0;border-right:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;cursor:pointer;transition:background-color var(--t-fast) var(--ease)}
 .wf-where-cell:last-child{border-right:0}
-.wf-where-cell:hover{background:var(--mist)}
-.wf-where-cell[aria-pressed="true"]{background:var(--mist-2);box-shadow:inset 0 -2px 0 var(--solid)}
-.wf-where-cell:focus-visible{outline-offset:-3px}
-.wf-where-tile{flex:none;width:28px;height:28px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(10,31,99,.08)}
+.wf-where-cell:hover{background:var(--mist-2)}
+.wf-where-cell[aria-pressed="true"]{background:var(--tint);box-shadow:inset 0 -2px 0 var(--sky)}
+.wf-where-cell:focus-visible{position:relative;z-index:1;outline-offset:-3px}
+.wf-where-tile{flex:none;width:28px;height:28px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--line-2)}
 .wf-where-text{display:flex;flex-direction:column;flex:1;min-width:0}
 .wf-where-name{font:500 14px/1.25 var(--font-ui)}
 .wf-where-hint{color:var(--ink-3)}
 .wf-where-count{flex:none;color:var(--ink-2)}
 
-.wf-tabs{margin-bottom:var(--s-3);border-bottom:1px solid var(--line);margin-inline:0;padding-inline:0}
+/* The room .ui-tabs keeps around its tabs stays, so a focus ring is not cut off. The hairline is painted inside that room, so it still lines up with the cards. */
+.wf-tabs{max-width:calc(100% + 8px);margin-bottom:var(--s-3);background:linear-gradient(var(--line),var(--line)) center bottom/calc(100% - 8px) 1px no-repeat}
 .wf-tab-n{margin-left:2px;color:var(--ink-3)}
 
 .wf-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2);margin-bottom:var(--s-2)}
@@ -41,7 +42,7 @@
 .wf-chips{display:flex;flex-wrap:wrap;gap:4px}
 .wf-chip{display:inline-flex;align-items:center;padding:1px 6px;border-radius:var(--r-pill);background:var(--mist-2);color:var(--ink);font:500 12px/1.35 var(--font-ui);white-space:nowrap}
 .wf-chip[data-place]{background:var(--white);box-shadow:inset 0 0 0 1px var(--line-2)}
-.wf-chip[data-current]{background:var(--ink);color:var(--white)}
+.wf-chip[data-current]{background:var(--solid);color:var(--on-solid)}
 .wf-chip[data-warn]{background:var(--amber-tint);color:var(--amber)}
 .wf-card-foot{display:flex;align-items:center;gap:6px;margin-top:auto;padding-top:var(--s-1);color:var(--ink-3);min-width:0}
 .wf-card-who{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -49,21 +50,24 @@
 
 .wf-prev{display:grid;place-items:center;width:100%;aspect-ratio:3/2;overflow:hidden}
 .wf-prev[data-compact]{aspect-ratio:1;height:100%}
-.wf-prev-ink{background:var(--ink)}
+.wf-prev-ink{background:var(--page)}
 .wf-prev-garment{width:auto;height:88%;max-width:90%}
 .wf-prev[data-compact] .wf-prev-garment{height:100%}
 /* Page and logo previews sit on the pale end of their drop's colour, so a wall of cards stays calm. */
-.wf-prev[data-soft].t-lil{background:linear-gradient(155deg,#fbfaff 0%,#e8e4ff 100%)}
-.wf-prev[data-soft].t-sky{background:linear-gradient(155deg,#f4fcff 0%,#d3f1ff 100%)}
-.wf-prev[data-soft].t-vio{background:linear-gradient(155deg,#f6f5ff 0%,#dcd8ff 72%,#d3e2ff 120%)}
-.wf-prev[data-soft].t-pale{background:linear-gradient(135deg,#e8fbff 0%,#fff 58%,#efecff 100%)}
+.wf-prev[data-soft].t-lil{background:radial-gradient(100% 90% at 80% 104%,rgba(140,123,255,.3),rgba(140,123,255,0) 72%),#0a0a14}
+.wf-prev[data-soft].t-sky{background:radial-gradient(100% 84% at 22% 10%,rgba(111,211,255,.24),rgba(111,211,255,0) 68%),#070d18}
+.wf-prev[data-soft].t-vio{background:radial-gradient(90% 90% at 90% 10%,rgba(140,123,255,.28),rgba(140,123,255,0) 70%),radial-gradient(90% 90% at 16% 90%,rgba(47,107,255,.2),rgba(47,107,255,0) 66%),#0a0a1c}
+.wf-prev[data-soft].t-pale{background:radial-gradient(90% 80% at 0% 0%,rgba(111,211,255,.16),rgba(111,211,255,0) 70%),radial-gradient(90% 80% at 100% 100%,rgba(140,123,255,.2),rgba(140,123,255,0) 70%),#07080f}
 .wf-page{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:64px;height:78px;background:var(--line-2);color:var(--ink);clip-path:polygon(0 0,74% 0,100% 20%,100% 100%,0 100%);border-radius:4px 0 4px 4px}
 .wf-page::before{content:"";position:absolute;inset:1px;background:var(--white);clip-path:polygon(0 0,74% 0,100% 20%,100% 100%,0 100%);border-radius:3px 0 3px 3px}
 .wf-page>*{position:relative}
 .wf-page-ext{font:500 12px/1 var(--font-mono);color:var(--ink)}
 .wf-prev[data-compact] .wf-page{width:24px;height:30px;gap:0}
 .wf-logo-word{font:italic 400 clamp(22px,3vw,30px)/1 var(--font-serif);color:var(--ink);overflow-wrap:anywhere;text-align:center;padding:0 var(--s-2)}
-.wf-prev-ink .wf-logo-word{color:var(--white)}
+.wf-prev-ink .wf-logo-word{color:var(--on-solid)}
+/* The ink wordmark is the dark one, so it shows on a bright fill. */
+.wf-prev-bright{background:var(--sky)}
+.wf-prev-bright .wf-logo-word{color:var(--on-bright)}
 
 .wf-list{border:1px solid var(--line);border-radius:16px;background:var(--white);overflow:hidden}
 .wf-list .ui-table th{top:0;position:static}
@@ -100,12 +104,13 @@
 
 .wf-dropwrap{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-2)}
 .wf-drop{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;padding:var(--s-5) var(--s-3);border:1.5px dashed var(--line-3);border-radius:var(--r-3);background:var(--mist);color:var(--ink);text-align:center;cursor:pointer;overflow-wrap:anywhere}
-.wf-drop:hover,.wf-drop[data-over]{background:var(--mist-2);border-color:var(--solid)}
+.wf-drop:hover,.wf-drop[data-over]{background:var(--mist-2);border-color:var(--sky)}
 .wf-drop[data-invalid]{border-color:var(--rose)}
-.wf-drop:focus-within{outline:2px solid var(--ink);outline-offset:2px}
+.wf-drop:focus-within{outline:2px solid var(--ice);outline-offset:2px}
 .wf-drop-note{color:var(--ink-3)}
 .wf-muted{color:var(--ink-3)}
 .wf-linkbtn{display:inline-flex;align-items:center;gap:4px;padding:0;border:0;background:none;color:var(--link);font:inherit;font-weight:500;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;cursor:pointer}
+.wf-linkbtn:hover{text-decoration-thickness:2px}
 
 .wf-trash{display:flex;flex-direction:column;margin:0;padding:0;list-style:none}
 .wf-trash>li{display:flex;flex-wrap:wrap;gap:var(--s-3);padding:var(--s-3) 0;border-bottom:1px solid var(--line)}

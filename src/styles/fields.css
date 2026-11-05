@@ -1,17 +1,20 @@
-.f-landing{background:radial-gradient(52% 60% at 86% 76%,#2f6bff 0%,rgba(47,107,255,.86) 32%,rgba(47,107,255,0) 100%),radial-gradient(36% 44% at 102% 36%,#8c7bff 0%,rgba(140,123,255,0) 100%),radial-gradient(56% 50% at 42% 106%,#6fd3ff 0%,rgba(111,211,255,0) 100%),radial-gradient(62% 48% at 58% 52%,#b9f3ff 0%,rgba(185,243,255,0) 100%),#fff}
-.f-region{background:linear-gradient(115deg,#b9f3ff,#6fd3ff 70%,#8c7bff 135%)}
-.f-order{background:linear-gradient(120deg,#b9f3ff 0%,#fff 44%,rgba(140,123,255,.3) 100%)}
-.f-finance{background:linear-gradient(155deg,#b9f3ff 0%,#fff 46%,rgba(140,123,255,.30) 100%)}
-.f-stage{background:radial-gradient(90% 80% at 24% 18%,#b9f3ff,rgba(185,243,255,0) 62%),radial-gradient(70% 80% at 86% 90%,#8c7bff,rgba(140,123,255,0) 72%),linear-gradient(160deg,#6fd3ff,#2f6bff)}
-.f-shop{background:radial-gradient(62% 86% at 106% 96%,#8c7bff,#8c7bff00 66%),radial-gradient(56% 92% at 88% 22%,#2f6bff,#2f6bff00 70%),radial-gradient(64% 88% at 56% 104%,#6fd3ff,#6fd3ff00 72%),radial-gradient(60% 60% at 42% -6%,#b9f3ff,#b9f3ff00 74%),#fff}
-.f-weave{background:repeating-linear-gradient(90deg,#ffffff2b 0 1px,#fff0 1px 7px),repeating-linear-gradient(0deg,#ffffff12 0 1px,#fff0 1px 7px);mask-image:linear-gradient(90deg,transparent 40%,#000 74%)}
-.f-receipt{background:linear-gradient(115deg,#b9f3ff,#6fd3ff 42%,#8c7bff 112%)}
-/* garment tiles */
-.t-ice{background:linear-gradient(165deg,#fff 0%,#b9f3ff 100%)}
-.t-sky{background:radial-gradient(110% 90% at 22% 12%,#b9f3ff,#6fd3ff 58%,#2f6bff 130%)}
-.t-deep{background:radial-gradient(120% 100% at 80% 8%,#8c7bff,#2f6bff 66%)}
-.t-lil{background:linear-gradient(200deg,#fff 0%,rgba(140,123,255,.35) 50%,#8c7bff 130%)}
-.t-cob{background:linear-gradient(170deg,#6fd3ff 0%,#2f6bff 100%)}
-.t-vio{background:radial-gradient(90% 90% at 18% 88%,#6fd3ff,#8c7bff 72%)}
-.t-mist{background:radial-gradient(100% 90% at 70% 20%,#fff,#b9f3ff 70%,#6fd3ff 120%)}
-.t-pale{background:linear-gradient(135deg,#b9f3ff,#fff 58%,rgba(140,123,255,.3))}
+/* Black with an aurora, as on a night sky. The glows gather on the right and low down, so the left, where a headline starts, stays dark and calm.
+   Every old white stop is black or a deep palette tone. No glow is centred on or past a box edge, and each field fades to black at the end that meets the page,
+   so a band of sky never ends in a ruled line. The fade uses min(), so a small tile keeps its colour. */
+.f-landing{--f-sky:radial-gradient(42% 56% at 88% 62%,rgba(47,107,255,.95) 0%,rgba(47,107,255,.5) 38%,rgba(47,107,255,0) 100%),radial-gradient(30% 48% at 88% 22%,rgba(140,123,255,.85) 0%,rgba(140,123,255,0) 100%),radial-gradient(54% 40% at 58% 84%,rgba(111,211,255,.74) 0%,rgba(111,211,255,0) 100%),radial-gradient(24% 28% at 82% 52%,rgba(185,243,255,.34) 0%,rgba(185,243,255,0) 100%);background:linear-gradient(180deg,transparent calc(100% - min(140px,30%)),#000),var(--f-sky),#000}
+.f-region{background:radial-gradient(84% 90% at 16% 8%,rgba(111,211,255,.42),rgba(111,211,255,0) 66%),radial-gradient(76% 84% at 100% 100%,rgba(140,123,255,.5),rgba(140,123,255,0) 70%),#05070f}
+.f-order{background:radial-gradient(70% 150% at 0% 0%,rgba(47,107,255,.3),rgba(47,107,255,0) 70%),radial-gradient(60% 150% at 100% 100%,rgba(140,123,255,.24),rgba(140,123,255,0) 72%),var(--card)}
+.f-finance{background:radial-gradient(70% 90% at 0% 0%,rgba(111,211,255,.2),rgba(111,211,255,0) 70%),radial-gradient(70% 90% at 100% 100%,rgba(140,123,255,.26),rgba(140,123,255,0) 72%),var(--card)}
+.f-stage{background:radial-gradient(70% 60% at 22% 14%,rgba(185,243,255,.22),rgba(185,243,255,0) 66%),radial-gradient(70% 70% at 88% 92%,rgba(140,123,255,.46),rgba(140,123,255,0) 72%),linear-gradient(160deg,#0b1f4d,#05070f 78%)}
+.f-shop{background:linear-gradient(180deg,transparent calc(100% - min(140px,30%)),#000),linear-gradient(0deg,transparent calc(100% - min(120px,24%)),#000),radial-gradient(44% 70% at 88% 76%,rgba(140,123,255,.9),rgba(140,123,255,0) 100%),radial-gradient(44% 74% at 88% 30%,rgba(47,107,255,.86),rgba(47,107,255,0) 100%),radial-gradient(46% 46% at 62% 84%,rgba(111,211,255,.56),rgba(111,211,255,0) 100%),radial-gradient(26% 30% at 70% 16%,rgba(185,243,255,.3),rgba(185,243,255,0) 100%),#000}
+.f-weave{background:repeating-linear-gradient(90deg,#ffffff1f 0 1px,#fff0 1px 7px),repeating-linear-gradient(0deg,#ffffff0d 0 1px,#fff0 1px 7px);mask-image:linear-gradient(90deg,transparent 40%,#000 74%),linear-gradient(0deg,transparent,#000 140px,#000 calc(100% - 120px),transparent);mask-composite:intersect}
+.f-receipt{background:linear-gradient(180deg,transparent calc(100% - min(140px,30%)),#000),linear-gradient(0deg,transparent calc(100% - min(120px,24%)),#000),radial-gradient(64% 130% at 88% 70%,rgba(140,123,255,.62),rgba(140,123,255,0) 72%),radial-gradient(56% 120% at 70% 14%,rgba(47,107,255,.5),rgba(47,107,255,0) 72%),radial-gradient(40% 90% at 12% 80%,rgba(111,211,255,.26),rgba(111,211,255,0) 72%),#000}
+/* garment tiles: night tones, each with its own low glow. No tile is white, and a pale garment glows on any of them. */
+.t-ice{background:radial-gradient(90% 70% at 50% 110%,rgba(185,243,255,.3),rgba(185,243,255,0) 72%),linear-gradient(165deg,#070b14 0%,#0d2231 100%)}
+.t-sky{background:radial-gradient(100% 84% at 22% 10%,rgba(111,211,255,.46),rgba(111,211,255,0) 68%),linear-gradient(170deg,#0a1a33,#050a18)}
+.t-deep{background:radial-gradient(110% 90% at 82% 6%,rgba(140,123,255,.56),rgba(140,123,255,0) 68%),linear-gradient(160deg,#0a1c52,#04060f)}
+.t-lil{background:radial-gradient(100% 90% at 80% 104%,rgba(140,123,255,.52),rgba(140,123,255,0) 72%),linear-gradient(200deg,#07070f,#191538)}
+.t-cob{background:radial-gradient(90% 76% at 30% 0%,rgba(47,107,255,.62),rgba(47,107,255,0) 72%),linear-gradient(170deg,#0a1f4f,#040712)}
+.t-vio{background:radial-gradient(90% 90% at 16% 90%,rgba(111,211,255,.36),rgba(111,211,255,0) 66%),radial-gradient(90% 90% at 90% 10%,rgba(140,123,255,.46),rgba(140,123,255,0) 70%),#0a0a1c}
+.t-mist{background:radial-gradient(90% 84% at 70% 16%,rgba(185,243,255,.24),rgba(185,243,255,0) 70%),linear-gradient(180deg,#0b1a26,#04060c)}
+.t-pale{background:radial-gradient(90% 80% at 0% 0%,rgba(111,211,255,.26),rgba(111,211,255,0) 70%),radial-gradient(90% 80% at 100% 100%,rgba(140,123,255,.3),rgba(140,123,255,0) 70%),#07080f}

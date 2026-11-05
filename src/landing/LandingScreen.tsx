@@ -232,7 +232,7 @@ function Receipt() {
       </div>
       <div className="lp-slip">
         <svg className="lp-slip-edge" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true">
-          <path d={tornEdge()} fill="#fff" />
+          <path d={tornEdge()} />
         </svg>
         <div className="lp-slip-body">
           <p className="lp-slip-head">{t.receiptHead}</p>

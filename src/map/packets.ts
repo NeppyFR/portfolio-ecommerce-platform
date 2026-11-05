@@ -69,7 +69,7 @@ export const stepStart = (step: number): number => starts[step] ?? 0;
 
 export type StoryAt = { step: number; k: number; resting: boolean };
 
-/** Where the dark packet is `ms` into the loop. `k` is the share of the hop done, 1 while it dwells. */
+/** Where the bright packet is `ms` into the loop. `k` is the share of the hop done, 1 while it dwells. */
 export function storyAt(ms: number): StoryAt {
   const t = ((ms % STORY_LOOP_MS) + STORY_LOOP_MS) % STORY_LOOP_MS;
   for (let i = STORY_STEPS.length - 1; i >= 0; i--) {

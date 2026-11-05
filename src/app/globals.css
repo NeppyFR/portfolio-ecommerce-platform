@@ -25,7 +25,7 @@
 
 @layer base {
   body {
-    background: var(--white);
+    background: var(--page);
     color: var(--ink);
     font-family: var(--font-ui);
     font-size: 14px;
@@ -38,9 +38,28 @@
   }
 }
 
-/* Unlayered on purpose: focus stays visible on every surface. */
+::selection { background: #2860ee; color: #fff; }
+
+/* Unlayered on purpose: focus stays visible on every surface. Ice reads on black and on a card, the black gap between it and
+   the element holds the ring off a blue fill or a bright glow. */
 :focus-visible {
-  outline: 2px solid #0a1f63;
+  outline: 2px solid #b9f3ff;
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px #000;
+}
+/* An SVG node paints no box-shadow, and an outline would be a square around a rounded box. So the box edge is the ring, and a black rounded rect behind it is the gap that keeps wires off it. */
+.ui-map .ui-map-node[data-interactive]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.ui-map .ui-map-node[data-interactive]:focus-visible .ui-map-box {
+  stroke: #b9f3ff;
+  stroke-width: 2.5;
+}
+.ui-map .ui-map-node[data-interactive]:focus-visible .ui-map-ring {
+  display: block;
+}
+.paper :focus-visible {
+  outline-color: #000;
   box-shadow: 0 0 0 2px #fff;
 }

@@ -67,7 +67,7 @@ export function LabelsScreen() {
       ) : (
         <div className="pr-pages">
           {pages.map((page, i) => (
-            <section key={i} className={layout === "a4" ? "pr-a4" : "pr-roll"} aria-label={fmt(t.labels.page, { n: i + 1 })}>
+            <section key={i} className={`${layout === "a4" ? "pr-a4" : "pr-roll"} paper`} aria-label={fmt(t.labels.page, { n: i + 1 })}>
               {page.map((label) => (
                 <OneLabel key={label.key} label={label} layout={layout} />
               ))}

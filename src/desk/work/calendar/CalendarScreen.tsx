@@ -26,7 +26,13 @@ import { Avatar, AvatarStack, PersonToggles, usePeople } from "../checklist/part
 type T = typeof calendar.en;
 type View = "month" | "week" | "agenda";
 
-const typeStyle = (type: CalendarEventType) => ({ "--wk-type": `var(--wk-type-${type})`, "--wk-type-tint": `var(--wk-type-${type}-tint)` }) as CSSProperties;
+const typeStyle = (type: CalendarEventType) =>
+  ({
+    "--wk-type": `var(--wk-type-${type})`,
+    "--wk-type-tint": `var(--wk-type-${type}-tint)`,
+    "--wk-bar": `var(--wk-type-${type}-bar,linear-gradient(var(--wk-type),var(--wk-type)))`,
+    "--wk-dot": `var(--wk-type-${type}-dot,50%)`,
+  }) as CSSProperties;
 
 const entryTitle = (entry: CalendarEntry, t: T) => (entry.source === "drop" ? fmt(t.launchOf, { drop: entry.title }) : entry.title);
 

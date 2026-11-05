@@ -125,7 +125,7 @@ export function SearchField({ label, placeholder, value, onChange }: { label: Re
   );
 }
 
-/** A table in a white card, with its tools on top and an optional line under it. */
+/** A table in a card, with its tools on top and an optional line under it. */
 export function TableCard({ head, foot, children }: { head?: ReactNode; foot?: ReactNode; children: ReactNode }) {
   return (
     <section className="cat-tablecard">

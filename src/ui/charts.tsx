@@ -87,7 +87,7 @@ export function Bars({ data, caption, formatValue = String, className, height = 
           return (
             <g key={d.key} onMouseEnter={() => setHover(d.key)}>
               <rect x={x} y={0} width={bar + gap} height={height} fill="transparent" />
-              {h > 0 ? <path d={`M${x} ${y + h}V${y + r}Q${x} ${y} ${x + r} ${y}H${x + bar - r}Q${x + bar} ${y} ${x + bar} ${y + r}V${y + h}Z`} fill={d.active ? "var(--ink)" : `url(#${gradient})`} /> : null}
+              {h > 0 ? <path d={`M${x} ${y + h}V${y + r}Q${x} ${y} ${x + r} ${y}H${x + bar - r}Q${x + bar} ${y} ${x + bar} ${y + r}V${y + h}Z`} fill={d.active ? "var(--ice)" : `url(#${gradient})`} /> : null}
               {showValue ? (
                 <text className="ui-chart-value" x={tx} y={Math.max(13, y - 6)} textAnchor={anchor}>
                   {formatValue(d.value)}
@@ -144,7 +144,7 @@ export function Spark({ values, caption, className }: SparkProps) {
   return (
     <span className={`ui-spark ${className ?? ""}`}>
       <svg viewBox="0 0 56 22" width={56} height={22} aria-hidden="true">
-        <polyline points={points} fill="none" stroke="var(--blue)" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+        <polyline points={points} fill="none" stroke="var(--sky)" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
       </svg>
       <SrTable caption={caption} rows={values.map((v, i) => ({ key: String(i), label: String(i + 1), value: String(v) }))} />
     </span>

@@ -7,7 +7,7 @@
 .ib-search .ui-field-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .ib-search input{border-radius:var(--r-pill);padding-inline:var(--s-4)}
 .ib-toggle{white-space:nowrap}
-.ib-toggle[aria-pressed="true"]{border-color:var(--ink);background:var(--mist-2)}
+.ib-toggle[aria-pressed="true"]{background:var(--tint);border-color:var(--sky);color:var(--ink)}
 .ib-tabs{margin-bottom:var(--s-2);border-bottom:1px solid var(--line)}
 .ib-count{font:500 12px/1 var(--font-mono);color:var(--ink-3)}
 .ui-tab[data-active] .ib-count{color:var(--ink)}
@@ -63,6 +63,7 @@
 
 .ib-how{margin-top:var(--s-4);padding:var(--s-4) var(--s-6);border:1px solid var(--line);border-radius:16px;background:var(--white)}
 .ib-how summary{cursor:pointer;font:680 15px/1.25 var(--font-disp)}
+.ib-how summary:hover{text-decoration:underline;text-underline-offset:3px}
 .ib-how ol{display:flex;flex-direction:column;gap:var(--s-2);margin:var(--s-3) 0 0;padding:0 0 0 var(--s-5);font:400 13px/1.45 var(--font-ui)}
 .ib-how li::marker{font:500 12px/1 var(--font-mono);color:var(--ink-3)}
 

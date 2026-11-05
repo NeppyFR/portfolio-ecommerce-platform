@@ -179,9 +179,9 @@ describe("the contract", () => {
     expect(source).toContain("Math.min(now - last, 64)");
     expect(source).toContain("threshold: [0, 0.5]");
   });
-  it("stays on the palette, with no network and no image", () => {
+  it("stays on the dark palette, with no network and no image", () => {
     for (const text of [source, demo]) {
-      expect(text).not.toMatch(new RegExp("#0{3}\\b"));
+      expect(text).not.toMatch(/#0a1f63|#143bb0|#51629c|#dbe5fb|#e8f0ff|#eef[34]ff|#f1f5ff|#dff6ff|#b6cbfa|#e8eefc|#8ea3d6|#ffb020|#7f4600/i);
       expect(text).not.toMatch(new RegExp(["\\bfet" + "ch\\(", "XMLHttp" + "Request", "<image\\b", "<img\\b", "@font-face"].join("|")));
       expect(text.replaceAll("http://www.w3.org/2000/svg", "")).not.toMatch(/https?:\/\//);
     }
@@ -237,6 +237,45 @@ describe("the contract", () => {
     expect(readme).toContain("CinematicSection");
     expect(readme).toContain("CommerceSlot");
     expect(readme).toContain("useLanguage");
+  });
+});
+
+describe("the banner on black", () => {
+  const lum = (hex: string) => {
+    const n = hex.slice(1);
+    const v = [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  };
+  const ratio = (a: string, b: string) => {
+    const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+    return (x + 0.05) / (y + 0.05);
+  };
+  const constant = (name: string) => source.match(new RegExp(`const ${name} = "(#[0-9a-f]{3,6})"`))?.[1] ?? "";
+  const hex6 = (h: string) => (h.length === 4 ? `#${h[1]}${h[1]}${h[2]}${h[2]}${h[3]}${h[3]}` : h);
+
+  it("has a black field with the aurora on it, and a hairline and a glow to hold its edge", () => {
+    expect(CP_CSS).toMatch(/\.cp-stage\{[^}]*#000/);
+    expect(CP_CSS).toMatch(/\.cp-stage\{[^}]*box-shadow:inset/);
+    expect(CP_CSS).not.toMatch(/#fff/i);
+  });
+  it("paints no white surface: every window, card and tile is dark", () => {
+    expect(html(<CommercePreview lang="en" />)).not.toMatch(/<rect[^>]*fill="#fff"/);
+  });
+  it("runs the button from blue to violet", () => {
+    const out = html(<CommercePreview lang="en" />);
+    expect(out).toMatch(/id="[^"]*cta"[^>]*><stop offset="0" stop-color="#2860ee"[^>]*><\/stop><stop offset="1" stop-color="#6a55f5"/);
+  });
+  it("keeps its words at AA, computed", () => {
+    for (const card of ["CARD", "RAISED", "CHIP"].map(constant)) {
+      for (const word of ["INK", "INK2", "MUTE"].map(constant)) expect(ratio(hex6(word), hex6(card)), `${word} on ${card}`).toBeGreaterThanOrEqual(4.5);
+    }
+    for (const fill of ["#2860ee", "#6a55f5"]) expect(ratio("#ffffff", fill), fill).toBeGreaterThanOrEqual(4.5);
+    expect(ratio("#000000", constant("VIOLET"))).toBeGreaterThanOrEqual(4.5);
+    for (const tint of ["#0c2416", "#2a2007", "#1d1a3f", "#0f2430"]) expect(ratio("#ffffff", tint), tint).toBeGreaterThanOrEqual(4.5);
+  });
+  it("puts the demo on a black page", () => {
+    expect(demo).toMatch(/body\{[^}]*background:#000/);
+    expect(demo).toContain("color-scheme:dark");
   });
 });
 

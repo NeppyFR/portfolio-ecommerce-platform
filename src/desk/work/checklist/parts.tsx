@@ -20,7 +20,7 @@ export function Avatar({ person, size = 24, title }: { person: Person; size?: 18
   const who = identityOf(person, team);
   return (
     <span className="wk-av" data-size={size} title={title ?? who.name} role="img" aria-label={title ?? who.name}>
-      <span aria-hidden="true">{who.initials}</span>
+      <span aria-hidden="true">{size === 18 ? who.initials?.slice(0, 1) : who.initials}</span>
     </span>
   );
 }

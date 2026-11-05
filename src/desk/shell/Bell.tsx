@@ -82,7 +82,7 @@ export function BellPanel() {
             const fresh = isUnread(profile, row);
             return (
               <li key={row.key} className="border-b border-line last:border-b-0">
-                <Link href={row.href} className="flex items-start gap-3 px-4 py-3 hover:bg-mist">
+                <Link href={row.href} className="flex items-start gap-3 px-4 py-3 hover:bg-[var(--mist-2)]">
                   <Icon size={16} strokeWidth={1.75} className="mt-0.5 flex-none" style={{ color: TONE_COLOR[row.tone] }} aria-hidden="true" />
                   <span className="min-w-0 flex-1">
                     <span className="type-label block">

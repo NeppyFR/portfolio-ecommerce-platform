@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useState } from "react";
 import { formatChf } from "@/lib/format";
 import { roundToFranc, type Slice } from "./dashboard-rules";
 
@@ -17,13 +17,8 @@ type Props = {
   headSales: string;
 };
 
-/** Palette gradients by rank, biggest slice strongest. The same pairs colour the legend squares. */
-const FILLS: [string, string][] = [
-  ["#2f6bff", "#8c7bff"],
-  ["#8c7bff", "#6fd3ff"],
-  ["#6fd3ff", "#b9f3ff"],
-  ["#b9f3ff", "#d8e4ff"],
-];
+/** Flat palette fills by rank, biggest slice strongest. The same colours fill the legend squares, so a slice and its name match exactly. */
+const FILLS = ["#2f6bff", "#8c7bff", "#6fd3ff", "#b9f3ff"];
 
 const SIZE = 184;
 const CENTER = SIZE / 2;
@@ -42,7 +37,6 @@ function sector(from: number, to: number): string {
 }
 
 export function CollectionDonut({ slices, totalRappen, caption, emptyText, note, headName, headShare, headSales }: Props) {
-  const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const sum = slices.reduce((all, s) => all + s.salesRappen, 0);
   const active = slices.find((s) => s.key === activeKey) ?? null;
@@ -61,17 +55,9 @@ export function CollectionDonut({ slices, totalRappen, caption, emptyText, note,
     <div className="db-donut">
       <div className="db-donut-ring">
         <svg viewBox={`0 0 ${SIZE} ${SIZE}`} aria-hidden="true">
-          <defs>
-            {FILLS.map(([a, b], i) => (
-              <linearGradient key={i} id={`${uid}${i}`} x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor={a} />
-                <stop offset="1" stopColor={b} />
-              </linearGradient>
-            ))}
-          </defs>
           {sum === 0 ? <circle cx={CENTER} cy={CENTER} r={(OUTER + INNER) / 2} fill="none" stroke="var(--mist-2)" strokeWidth={OUTER - INNER} /> : null}
           {arcs.map(({ slice, i, d }) => (
-            <path key={slice.key} d={d} fill={`url(#${uid}${i % FILLS.length})`} className="db-slice" data-dim={activeKey !== null && activeKey !== slice.key ? "" : undefined} onPointerEnter={() => setActiveKey(slice.key)} onPointerLeave={() => setActiveKey(null)} />
+            <path key={slice.key} d={d} fill={FILLS[i % FILLS.length]} className="db-slice" data-dim={activeKey !== null && activeKey !== slice.key ? "" : undefined} onPointerEnter={() => setActiveKey(slice.key)} onPointerLeave={() => setActiveKey(null)} />
           ))}
         </svg>
         <div className="db-donut-center">
@@ -85,10 +71,9 @@ export function CollectionDonut({ slices, totalRappen, caption, emptyText, note,
         ) : (
           <ul className="db-legend">
             {slices.map((slice, i) => {
-              const [a, b] = FILLS[i % FILLS.length];
               return (
                 <li key={slice.key} onPointerEnter={() => setActiveKey(slice.key)} onPointerLeave={() => setActiveKey(null)}>
-                  <span className="db-swatch" style={{ background: `linear-gradient(135deg,${a},${b})` }} aria-hidden="true" />
+                  <span className="db-swatch" style={{ background: FILLS[i % FILLS.length] }} aria-hidden="true" />
                   <span className="db-legend-name">{slice.name}</span>
                   <span className="db-legend-share">{slice.percent}%</span>
                 </li>

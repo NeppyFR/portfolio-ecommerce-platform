@@ -70,7 +70,7 @@ function SlipSheet({ order }: { order: Order }) {
   const address = order.shippingAddress;
   const hasAddress = !order.customerErased && Boolean(address.line1);
   return (
-    <article className="pr-sheet" lang={order.locale}>
+    <article className="pr-sheet paper" lang={order.locale}>
       <header className="pr-sheet-head">
         <div>
           <p className="pr-word">{LABEL.name}</p>

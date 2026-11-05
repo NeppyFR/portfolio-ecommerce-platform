@@ -48,10 +48,10 @@ npm run gates            # everything below, in order
 
 | Gate | What it does |
 |---|---|
-| `scan` | Reads the source, the output and the file names for forbidden patterns: outbound calls, foreign URLs, password or card fields, images, pictographs, and the colour and spelling rules. A binary file passes only if its hash is one of the pinned fonts |
+| `scan` | Reads the source, the output and the file names for forbidden patterns: outbound calls, foreign URLs, password or card fields, images, pictographs, and the spelling rule. A binary file passes only if its hash is one of the pinned fonts |
 | `deps` | Fails on any forbidden package and on any version that is not exact |
 | `outcheck` | Confirms a pure static export, with no route handlers, no server output and no source maps |
-| `crawl` | Opens every route and state in Chrome at 1440 and 390 px, in both languages. It fails on a console error, a request to another origin, sideways scrolling, a failed response, a missing screen title or a sheet that stays shut. It also checks for sideways scrolling at 720, 900 and 1100 px, presses Back and Forward on a product sheet and on the order pane at both widths, then runs one order from the bag through to the desk |
+| `crawl` | Opens every route and state in Chrome at 1440 and 390 px, in both languages. It fails on a console error, a request to another origin, sideways scrolling, a failed response, a missing screen title, a sheet that stays shut or a body that is not black (the print pages are exempt). It also checks for sideways scrolling at 720, 900 and 1100 px, presses Back and Forward on a product sheet and on the order pane at both widths, then runs one order from the bag through to the desk |
 | `test` | Runs the unit tests |
 
 `scan` and `crawl` also accept `--denylist <file>`, a JSON list of extra words the project must never contain. Without it they run the generic checks and print one warning. The crawl uses the installed Chrome.

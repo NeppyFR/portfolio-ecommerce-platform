@@ -10,8 +10,8 @@
 .in-tools{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s-3) var(--s-4);margin-bottom:var(--s-4)}
 .in-pills{display:flex;flex-wrap:wrap;gap:var(--s-1)}
 .in-pill{display:inline-flex;align-items:center;gap:var(--s-2);min-height:38px;padding:0 var(--s-3);border:1.5px solid var(--line-3);border-radius:var(--r-pill);background:var(--white);color:var(--ink);font:500 13px/1 var(--font-ui);cursor:pointer}
-.in-pill:hover{background:var(--mist)}
-.in-pill[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--white)}
+.in-pill:hover{background:var(--mist-2)}
+.in-pill[aria-pressed="true"]{background:var(--tint);border-color:var(--sky);color:var(--ink)}
 .in-search{flex:1 1 240px;min-width:0;max-width:380px}
 .in-labels{margin-left:auto}
 .in-labels .ui-btn-label{display:inline-flex;align-items:center;gap:6px}

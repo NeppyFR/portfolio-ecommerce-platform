@@ -1,5 +1,5 @@
-/* Slip and labels live outside the desk shell. Screen shows them on mist; print has exact geometry. */
-.pr-page{min-height:100dvh;padding:var(--s-5) var(--gutter) var(--s-9);background:var(--mist);color:var(--ink)}
+/* Slip and labels live outside the desk shell. The screen shows a paper sheet (.paper) on the black page; print has exact geometry and is black on white. */
+.pr-page{min-height:100dvh;padding:var(--s-5) var(--gutter) var(--s-9);background:var(--page);color:var(--ink)}
 .pr-missing{display:grid;place-items:center;min-height:50vh}
 @media screen{.pr-page.pr-missing{min-height:100dvh}}
 .pr-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2) var(--s-3);max-width:210mm;margin:0 auto var(--s-4)}

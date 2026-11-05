@@ -29,7 +29,7 @@ type Places = Map<string, { name: string; tile: string; accent: string }>;
 /** The palette's gradients stand in for the original drop accents, by launch order. */
 const PLACE_TILES = ["t-lil", "t-sky", "t-vio", "t-pale"];
 const PLACE_ACCENTS = ["#8c7bff", "#6fd3ff", "#2f6bff", "#b9f3ff"];
-const BRAND_PLACE = { tile: "t-ice", accent: "#7286d0" };
+const BRAND_PLACE = { tile: "t-ice", accent: "var(--line-3)" };
 
 function usePlaces(drops: Drop[], t: T): Places {
   return useMemo(() => {
@@ -69,9 +69,10 @@ function Preview({ file, places, compact }: { file: FileRecord; places: Places; 
   const drawn = drawnFor(file);
   if (file.category === "logo" && file.kind === "image" && !compact) {
     const reversed = /white/i.test(file.title);
+    const dark = /\bink\b/i.test(file.title);
     const dropName = file.dropId ? place.name : null;
     return (
-      <span className={`wf-prev ${reversed ? "wf-prev-ink" : place.tile}`} data-soft={reversed ? undefined : true}>
+      <span className={`wf-prev ${reversed ? "wf-prev-ink" : dark ? "wf-prev-bright" : place.tile}`} data-soft={reversed || dark ? undefined : true}>
         <LogoArt file={file} dropName={dropName} />
       </span>
     );

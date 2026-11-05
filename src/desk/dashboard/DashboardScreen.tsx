@@ -347,7 +347,10 @@ function StockAlerts() {
                   <span className="db-stock-name">{plainName(lang === "de" ? product.nameDe : product.nameEn)}</span>
                   <span className="db-stock-sub">{`${sizeLabel(variant.size, lang)} / ${t.colors[variant.color] ?? variant.color}`}</span>
                 </span>
-                <span className="db-left">{left <= 0 ? t.out : fmt(t.left, { n: left })}</span>
+                <span className="db-left">
+                  <TriangleAlert size={13} aria-hidden="true" />
+                  {left <= 0 ? t.out : fmt(t.left, { n: left })}
+                </span>
               </Link>
             </li>
           ))}

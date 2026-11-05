@@ -21,6 +21,12 @@ const ROWS = {
 };
 const HEIGHT = ROWS.db.y + ROWS.db.h + 2;
 
+/* The slabs are cards on black; the wires are light, with a black casing where they pass over anything. */
+const CARD = "#0b0c10";
+const RAISED = "#14161c";
+const HAIR = "rgba(255,255,255,.18)";
+const WIRE = "#b9f3ff";
+
 /** Text wraps by itself in a foreignObject, which matters because the German runs longer. */
 function Copy({ x, y, w, h, title, text, tone }: { x: number; y: number; w: number; h: number; title?: string; text?: string; tone?: "light" }) {
   return (
@@ -36,15 +42,15 @@ function Copy({ x, y, w, h, title, text, tone }: { x: number; y: number; w: numb
 function Link({ from, to, id }: { from: number; to: number; id: string }) {
   return (
     <g>
-      <path d={`M${CENTER} ${from} V${to}`} stroke="#fff" strokeWidth={5} strokeOpacity={0.8} fill="none" />
-      <path d={`M${CENTER} ${from} V${to - 1}`} stroke="#143bb0" strokeWidth={1.5} fill="none" markerEnd={`url(#${id})`} />
+      <path d={`M${CENTER} ${from} V${to}`} stroke="#000" strokeWidth={5} strokeOpacity={0.9} fill="none" />
+      <path d={`M${CENTER} ${from} V${to - 1}`} stroke={WIRE} strokeWidth={1.5} fill="none" markerEnd={`url(#${id})`} />
     </g>
   );
 }
 
 function Bracket({ y1, y2 }: { y1: number; y2: number }) {
   const x = SLAB + 24;
-  return <path d={`M${SLAB + 10} ${y1} H${x} V${y2} H${SLAB + 10}`} fill="none" stroke="#7286d0" strokeWidth={1.5} />;
+  return <path d={`M${SLAB + 10} ${y1} H${x} V${y2} H${SLAB + 10}`} fill="none" stroke="#6f7787" strokeWidth={1.5} />;
 }
 
 function Layered({ t }: { t: Strings }) {
@@ -57,12 +63,12 @@ function Layered({ t }: { t: Strings }) {
     <svg className="bt-arch-svg" viewBox={`0 0 1100 ${HEIGHT}`} role="img" aria-label={t.archAria}>
       <defs>
         <marker id={arrow} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto">
-          <path d="M0,0.8 L9.5,5 L0,9.2 z" fill="#143bb0" />
+          <path d="M0,0.8 L9.5,5 L0,9.2 z" fill={WIRE} />
         </marker>
         <linearGradient id={fill} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#b9f3ff" />
-          <stop offset=".46" stopColor="#fff" />
-          <stop offset="1" stopColor="#8c7bff" stopOpacity=".3" />
+          <stop offset="0" stopColor="#0f2c4a" />
+          <stop offset=".46" stopColor="#0b0c10" />
+          <stop offset="1" stopColor="#2a2360" />
         </linearGradient>
       </defs>
 
@@ -77,10 +83,10 @@ function Layered({ t }: { t: Strings }) {
         <div className="bt-fo-pill">{t.archPeople}</div>
       </foreignObject>
 
-      <rect x={LEFT + 0.75} y={ROWS.door.y} width={SLAB - 1.5} height={ROWS.door.h} rx={14} fill={`url(#${fill})`} stroke="#b6cbfa" />
+      <rect x={LEFT + 0.75} y={ROWS.door.y} width={SLAB - 1.5} height={ROWS.door.h} rx={14} fill={`url(#${fill})`} stroke={HAIR} />
       <Copy x={LEFT + 24} y={ROWS.door.y} w={SLAB - 48} h={ROWS.door.h} title={t.archDoorTitle} text={t.archDoor} />
 
-      <rect x={LEFT + 0.75} y={ROWS.surfaces.y} width={SLAB - 1.5} height={ROWS.surfaces.h} rx={14} fill="#e9f1ff" stroke="#b6cbfa" />
+      <rect x={LEFT + 0.75} y={ROWS.surfaces.y} width={SLAB - 1.5} height={ROWS.surfaces.h} rx={14} fill={CARD} stroke={HAIR} />
       <Copy x={LEFT + 24} y={ROWS.surfaces.y + 8} w={SLAB - 48} h={30} title={t.archSurfacesTitle} />
       {(
         [
@@ -90,18 +96,18 @@ function Layered({ t }: { t: Strings }) {
         ] as const
       ).map(([name, text], i) => (
         <g key={name}>
-          <rect x={inner(i)} y={ROWS.surfaces.y + 42} width={third} height={86} rx={10} fill="#fff" stroke="#b6cbfa" />
+          <rect x={inner(i)} y={ROWS.surfaces.y + 42} width={third} height={86} rx={10} fill={RAISED} stroke={HAIR} />
           <Copy x={inner(i) + 12} y={ROWS.surfaces.y + 42} w={third - 24} h={86} title={name} text={text} />
         </g>
       ))}
 
-      <rect x={LEFT + 0.75} y={ROWS.data.y} width={SLAB - 1.5} height={ROWS.data.h} rx={14} fill={`url(#${fill})`} stroke="#b6cbfa" />
+      <rect x={LEFT + 0.75} y={ROWS.data.y} width={SLAB - 1.5} height={ROWS.data.h} rx={14} fill={`url(#${fill})`} stroke={HAIR} />
       <Copy x={LEFT + 24} y={ROWS.data.y} w={SLAB - 48} h={ROWS.data.h} title={t.archDataTitle} text={t.archData} />
 
-      <rect x={LEFT + 0.75} y={ROWS.rules.y} width={SLAB - 1.5} height={ROWS.rules.h} rx={14} fill="#e9f1ff" stroke="#b6cbfa" />
+      <rect x={LEFT + 0.75} y={ROWS.rules.y} width={SLAB - 1.5} height={ROWS.rules.h} rx={14} fill={CARD} stroke={HAIR} />
       <Copy x={LEFT + 24} y={ROWS.rules.y} w={SLAB - 48} h={ROWS.rules.h} title={t.archRulesTitle} text={t.archRules} />
 
-      <rect x={LEFT} y={ROWS.db.y} width={SLAB} height={ROWS.db.h} rx={14} fill="#0a1f63" />
+      <rect x={LEFT} y={ROWS.db.y} width={SLAB} height={ROWS.db.h} rx={14} fill="#2860ee" />
       <Copy x={LEFT + 24} y={ROWS.db.y} w={SLAB - 48} h={ROWS.db.h} title={t.archDbTitle} text={t.archDb} tone="light" />
 
       <Bracket y1={ROWS.door.y + 8} y2={ROWS.data.y + ROWS.data.h - 8} />

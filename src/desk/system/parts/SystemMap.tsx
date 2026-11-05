@@ -10,7 +10,7 @@ import { DEMO_NOW_MS } from "@/store/clock";
 import { useStore } from "@/store/core";
 import type { Tone } from "@/store/types";
 
-const STROKE: Record<Tone, string> = { ok: "var(--ok)", warn: "var(--amber)", bad: "var(--rose)", unknown: "var(--unknown)", off: "#b6cbfa" };
+const STROKE: Record<Tone, string> = { ok: "var(--ok)", warn: "var(--amber)", bad: "var(--rose)", unknown: "var(--unknown)", off: "var(--off)" };
 
 /**
  * MapCanvas draws every box alike, so the live colours go on from here, keyed by `data-node`.
@@ -23,7 +23,7 @@ function liveCss(lights: Partial<Record<string, { tone: Tone }>>, scope: string)
       const dash = light.tone === "unknown" ? "stroke-dasharray:5 4;" : "";
       const hub = node === "database";
       const width = light.tone === "warn" || light.tone === "bad" ? 3 : 2;
-      return `.${scope} [data-node="${node}"] .ui-map-box{stroke:${STROKE[light.tone]};stroke-width:${width};${dash}${hub ? "" : "fill:#fff;"}}`;
+      return `.${scope} [data-node="${node}"] .ui-map-box{stroke:${STROKE[light.tone]};stroke-width:${width};${dash}${hub ? "" : "fill:var(--card);"}}`;
     })
     .join("");
 }

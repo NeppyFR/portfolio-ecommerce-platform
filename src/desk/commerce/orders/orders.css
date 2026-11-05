@@ -4,12 +4,12 @@
 .or-right{text-align:right}
 .or-anywhere{overflow-wrap:anywhere}
 .or-link{color:var(--link);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
-.or-link:hover{color:var(--ink)}
+.or-link:hover{color:var(--ink);text-decoration-thickness:2px}
 .or-stops{margin-bottom:var(--s-4)}
 .or-returns-link .ui-btn-label{display:inline-flex;align-items:center;gap:6px}
 @media (max-width:719px){.or-returns-link{display:none}}
 
-/* White hairline cards: the admin's one surface. Inventory, Customers and Returns use them too. */
+/* Hairline cards: the admin's one surface. Inventory, Customers and Returns use them too. */
 .or-card{min-width:0;padding:var(--s-5);border:1px solid var(--line);border-radius:16px;background:var(--white)}
 .or-card + .or-card{margin-top:var(--s-4)}
 @media (max-width:719px){.or-card{padding:var(--s-3) var(--s-4)}}
@@ -68,9 +68,9 @@
 .or-row-item:last-child{border-bottom:0}
 .or-row-item:last-child .or-row{border-bottom-left-radius:15px}
 .or-row{position:relative;width:100%;min-height:60px;padding-block:var(--s-2);background:none;text-align:left;cursor:pointer;transition:background var(--t-fast) var(--ease)}
-.or-row:hover{background:var(--mist)}
+.or-row:hover{background:var(--mist-2)}
 .or-row:focus-visible{z-index:2}
-.or-row[aria-current]{background:linear-gradient(90deg,var(--mist) 0%,var(--mist-2) 100%);box-shadow:inset 2px 0 0 var(--solid)}
+.or-row[aria-current]{background:var(--tint);box-shadow:inset 2px 0 0 var(--sky)}
 .or-row[aria-current]::after{content:"";position:absolute;right:-7px;top:50%;width:13px;height:13px;margin-top:-7px;background:var(--mist-2);border-right:1px solid var(--line-2);border-top:1px solid var(--line-2);transform:rotate(45deg);z-index:2}
 .or-row-id{display:flex;flex-direction:column;gap:1px;min-width:0}
 .or-row-number{display:inline-flex;align-items:center;gap:4px}
@@ -103,7 +103,7 @@
 
 /* Order pane */
 .or-detail{container-type:inline-size;min-width:0;--or-pad:var(--s-5)}
-.or-head{display:flex;flex-direction:column;gap:var(--s-4);padding:var(--s-5) var(--or-pad);border-bottom:1px solid var(--line);border-top-right-radius:16px;background:radial-gradient(62% 120% at 100% 0%,rgba(111,211,255,.26),rgba(111,211,255,0) 72%),radial-gradient(46% 90% at 100% 100%,rgba(140,123,255,.13),rgba(140,123,255,0) 74%),var(--white)}
+.or-head{display:flex;flex-direction:column;gap:var(--s-4);padding:var(--s-5) var(--or-pad);border-bottom:1px solid var(--line);border-top-right-radius:16px;background:radial-gradient(62% 120% at 100% 0%,rgba(47,107,255,.3),rgba(47,107,255,0) 72%),radial-gradient(46% 90% at 100% 100%,rgba(140,123,255,.16),rgba(140,123,255,0) 74%),var(--white)}
 .or-detail[data-in-sheet] .or-head{border-radius:16px;border:1px solid var(--line)}
 .or-head-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s-2) var(--s-3)}
 .or-head-id{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-1) var(--s-3);min-width:0}
@@ -111,7 +111,7 @@
 .or-head-placed{color:var(--ink)}
 .or-head-slip{flex:none;margin-left:auto;color:var(--ink)}
 .or-actions{display:flex;flex-wrap:wrap;gap:var(--s-2)}
-.or-alert{display:flex;gap:var(--s-3);margin:var(--s-4) var(--or-pad) 0;padding:var(--s-3) var(--s-4);border:1px solid #e7cfa8;border-radius:var(--r-2);background:var(--amber-tint);color:var(--amber)}
+.or-alert{display:flex;gap:var(--s-3);margin:var(--s-4) var(--or-pad) 0;padding:var(--s-3) var(--s-4);border:1px solid rgba(251,191,36,.35);border-radius:var(--r-2);background:var(--amber-tint);color:var(--amber)}
 .or-alert svg{flex:none;margin-top:1px}
 .or-alert ul{margin:2px 0 0;padding:0;list-style:none}
 .or-body{display:grid;grid-template-columns:minmax(0,1fr)}

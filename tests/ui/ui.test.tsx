@@ -50,7 +50,7 @@ describe("Garment", () => {
     const mini = html(<Garment type="hoodie" tone="ice" view="mini" />);
     expect(mini).not.toContain("<pattern");
     expect(mini).not.toContain("radialGradient");
-    expect(mini).toContain('stroke="#7286d0"');
+    expect(mini).toContain('stroke="#b9f3ff"');
   });
   it("uses the blue rib overlay on pale tones and white on the rest", () => {
     expect(html(<Garment type="beanie" tone="ice" />)).toMatch(/fill="#2f6bff" opacity="0.14"/);
@@ -59,6 +59,10 @@ describe("Garment", () => {
   });
   it("draws the hood opening flat at .42", () => {
     expect(html(<Garment type="hoodie" tone="sky" />)).toMatch(/d="M156 94[^"]*" fill="#1b3fc4" opacity=".42"/);
+  });
+  it("prints in navy on a pale tone and in white on a deep one", () => {
+    expect(html(<Garment type="tee" tone="ice" printed />)).toMatch(/<text[^>]*fill="#0a1a52"/);
+    expect(html(<Garment type="tee" tone="dusk" printed />)).toMatch(/<text[^>]*fill="#fff"/);
   });
   it("prints the label name on tote and printed tee, nowhere else", () => {
     expect(html(<Garment type="tote" tone="ice" />)).toContain("Aerloom");
@@ -210,7 +214,7 @@ describe("charts", () => {
     expect(out).toContain("<caption>Revenue</caption>");
     expect(out).toContain(">v30</text>");
     expect(out).not.toContain(">v10</text>");
-    expect(out).toContain('fill="var(--ink)"');
+    expect(out).toContain('fill="var(--ice)"');
   });
   it("Bars survives no data", () => {
     expect(html(<Bars data={[]} caption="None" />)).toContain("None");

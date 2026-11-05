@@ -82,7 +82,7 @@ function JumpPanel({ onClose }: { onClose: () => void }) {
           className="type-body-l h-[52px] min-w-0 flex-1 bg-transparent text-ink placeholder:text-ink-3"
           style={{ outline: "none", boxShadow: "none" }}
         />
-        <button type="button" aria-label={t.jumpClose} onClick={onClose} className="grid size-11 flex-none place-items-center rounded-[var(--r-2)] text-ink-2 hover:bg-mist md:size-9">
+        <button type="button" aria-label={t.jumpClose} onClick={onClose} className="grid size-11 flex-none place-items-center rounded-[var(--r-2)] text-ink-2 hover:bg-[var(--mist-2)] md:size-9">
           <X size={17} strokeWidth={1.75} aria-hidden="true" />
         </button>
       </div>
@@ -162,7 +162,7 @@ export function JumpBox() {
       onClick={(event) => {
         if (event.target === dialog.current) setOpen(false);
       }}
-      className="fixed inset-x-0 top-[8vh] bottom-auto m-0 mx-auto max-h-[80vh] w-[min(600px,calc(100vw-32px))] rounded-[var(--r-3)] border-0 bg-white p-0 text-ink opacity-100 shadow-[var(--float)] transition-opacity duration-[140ms] backdrop:bg-[rgba(10,31,99,.28)] starting:open:opacity-0 motion-reduce:transition-none md:top-[12vh] md:max-h-[76vh]"
+      className="fixed inset-x-0 top-[8vh] bottom-auto m-0 mx-auto max-h-[80vh] w-[min(600px,calc(100vw-32px))] rounded-[var(--r-3)] border-0 bg-[var(--raised)] p-0 text-ink opacity-100 shadow-[var(--float)] transition-opacity duration-[140ms] backdrop:bg-[rgba(0,0,0,.66)] starting:open:opacity-0 motion-reduce:transition-none md:top-[12vh] md:max-h-[76vh]"
     >
       {open ? <JumpPanel onClose={() => setOpen(false)} /> : null}
     </dialog>

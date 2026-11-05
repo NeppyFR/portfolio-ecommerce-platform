@@ -54,7 +54,7 @@ export function ColumnChart({ data, caption, columns, height = 220, formatValue 
                   {!hover && d.key === largest ? <span className="cat-cols-top">{formatValue(d.value)}</span> : null}
                 </span>
                 {active ? (
-                  <span className="cat-cols-tip" style={{ bottom: `${pct}%` }}>
+                  <span className="cat-cols-tip" style={{ bottom: `min(${pct}%, calc(100% - var(--tip-room)))` }}>
                     <small>{d.tipTitle}</small>
                     <b>{d.tipValue}</b>
                     {d.tipNote ? <small>{d.tipNote}</small> : null}

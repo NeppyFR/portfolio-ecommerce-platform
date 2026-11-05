@@ -134,7 +134,7 @@ function rolls(out: Frame, prefix: string, items: [string, number][], lineH: num
   }
 }
 
-/** The white cover over the chart's tail, its end dot and that dot's pulse. */
+/** The cover over the chart's tail, its end dot and that dot's pulse. */
 function chart(out: Frame, prefix: string, c: Curve, x0: number, x1: number, t: number) {
   const k = ease((t - 7.4) / 0.7);
   out[`${prefix}cover`] = t < 10.6 ? part(1, (x1 - x0) * k) : part(smooth(10.6, 11.6, t));
@@ -424,22 +424,28 @@ export type CommercePreviewProps = { lang: "en" | "de"; labels?: Partial<Commerc
 
 type L = CommercePreviewLabels;
 
-const INK = "#0a1f63";
-const MUTE = "#51629c";
-const HAIR = "#dbe5fb";
-const WIRE = "#143bb0";
+/* Words are white on cards one and two steps above black. Computed on those cards: MUTE 8.9:1, INK2 11.1:1. White on SOLID 5.2:1. */
+const INK = "#fff";
+const INK2 = "#c6ccd9";
+const MUTE = "#aeb6c6";
+const PAGE = "#000";
+const CARD = "#0b0c10";
+const RAISED = "#14161c";
+const CHIP = "#1a1c23";
+const HAIR = "rgba(185,243,255,.3)";
 const SOLID = "#2860ee";
 const BLUE = "#2f6bff";
 const SKY = "#6fd3ff";
+const ICE = "#b9f3ff";
 const VIOLET = "#8c7bff";
-const ACTIVE = "#e8f0ff";
-const AMBER = "#ffb020";
-const AMBER_INK = "#7f4600";
+const ACTIVE = "#142553";
+const AMBER = "#fbbf24";
+const AMBER_INK = "#000";
 
 /** The art is two drawings. Only this rule picks one, so server HTML is right before any script runs. */
 export const CP_CSS =
   ".cp-root{container:cp/inline-size}" +
-  ".cp-stage{overflow:hidden;border-radius:16px;background:linear-gradient(135deg,#fff 0%,#b9f3ff 42%,#6fd3ff 100%)}" +
+  ".cp-stage{overflow:hidden;border-radius:16px;background:radial-gradient(70% 90% at 100% 100%,rgba(140,123,255,.42),rgba(140,123,255,0) 72%),radial-gradient(60% 90% at 0% 0%,rgba(47,107,255,.42),rgba(47,107,255,0) 72%),#000;box-shadow:inset 0 0 0 1px rgba(185,243,255,.24),0 0 56px -10px rgba(47,107,255,.65)}" +
   ".cp-w,.cp-c{width:100%;height:auto;overflow:visible}" +
   ".cp-w{display:block;aspect-ratio:1200/420}" +
   ".cp-c{display:none;aspect-ratio:480/300}" +
@@ -472,7 +478,7 @@ const HOODIE_HOOD = "M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z";
 const HOODIE_OPEN = "M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z";
 const HOODIE_POCKET = "M-11 12 L11 12 L14 24 L-14 24Z";
 
-function Hoodie({ scale, fill, tint = INK, cord = "#fff" }: { scale?: number; fill: string; tint?: string; cord?: string }) {
+function Hoodie({ scale, fill, tint = "#04102e", cord = "#fff" }: { scale?: number; fill: string; tint?: string; cord?: string }) {
   return (
     <g transform={scale === undefined ? undefined : `scale(${scale})`}>
       <path d={HOODIE_BODY} fill={fill} />
@@ -602,7 +608,7 @@ function Pills({ prefix, l, size }: { prefix: string; l: L; size: number }) {
         const w = pillW(l[id], size);
         return (
           <Move key={id} k={`${prefix}w.${id}`}>
-            <rect data-pill={id} data-size={size} x={-w / 2} y={-h / 2} width={w} height={h} rx={h / 2} fill={INK} />
+            <rect data-pill={id} data-size={size} x={-w / 2} y={-h / 2} width={w} height={h} rx={h / 2} fill={SOLID} stroke={ICE} strokeOpacity={0.7} />
             <Txt y={size * 0.35} size={size} w={650} c="#fff" a="middle" l={id}>
               {l[id]}
             </Txt>
@@ -614,10 +620,10 @@ function Pills({ prefix, l, size }: { prefix: string; l: L; size: number }) {
 }
 
 const TONES = {
-  paid: ["#e4f6ea", "#15803d"],
-  pending: ["#fdf1dc", "#7f4600"],
-  packed: ["#ece9ff", "#5b48d6"],
-  shipped: ["#e8f0ff", "#2f6bff"],
+  paid: ["#0c2416", "#4ade80"],
+  pending: ["#2a2007", "#fbbf24"],
+  packed: ["#1d1a3f", "#b4a9ff"],
+  shipped: ["#0f2430", "#6fd3ff"],
 } as const;
 
 /** A status chip around its own centre. 112 wide because German `Versendet` needs it. */
@@ -636,7 +642,7 @@ function Chip({ tone, l, text }: { tone: keyof typeof TONES; l: keyof L; text: s
 function Row({ u, no, total }: { u: string; no: string; total: string }) {
   return (
     <>
-      <rect x={666} y={-12} width={24} height={24} rx={6} fill="#eef3ff" />
+      <rect x={666} y={-12} width={24} height={24} rx={6} fill={CHIP} />
       <g transform="translate(678 0)">
         <Hoodie scale={0.28} fill={`url(#${u}gar)`} />
       </g>
@@ -653,11 +659,11 @@ function Row({ u, no, total }: { u: string; no: string; total: string }) {
 function ServiceNode({ y, l, name, icon, k }: { y: number; l: keyof L; name: string; icon: ReactNode; k: string }) {
   return (
     <>
-      <rect x={381} y={y} width={92} height={54} rx={14} fill="#fff" stroke={HAIR} />
+      <rect x={381} y={y} width={92} height={54} rx={14} fill={CARD} stroke={HAIR} />
       <Move k={k}>
-        <rect x={381} y={y} width={92} height={54} rx={14} fill="#b9f3ff" />
+        <rect x={381} y={y} width={92} height={54} rx={14} fill={SOLID} />
       </Move>
-      <Icon x={418} y={y + 7} size={18} color={SOLID}>
+      <Icon x={418} y={y + 7} size={18} color={SKY}>
         {icon}
       </Icon>
       <Txt x={427} y={y + 45} size={16} w={600} a="middle" l={l}>
@@ -671,39 +677,50 @@ function Defs({ u }: { u: string }) {
   return (
     <>
       <radialGradient id={`${u}a1`}>
-        <stop offset="0" stopColor={VIOLET} stopOpacity=".75" />
+        <stop offset="0" stopColor={VIOLET} stopOpacity=".9" />
         <stop offset="1" stopColor={VIOLET} stopOpacity="0" />
       </radialGradient>
       <radialGradient id={`${u}a2`}>
-        <stop offset="0" stopColor={BLUE} stopOpacity=".6" />
+        <stop offset="0" stopColor={BLUE} stopOpacity=".85" />
         <stop offset="1" stopColor={BLUE} stopOpacity="0" />
       </radialGradient>
       <radialGradient id={`${u}a3`}>
-        <stop offset="0" stopColor="#fff" stopOpacity=".95" />
-        <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        <stop offset="0" stopColor={SKY} stopOpacity=".5" />
+        <stop offset="1" stopColor={SKY} stopOpacity="0" />
       </radialGradient>
       <radialGradient id={`${u}corner`}>
         <stop offset="0" stopColor={VIOLET} stopOpacity=".38" />
         <stop offset=".6" stopColor={SKY} stopOpacity=".2" />
         <stop offset="1" stopColor={SKY} stopOpacity="0" />
       </radialGradient>
+      <radialGradient id={`${u}halo`}>
+        <stop offset="0" stopColor={ICE} stopOpacity=".5" />
+        <stop offset=".55" stopColor={SKY} stopOpacity=".18" />
+        <stop offset="1" stopColor={SKY} stopOpacity="0" />
+      </radialGradient>
       <linearGradient id={`${u}tile`} x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#e8fbff" />
-        <stop offset=".55" stopColor="#b9f3ff" />
-        <stop offset="1" stopColor="#c9c1ff" />
+        <stop offset="0" stopColor="#0a2358" />
+        <stop offset=".55" stopColor="#070f26" />
+        <stop offset="1" stopColor="#1c1650" />
       </linearGradient>
       <linearGradient id={`${u}gar`} x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor={SKY} />
-        <stop offset=".5" stopColor={BLUE} />
+        <stop offset="0" stopColor={ICE} />
+        <stop offset=".5" stopColor={SKY} />
         <stop offset="1" stopColor={VIOLET} />
       </linearGradient>
+      {/* Blue to violet. The far end is deepened from the palette's violet, so white words keep AA: 4.96:1 at their worst. */}
       <linearGradient id={`${u}cta`} x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stopColor={BLUE} />
-        <stop offset="1" stopColor={VIOLET} />
+        <stop offset="0" stopColor={SOLID} />
+        <stop offset="1" stopColor="#6a55f5" />
+      </linearGradient>
+      <linearGradient id={`${u}edge`} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor={SKY} stopOpacity=".95" />
+        <stop offset=".5" stopColor={BLUE} stopOpacity=".55" />
+        <stop offset="1" stopColor={VIOLET} stopOpacity=".95" />
       </linearGradient>
       <linearGradient id={`${u}area`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor={BLUE} stopOpacity=".34" />
-        <stop offset="1" stopColor={SKY} stopOpacity=".02" />
+        <stop offset="0" stopColor={SKY} stopOpacity=".42" />
+        <stop offset="1" stopColor={BLUE} stopOpacity=".02" />
       </linearGradient>
     </>
   );
@@ -800,8 +817,8 @@ function WideArt({ u, l }: { u: string; l: L }) {
       </Txt>
 
       {/* The shop window */}
-      <rect x={44} y={60} width={330} height={342} rx={18} fill={INK} opacity={0.07} />
-      <rect x={40} y={54} width={330} height={342} rx={18} fill="#fff" />
+      <rect x={44} y={60} width={330} height={342} rx={18} fill={SKY} opacity={0.1} />
+      <rect x={40} y={54} width={330} height={342} rx={18} fill={CARD} stroke={`url(#${u}edge)`} strokeWidth={1.4} />
       <text x={58} y={81} fontSize={21} fontStyle="italic" fontFamily="Georgia,'Times New Roman',serif" fill={INK}>
         Aerloom
       </text>
@@ -810,7 +827,8 @@ function WideArt({ u, l }: { u: string; l: L }) {
           {I_BAG}
         </Icon>
       </Move>
-      <rect x={56} y={96} width={298} height={186} rx={12} fill={`url(#${u}tile)`} />
+      <rect x={56} y={96} width={298} height={186} rx={12} fill={`url(#${u}tile)`} stroke={HAIR} />
+      <circle cx={205} cy={192} r={92} fill={`url(#${u}halo)`} />
       <Move k="w.bob">
         <Hoodie fill={`url(#${u}gar)`} />
       </Move>
@@ -822,7 +840,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
       </Txt>
       {["S", "M", "L", "XL"].map((z, i) => (
         <g key={z}>
-          <rect x={56 + i * 40} y={318} width={34} height={24} rx={8} fill={z === "M" ? `url(#${u}cta)` : "#f1f5ff"} />
+          <rect x={56 + i * 40} y={318} width={34} height={24} rx={8} fill={z === "M" ? `url(#${u}cta)` : CHIP} />
           <Txt x={73 + i * 40} y={336} size={16} w={600} a="middle" c={z === "M" ? "#fff" : INK}>
             {z}
           </Txt>
@@ -840,31 +858,31 @@ function WideArt({ u, l }: { u: string; l: L }) {
         </Move>
       </g>
       <Move k="w.badge">
-        <circle r={9} fill={BLUE} />
+        <circle r={9} fill={SOLID} />
         <Txt y={5.5} size={16} w={700} a="middle" c="#fff">
           1
         </Txt>
       </Move>
 
       {/* The spine between the two windows */}
-      <path d={W_WIRE} fill="none" stroke="#fff" strokeOpacity={0.85} strokeWidth={6} />
-      <path d={W_WIRE} fill="none" stroke={WIRE} strokeWidth={1.6} />
+      <path d={W_WIRE} fill="none" stroke={PAGE} strokeOpacity={0.9} strokeWidth={6} />
+      <path d={W_WIRE} fill="none" stroke={ICE} strokeWidth={1.6} />
       {W_LIT.map((d, i) => (
         <Move key={d} k={`w.l${i}`}>
-          <path d={d} fill="none" stroke={BLUE} strokeWidth={3.2} />
+          <path d={d} fill="none" stroke={SKY} strokeWidth={3.2} />
         </Move>
       ))}
       <ServiceNode y={98} l="payments" name={l.payments} icon={I_CARD} k="w.h.pay" />
       <ServiceNode y={178} l="database" name={l.database} icon={I_DB} k="w.h.db" />
-      <rect x={381} y={258} width={92} height={54} rx={14} fill="#dff6ff" />
+      <rect x={381} y={258} width={92} height={54} rx={14} fill={RAISED} />
       <Move k="w.mail">
         <ServiceNode y={258} l="mail" name={l.mail} icon={I_MAIL} k="w.h.mail" />
       </Move>
 
       {/* The dashboard window */}
-      <rect x={488} y={60} width={676} height={342} rx={18} fill={INK} opacity={0.07} />
-      <rect x={484} y={54} width={676} height={342} rx={18} fill="#fff" />
-      <path d="M496 86 Q509 66 522 86" fill="none" stroke={BLUE} strokeWidth={2} />
+      <rect x={488} y={60} width={676} height={342} rx={18} fill={VIOLET} opacity={0.12} />
+      <rect x={484} y={54} width={676} height={342} rx={18} fill={CARD} stroke={`url(#${u}edge)`} strokeWidth={1.4} />
+      <path d="M496 86 Q509 66 522 86" fill="none" stroke={SKY} strokeWidth={2} />
       <circle cx={496} cy={86} r={3.4} fill={SKY} />
       <circle cx={509} cy={76} r={3.4} fill={BLUE} />
       <circle cx={522} cy={86} r={3.4} fill={VIOLET} />
@@ -875,10 +893,10 @@ function WideArt({ u, l }: { u: string; l: L }) {
       <rect x={492} y={99} width={140} height={32} rx={10} fill={ACTIVE} />
       {nav.map(([key, icon], i) => (
         <g key={key}>
-          <Icon x={500} y={NAV_Y(i) - 12} size={18} color={i === 0 ? BLUE : INK}>
+          <Icon x={500} y={NAV_Y(i) - 12} size={18} color={i === 0 ? ICE : INK2}>
             {icon}
           </Icon>
-          <Txt x={522} y={NAV_Y(i) + 3} size={16} w={i === 0 ? 650 : 500} c={i === 0 ? WIRE : INK} l={key}>
+          <Txt x={522} y={NAV_Y(i) + 3} size={16} w={i === 0 ? 650 : 500} c={i === 0 ? INK : INK2} l={key}>
             {l[key]}
           </Txt>
         </g>
@@ -886,12 +904,12 @@ function WideArt({ u, l }: { u: string; l: L }) {
       <Move k="w.ib">
         <circle r={9} fill={VIOLET} />
         <Move k="w.i3">
-          <Txt y={5.5} size={16} w={700} a="middle" c={INK}>
+          <Txt y={5.5} size={16} w={700} a="middle" c={PAGE}>
             3
           </Txt>
         </Move>
         <Move k="w.i4">
-          <Txt y={5.5} size={16} w={700} a="middle" c={INK}>
+          <Txt y={5.5} size={16} w={700} a="middle" c={PAGE}>
             4
           </Txt>
         </Move>
@@ -900,16 +918,16 @@ function WideArt({ u, l }: { u: string; l: L }) {
       <Txt x={652} y={88} size={25} w={700} l="navDashboard">
         {l.navDashboard}
       </Txt>
-      <rect x={940} y={66} width={124} height={28} rx={14} fill="#fff" stroke={HAIR} />
-      <Icon x={950} y={72} size={16} color="#8ea3d6">
+      <rect x={940} y={66} width={124} height={28} rx={14} fill={RAISED} stroke={HAIR} />
+      <Icon x={950} y={72} size={16} color={MUTE}>
         {I_SEARCH}
       </Icon>
-      <rect x={974} y={76} width={72} height={8} rx={4} fill="#e8eefc" />
+      <rect x={974} y={76} width={72} height={8} rx={4} fill="#2b2f3b" />
       <Icon x={1077} y={69} size={22} color={INK}>
         {I_BELL}
       </Icon>
       <Move k="w.bell">
-        <circle r={5} fill={VIOLET} stroke="#fff" strokeWidth={1.5} />
+        <circle r={5} fill={VIOLET} stroke={CARD} strokeWidth={1.5} />
       </Move>
       <circle cx={1126} cy={80} r={15} fill={ACTIVE} />
       <Txt x={1126} y={86} size={16} w={650} a="middle">
@@ -918,7 +936,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
 
       {/* KPI cards */}
       <g clipPath={`url(#${u}k0)`}>
-        <rect x={652} y={102} width={156} height={62} fill="#fff" />
+        <rect x={652} y={102} width={156} height={62} fill={RAISED} />
         <circle cx={792} cy={118} r={46} fill={`url(#${u}corner)`} />
       </g>
       <rect x={652} y={102} width={156} height={62} rx={14} fill="none" stroke={HAIR} />
@@ -940,7 +958,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
         <Roll k="w.k0.2" x={788} y={153} size={25} h={29} from="7" to="6" />
       </g>
 
-      <rect x={820} y={102} width={156} height={62} rx={14} fill="#fff" stroke={HAIR} />
+      <rect x={820} y={102} width={156} height={62} rx={14} fill={RAISED} stroke={HAIR} />
       <Txt x={834} y={124} size={16} c={MUTE} l="orders">
         {l.orders}
       </Txt>
@@ -949,7 +967,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
         <Roll k="w.k1.1" x={859} y={153} size={25} h={29} from="9" to="0" />
       </g>
 
-      <rect x={988} y={102} width={156} height={62} rx={14} fill="#fff" stroke={HAIR} />
+      <rect x={988} y={102} width={156} height={62} rx={14} fill={RAISED} stroke={HAIR} />
       <Txt x={1002} y={124} size={16} c={MUTE} l="customers">
         {l.customers}
       </Txt>
@@ -961,12 +979,12 @@ function WideArt({ u, l }: { u: string; l: L }) {
       </g>
 
       {/* Revenue */}
-      <rect x={652} y={174} width={324} height={106} rx={14} fill="#fff" />
+      <rect x={652} y={174} width={324} height={106} rx={14} fill={RAISED} />
       <path d={`${W_LINE} L960 272 L666 272Z`} fill={`url(#${u}area)`} />
-      <path d={W_LINE} fill="none" stroke={BLUE} strokeWidth={2.6} />
+      <path d={W_LINE} fill="none" stroke={SKY} strokeWidth={2.6} />
       <g clipPath={`url(#${u}chart)`}>
         <Move k="w.cover">
-          <rect x={900} y={206} width={76} height={74} fill="#fff" />
+          <rect x={900} y={206} width={76} height={74} fill={RAISED} />
         </Move>
       </g>
       <rect x={652} y={174} width={324} height={106} rx={14} fill="none" stroke={HAIR} />
@@ -976,26 +994,26 @@ function WideArt({ u, l }: { u: string; l: L }) {
       {["7D", "30D", "90D", "1Y"].map((p, i) => (
         <g key={p}>
           {i === 0 ? <rect x={816} y={182} width={34} height={22} rx={11} fill={ACTIVE} /> : null}
-          <Txt x={833 + i * 38} y={198.5} size={16} w={i === 0 ? 650 : 500} a="middle" c={i === 0 ? WIRE : MUTE}>
+          <Txt x={833 + i * 38} y={198.5} size={16} w={i === 0 ? 650 : 500} a="middle" c={i === 0 ? ICE : MUTE}>
             {p}
           </Txt>
         </g>
       ))}
       <Move k="w.pulse">
-        <circle r={7} fill="none" stroke={BLUE} strokeWidth={2} />
+        <circle r={7} fill="none" stroke={SKY} strokeWidth={2} />
       </Move>
       <Move k="w.dot">
-        <circle r={5.5} fill={BLUE} stroke="#fff" strokeWidth={2} />
+        <circle r={5.5} fill={SKY} stroke="#fff" strokeWidth={2} />
       </Move>
       <Move k="w.tip">
-        <rect x={-42} y={-13} width={84} height={26} rx={8} fill={INK} />
+        <rect x={-42} y={-13} width={84} height={26} rx={8} fill={SOLID} stroke={ICE} strokeOpacity={0.7} />
         <Txt y={5.5} size={16} w={650} a="middle" c="#fff">
           +CHF 89
         </Txt>
       </Move>
 
       {/* Donut */}
-      <rect x={988} y={174} width={156} height={106} rx={14} fill="#fff" stroke={HAIR} />
+      <rect x={988} y={174} width={156} height={106} rx={14} fill={RAISED} stroke={HAIR} />
       <Move k="w.donut">
         <g transform="rotate(-90)" fill="none" strokeWidth={13}>
           <circle r={36} stroke={BLUE} strokeDasharray={`${0.52 * CIRC} ${CIRC}`} />
@@ -1005,7 +1023,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
       </Move>
 
       {/* Recent orders */}
-      <rect x={652} y={290} width={492} height={94} rx={14} fill="#fff" stroke={HAIR} />
+      <rect x={652} y={290} width={492} height={94} rx={14} fill={RAISED} stroke={HAIR} />
       <Txt x={666} y={310} size={16} w={650} l="recentOrders">
         {l.recentOrders}
       </Txt>
@@ -1024,7 +1042,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
         </Move>
         <Move k="w.new">
           <Move k="w.tint">
-            <rect x={658} y={-14} width={480} height={28} rx={8} fill="#eef4ff" />
+            <rect x={658} y={-14} width={480} height={28} rx={8} fill={ACTIVE} />
           </Move>
           <Row u={u} no="AL-1151" total="CHF 89.00" />
           <Move k="w.c.paid">
@@ -1039,12 +1057,12 @@ function WideArt({ u, l }: { u: string; l: L }) {
         </Move>
         <Move k="w.dt">
           {[0, 1, 2, 3, 4].map((i) => (
-            <circle key={i} cx={910 + 20 * i} cy={330} r={4} fill="#fff" stroke="#b6cbfa" strokeWidth={1.5} />
+            <circle key={i} cx={910 + 20 * i} cy={330} r={4} fill={RAISED} stroke={MUTE} strokeWidth={1.5} />
           ))}
         </Move>
         {[0, 1, 2, 3, 4].map((i) => (
           <Move key={i} k={`w.d${i}`}>
-            <circle r={4} fill={SOLID} />
+            <circle r={4} fill={SKY} />
           </Move>
         ))}
       </g>
@@ -1052,7 +1070,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
       {/* Above everything: the amber fault, the packet, the word, the cursors */}
       {(["pay", "db", "mail"] as const).map((id) => (
         <Move key={id} k={`w.r.${id}`}>
-          <rect x={-46} y={-27} width={92} height={54} rx={14} fill="none" stroke={BLUE} strokeWidth={2.5} />
+          <rect x={-46} y={-27} width={92} height={54} rx={14} fill="none" stroke={SKY} strokeWidth={2.5} />
         </Move>
       ))}
       <Move k="w.mini">
@@ -1065,12 +1083,13 @@ function WideArt({ u, l }: { u: string; l: L }) {
         <circle r={13} fill="none" stroke={AMBER} strokeWidth={3} />
       </Move>
       <Move k="w.pkt">
-        <circle r={11} fill={INK} stroke="#fff" strokeWidth={2} />
-        <Hoodie scale={0.2} fill="#fff" tint={INK} cord={INK} />
+        <circle r={18} fill={SKY} opacity={0.32} />
+        <circle r={11} fill={ICE} stroke="#fff" strokeWidth={2} />
+        <Hoodie scale={0.2} fill={PAGE} tint={ICE} cord={ICE} />
       </Move>
       <Pills prefix="w." l={l} size={17} />
       <Move k="w.cur">
-        <path d={CURSOR} fill={INK} stroke="#fff" strokeWidth={1.5} strokeLinejoin="round" />
+        <path d={CURSOR} fill={INK} stroke={PAGE} strokeWidth={1.5} strokeLinejoin="round" />
       </Move>
       <Move k="w.vrip">
         <circle r={13} fill="none" stroke={VIOLET} strokeWidth={2.5} />
@@ -1114,9 +1133,10 @@ function CompactArt({ u, l }: { u: string; l: L }) {
       </Txt>
 
       {/* The shop, as a phone */}
-      <rect x={17} y={48} width={148} height={240} rx={18} fill={INK} opacity={0.07} />
-      <rect x={14} y={44} width={148} height={240} rx={18} fill="#fff" />
-      <rect x={24} y={54} width={128} height={120} rx={12} fill={`url(#${u}tile)`} />
+      <rect x={17} y={48} width={148} height={240} rx={18} fill={SKY} opacity={0.1} />
+      <rect x={14} y={44} width={148} height={240} rx={18} fill={CARD} stroke={`url(#${u}edge)`} strokeWidth={1.4} />
+      <rect x={24} y={54} width={128} height={120} rx={12} fill={`url(#${u}tile)`} stroke={HAIR} />
+      <circle cx={88} cy={116} r={60} fill={`url(#${u}halo)`} />
       <Move k="c.bob">
         <Hoodie fill={`url(#${u}gar)`} />
       </Move>
@@ -1131,8 +1151,8 @@ function CompactArt({ u, l }: { u: string; l: L }) {
       </Move>
 
       {/* The staff window */}
-      <rect x={189} y={48} width={280} height={240} rx={18} fill={INK} opacity={0.07} />
-      <rect x={186} y={44} width={280} height={240} rx={18} fill="#fff" />
+      <rect x={189} y={48} width={280} height={240} rx={18} fill={VIOLET} opacity={0.12} />
+      <rect x={186} y={44} width={280} height={240} rx={18} fill={CARD} stroke={`url(#${u}edge)`} strokeWidth={1.4} />
       <g clipPath={`url(#${u}k0)`}>
         <circle cx={312} cy={66} r={40} fill={`url(#${u}corner)`} />
       </g>
@@ -1161,26 +1181,27 @@ function CompactArt({ u, l }: { u: string; l: L }) {
       </g>
 
       <path d={`${C_LINE} L454 196 L198 196Z`} fill={`url(#${u}area)`} />
-      <path d={C_LINE} fill="none" stroke={BLUE} strokeWidth={3} />
+      <path d={C_LINE} fill="none" stroke={SKY} strokeWidth={3} />
       <g clipPath={`url(#${u}win)`}>
         <Move k="c.cover">
-          <rect x={400} y={134} width={66} height={64} fill="#fff" />
+          <rect x={400} y={134} width={66} height={64} fill={CARD} />
         </Move>
       </g>
+      <rect x={186} y={44} width={280} height={240} rx={18} fill="none" stroke={`url(#${u}edge)`} strokeWidth={1.4} />
       <Move k="c.pulse">
-        <circle r={8} fill="none" stroke={BLUE} strokeWidth={2.5} />
+        <circle r={8} fill="none" stroke={SKY} strokeWidth={2.5} />
       </Move>
       <Move k="c.dot">
-        <circle r={6} fill={BLUE} stroke="#fff" strokeWidth={2} />
+        <circle r={6} fill={SKY} stroke="#fff" strokeWidth={2} />
       </Move>
 
       {/* The order row */}
-      <rect x={198} y={204} width={256} height={68} rx={12} fill="#fff" />
+      <rect x={198} y={204} width={256} height={68} rx={12} fill={RAISED} />
       <Move k="c.tint">
-        <rect x={198} y={204} width={256} height={68} rx={12} fill="#eef4ff" />
+        <rect x={198} y={204} width={256} height={68} rx={12} fill={ACTIVE} />
       </Move>
       <rect x={198} y={204} width={256} height={68} rx={12} fill="none" stroke={HAIR} />
-      <rect x={208} y={217} width={42} height={42} rx={9} fill="#eef3ff" />
+      <rect x={208} y={217} width={42} height={42} rx={9} fill={CHIP} />
       <g transform="translate(229 238)">
         <Hoodie scale={0.5} fill={`url(#${u}gar)`} />
       </g>
@@ -1208,19 +1229,19 @@ function CompactArt({ u, l }: { u: string; l: L }) {
       </Move>
 
       {/* The wire across the gap, and everything on top */}
-      <path d="M152 243 L198 238" stroke="#fff" strokeOpacity={0.85} strokeWidth={6} />
-      <path d="M152 243 L198 238" stroke={WIRE} strokeWidth={2} />
+      <path d="M152 243 L198 238" stroke={PAGE} strokeOpacity={0.9} strokeWidth={6} />
+      <path d="M152 243 L198 238" stroke={ICE} strokeWidth={2} />
       <Move k="c.lit">
-        <path d="M152 243 L198 238" stroke={BLUE} strokeWidth={3.2} />
+        <path d="M152 243 L198 238" stroke={SKY} strokeWidth={3.2} />
       </Move>
       <Move k="c.tap">
-        <circle r={30} fill="none" stroke={INK} strokeWidth={3} />
+        <circle r={30} fill="none" stroke={ICE} strokeWidth={3} />
       </Move>
       <Move k="c.vtap">
         <circle r={24} fill="none" stroke={VIOLET} strokeWidth={3} />
       </Move>
       <Move k="c.r.row">
-        <rect x={-128} y={-34} width={256} height={68} rx={12} fill="none" stroke={BLUE} strokeWidth={3} />
+        <rect x={-128} y={-34} width={256} height={68} rx={12} fill="none" stroke={SKY} strokeWidth={3} />
       </Move>
       <Move k="c.mini">
         <Hoodie fill={`url(#${u}gar)`} />
@@ -1229,14 +1250,15 @@ function CompactArt({ u, l }: { u: string; l: L }) {
         <Triangle size={30} />
       </Move>
       <Move k="c.beat">
-        <circle r={13} fill="none" stroke={BLUE} strokeWidth={3} />
+        <circle r={13} fill="none" stroke={SKY} strokeWidth={3} />
       </Move>
       <Move k="c.halo">
         <circle r={13} fill="none" stroke={AMBER} strokeWidth={3} />
       </Move>
       <Move k="c.pkt">
-        <circle r={10} fill={INK} stroke="#fff" strokeWidth={2} />
-        <Hoodie scale={0.18} fill="#fff" tint={INK} cord={INK} />
+        <circle r={16} fill={SKY} opacity={0.32} />
+        <circle r={10} fill={ICE} stroke="#fff" strokeWidth={2} />
+        <Hoodie scale={0.18} fill={PAGE} tint={ICE} cord={ICE} />
       </Move>
       <Pills prefix="c." l={l} size={24} />
     </svg>

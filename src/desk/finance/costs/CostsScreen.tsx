@@ -22,7 +22,7 @@ import { PlanRow } from "./PlanRow";
 import { StorageCard } from "./StorageCard";
 import { TwelveMonths } from "./TwelveMonths";
 
-const SEGMENT_COLOURS = ["#2f6bff", "#6fd3ff", "#8c7bff", "#b9f3ff", "#1c4fdc", "#c9c0ff", "#7286d0", "#46599e"];
+const SEGMENT_COLOURS = ["#2f6bff", "#6fd3ff", "#8c7bff", "#b9f3ff", "#7ea4ff", "#c9c0ff", "#4f7fe8", "#9aa3b5"];
 
 export function CostsScreen() {
   const costLabel = useCostLabel();

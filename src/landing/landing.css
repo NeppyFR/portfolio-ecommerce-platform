@@ -1,25 +1,27 @@
 /* Landing and the rail it shares with /built/. Hero design space is 1440×900, scaled by --u. */
 
-.lp{background:var(--white);color:var(--ink)}
+.lp{background:var(--page);color:var(--ink)}
 .lp a{color:inherit;text-decoration:none}
 .lp h1,.lp h2,.lp p,.lp ul,.lp ol,.lp dl,.lp dd{margin:0;padding:0}
 .lp ul,.lp ol{list-style:none}
 
 /* Rail */
-.lp-skip{position:absolute;left:var(--s-4);top:-120px;z-index:60;padding:var(--s-2) var(--s-3);border-radius:var(--r-2);background:var(--white);color:var(--ink);font:500 14px/1.3 var(--font-ui);box-shadow:var(--float)}
+.lp-skip{position:absolute;left:var(--s-4);top:-120px;z-index:60;padding:var(--s-2) var(--s-3);border-radius:var(--r-2);background:var(--raised);color:var(--ink);font:500 14px/1.3 var(--font-ui);box-shadow:var(--float)}
 .lp-skip:focus{top:8px}
 .lp-rail{display:flex;align-items:center;gap:var(--s-5);min-height:64px;color:var(--ink)}
 .lp-rail a{color:inherit;text-decoration:none}
-.lp-brand{display:inline-flex;align-items:center;gap:9px;font:650 15px/1 var(--font-disp);letter-spacing:-.01em;white-space:nowrap}
+.lp-brand{display:inline-flex;align-items:center;gap:9px;font:650 15px/1 var(--font-disp);letter-spacing:-.01em;white-space:nowrap;transition:color var(--t-fast) var(--ease)}
+.lp-brand:hover{color:var(--link)}
 .lp-stops{position:relative;display:flex;align-items:center;gap:var(--s-4)}
 .lp-stops::before{content:"";position:absolute;left:12px;right:12px;top:50%;height:1.5px;background:var(--line-3)}
-.lp-stop{position:relative;display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border:1.5px solid var(--line-3);border-radius:var(--r-pill);background:var(--white);font:500 13px/1 var(--font-ui);white-space:nowrap;transition:background var(--t-fast) var(--ease)}
-.lp-stop:hover{background:var(--mist)}
-.lp-stop[aria-current="page"]{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.lp-stop{position:relative;display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border:1.5px solid var(--line-3);border-radius:var(--r-pill);background:var(--card);font:500 13px/1 var(--font-ui);white-space:nowrap;transition:background var(--t-fast) var(--ease),border-color var(--t-fast) var(--ease)}
+.lp-stop:hover{background:var(--mist-2);border-color:var(--sky)}
+.lp-stop[aria-current="page"]{background:var(--solid);border-color:var(--solid);color:var(--on-solid)}
+.lp-stop[aria-current="page"]:hover{background:var(--solid-hover);border-color:var(--sky)}
 .lp-rail-end{display:flex;align-items:center;gap:var(--s-3);margin-left:auto}
 .lp-rail-note{font:500 12px/1.2 var(--font-mono);color:var(--ink);white-space:nowrap}
-.lp-jump{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1.5px solid var(--line-3);border-radius:var(--r-2);background:var(--white);color:var(--ink);font:500 13px/1 var(--font-ui);cursor:pointer;white-space:nowrap}
-.lp-jump:hover{background:var(--mist)}
+.lp-jump{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1.5px solid var(--line-3);border-radius:var(--r-2);background:var(--card);color:var(--ink);font:500 13px/1 var(--font-ui);cursor:pointer;white-space:nowrap;transition:background var(--t-fast) var(--ease),border-color var(--t-fast) var(--ease)}
+.lp-jump:hover{background:var(--mist-2);border-color:var(--sky)}
 .lp-jump-key{font:500 12px/1 var(--font-mono);color:var(--ink-3)}
 
 /*
@@ -35,7 +37,7 @@
 .lp-copy{position:absolute;left:calc(56*var(--u));top:calc(78*var(--u));z-index:3;pointer-events:none;scroll-margin-top:80px}
 .lp-h1{display:flex;flex-direction:column;font-family:var(--font-disp);font-weight:660;font-size:calc(80*var(--u));line-height:1;letter-spacing:-.026em;font-stretch:92%;color:var(--ink)}
 .lp-h1 span,.lp-h1 em{display:block;width:fit-content;font-style:normal}
-.lp-h1 em{background:linear-gradient(90deg,#2f6bff,#8c7bff 200%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.08em;margin-bottom:-.08em}
+.lp-h1 em{background:linear-gradient(90deg,#6fd3ff,#8c7bff);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.08em;margin-bottom:-.08em}
 .lp-side{position:absolute;left:calc(1032*var(--u));top:calc(100*var(--u));width:calc(352*var(--u));z-index:3;color:var(--ink)}
 /* The German copy runs longer, so it starts higher and wider to stay clear of the order panel below it. */
 :root[lang="de"] .lp-side{left:calc(880*var(--u));top:calc(78*var(--u));width:calc(504*var(--u))}
@@ -50,70 +52,77 @@
 .lp-map-low{display:none}
 .lp-panel-float{position:absolute;left:calc(1104*var(--u));width:calc(280*var(--u));bottom:calc(268*var(--u));z-index:3}
 
-/* Map skin on the public pages */
+/* Map skin on the public pages: dark cards with a lit tile, hubs and people filled so they stand out, and everything that moves bright. */
 .lp-map .ui-map-tile{fill:url(#lp-tile)}
-.lp-map .ui-map-icon{color:var(--white)}
-.lp-map .ui-map-node[data-kind="person"] .ui-map-tile{fill:var(--white)}
-.lp-map .ui-map-node[data-kind="person"] .ui-map-icon{color:var(--solid)}
-.lp-map .ui-map-pulse{stroke:var(--ink);stroke-width:2.5;transform-box:fill-box;transform-origin:center}
+.lp-map .ui-map-icon{color:var(--on-solid)}
+.lp-map .ui-map-node:is([data-kind="hub"],[data-kind="person"]) .ui-map-box{fill:url(#lp-hub);stroke:rgba(185,243,255,.55)}
+.lp-map .ui-map-node:is([data-kind="hub"],[data-kind="person"])[data-interactive]:hover .ui-map-box{fill:var(--solid-hover);stroke:var(--ice)}
+.lp-map .ui-map-node:is([data-kind="hub"],[data-kind="person"]) .ui-map-tile{fill:var(--ice)}
+.lp-map .ui-map-node:is([data-kind="hub"],[data-kind="person"]) .ui-map-icon{color:var(--on-bright)}
+.lp-map .ui-map-pulse{stroke:var(--ice);stroke-width:2.5;transform-box:fill-box;transform-origin:center}
 .lp-map .ui-map-node[data-kind="person"] .ui-map-pulse{rx:30px}
 /* The phone map's boxes are 118 wide; the two long German names need the tighter setting */
 :root[lang="de"] .lp-map .ui-map[data-mode="phone"] .ui-map-node[data-kind="service"] .ui-map-name{font-size:12.4px;letter-spacing:-.02em}
-.lp-map .ui-map-node[data-interactive]{outline-offset:3px}
-.lp-map .ui-map-node[data-interactive]:focus-visible .ui-map-box{stroke:var(--ink);stroke-width:2}
-.lp-pk{fill:var(--blue);stroke:var(--white);stroke-width:1.5;opacity:0;will-change:transform}
-.lp-pk[data-slow]{fill:var(--violet)}
-.lp-hot{fill:none;stroke:var(--blue);stroke-width:3.25;opacity:0;transition:opacity var(--t-med) var(--ease);stroke-linecap:round}
+/* The halo is a translucent stroke, not a filter, so a moving packet costs no repaint of what lies under it. */
+.lp-pk{fill:var(--ice);stroke:rgba(111,211,255,.45);stroke-width:4;opacity:0;will-change:transform}
+.lp-pk[data-slow]{fill:#c9c1ff;stroke:rgba(140,123,255,.55)}
+.lp-hot{fill:none;stroke:var(--sky);stroke-width:3.25;opacity:0;transition:opacity var(--t-med) var(--ease);stroke-linecap:round}
 /* Same box as the wide map underneath, drawn over its labels; clicks fall through to the nodes */
 .lp-story{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+/* The words go back on top of the packet, with a black edge that cuts them out of it as it passes. */
+.lp-story .ui-map-label text{paint-order:stroke;stroke:#000;stroke-width:3px;stroke-linejoin:round}
 .lp-star{opacity:0;will-change:transform}
-.lp-star circle{fill:var(--ink);stroke:var(--white);stroke-width:2.5}
-.lp-star .lp-star-halo{fill:var(--ink);stroke:none;opacity:.16}
-.lp-trail{fill:var(--ink);opacity:0;will-change:transform}
+.lp-star circle{fill:var(--ink);stroke:var(--sky);stroke-width:2.5}
+.lp-star .lp-star-halo{fill:var(--sky);stroke:none;opacity:.34}
+.lp-trail{fill:var(--sky);opacity:0;will-change:transform}
 
 /* Side panel */
-.lp-panel{display:flex;flex-direction:column;gap:calc(7*var(--u));padding:calc(12*var(--u)) calc(14*var(--u));background:var(--white);border-radius:var(--r-3);color:var(--ink)}
+.lp-panel{display:flex;flex-direction:column;gap:calc(7*var(--u));padding:calc(12*var(--u)) calc(14*var(--u));background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-3);color:var(--ink)}
 .lp-panel-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s-2)}
 .lp-panel-head h2{font:680 max(14px,calc(15*var(--u)))/1.15 var(--font-disp);letter-spacing:-.01em}
 .lp-panel-id{display:inline-flex;align-items:center;gap:6px;font:500 12px/1 var(--font-mono);color:var(--ink-3)}
-.lp-panel-id i{width:7px;height:7px;border-radius:50%;background:var(--blue)}
-.lp-order{display:flex;align-items:center;gap:var(--s-2);min-height:44px;padding:4px 8px 4px 4px;border:1px solid var(--line);border-radius:var(--r-2);transition:background var(--t-fast) var(--ease)}
-.lp-order:hover{background:var(--mist)}
+.lp-panel-id i{width:7px;height:7px;border-radius:50%;background:var(--sky);box-shadow:0 0 8px var(--sky)}
+.lp-order{display:flex;align-items:center;gap:var(--s-2);min-height:44px;padding:4px 8px 4px 4px;border:1px solid var(--line);border-radius:var(--r-2);transition:background var(--t-fast) var(--ease),border-color var(--t-fast) var(--ease)}
+.lp-order:hover{background:var(--mist);border-color:var(--sky)}
 .lp-order-glyph{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32px;height:32px;border-radius:var(--r-1);background:var(--mist-2)}
 .lp-order-glyph svg{width:28px;height:28px}
 .lp-order-no{font:500 13px/1 var(--font-mono);margin-right:auto}
 .lp-rail-stations{position:relative;display:flex;justify-content:space-between;touch-action:none;user-select:none}
 .lp-rail-stations::before{content:"";position:absolute;left:12px;right:16px;top:12px;height:1.5px;background:var(--line-3)}
 .lp-station{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 2px;border:0;background:none;cursor:pointer;color:var(--ink-3);font:500 12px/1.2 var(--font-ui)}
-.lp-station-dot{width:13px;height:13px;border-radius:50%;background:var(--white);border:1.5px solid var(--line-3);transition:transform var(--t-fast) var(--ease)}
-.lp-station[data-state="done"] .lp-station-dot{background:var(--blue);border-color:var(--blue)}
+.lp-station-dot{width:13px;height:13px;border-radius:50%;background:var(--card);border:1.5px solid var(--line-3);transition:transform var(--t-fast) var(--ease)}
+.lp-station[data-state="done"] .lp-station-dot{background:var(--sky);border-color:var(--sky)}
 .lp-station[data-state="now"]{color:var(--ink)}
-.lp-station[data-state="now"] .lp-station-dot{background:var(--ink);border-color:var(--ink);transform:scale(1.2)}
+.lp-station[data-state="now"] .lp-station-dot{background:var(--ice);border-color:var(--ice);box-shadow:0 0 0 2.5px rgba(111,211,255,.55);transform:scale(1.2)}
 .lp-station:hover{color:var(--ink)}
+.lp-station:hover .lp-station-dot{border-color:var(--sky)}
 .lp-log li{display:grid;grid-template-columns:auto 1fr;gap:var(--s-2);padding:calc(4*var(--u)) 0;border-top:1px solid var(--line);font:400 max(12px,calc(12.5*var(--u)))/1.28 var(--font-ui);color:var(--ink-2);animation:lp-rise var(--t-med) var(--ease)}
 .lp-log li:last-child{color:var(--ink);font-weight:550}
 .lp-log time{font:400 12px/1.36 var(--font-mono);color:var(--ink-3)}
 @keyframes lp-rise{from{opacity:0;transform:translateY(5px)}}
 
 /* Ledger */
-.lp-ledger{display:grid;grid-template-columns:repeat(11,auto);justify-content:space-between;max-width:calc(1440*var(--u));margin:0 auto!important;padding:calc(11*var(--u)) calc(56*var(--u))!important;background:var(--white)}
+.lp-ledger{display:grid;grid-template-columns:repeat(11,auto);justify-content:space-between;max-width:calc(1440*var(--u));margin:0 auto!important;padding:calc(11*var(--u)) calc(56*var(--u))!important;background:var(--page)}
 .lp-ledger>div{display:flex;flex-direction:column;gap:4px;padding:2px 0 2px var(--s-3);border-left:1px solid var(--line)}
 .lp-ledger>div:first-child{border-left:0;padding-left:0}
 .lp-ledger dd{order:-1;font-family:var(--font-disp);font-weight:660;font-size:28px;line-height:1;font-stretch:94%;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
 .lp-ledger dt{font:400 12px/1.25 var(--font-ui);color:var(--ink-3);white-space:nowrap}
 
 /* Shop strip: the Newsreader voice */
-.lp-shop{padding-top:var(--s-10);background:var(--white)}
+.lp-shop{padding-top:var(--s-10);background:var(--page)}
 .lp-shop-head{display:grid;grid-template-columns:1fr minmax(0,360px) auto;align-items:end;gap:var(--s-7);max-width:1760px;margin:0 auto;padding:0 var(--gutter) var(--s-7)}
 .lp-shop-line{font-family:var(--font-serif);font-weight:300;font-size:clamp(40px,6.6vw,104px);line-height:.98;letter-spacing:-.02em}
 .lp-shop-copy{font:400 14px/1.45 var(--font-ui);color:var(--ink-2)}
 .lp-shop-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;font:500 14px/1.2 var(--font-ui);color:var(--link)!important;text-decoration:underline!important;text-underline-offset:3px;text-decoration-thickness:1px!important;white-space:nowrap}
+.lp-shop-link:hover{color:var(--ice)!important;text-decoration-thickness:2px!important}
 .lp-shop-link svg{transition:transform var(--t-fast) var(--ease)}
 .lp-shop-link:hover svg{transform:translateX(3px)}
 .lp-band{display:grid;grid-template-columns:1.5fr 1fr 1.7fr .9fr 1.25fr 1fr;height:clamp(300px,31vw,520px)}
 .lp-band li{position:relative;overflow:hidden;min-width:0}
 .lp-band a{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
 .lp-band svg{width:auto;height:84%;max-width:92%;transition:transform var(--t-med) var(--ease)}
+.lp-band a{transition:box-shadow var(--t-fast) var(--ease)}
+.lp-band a:hover{box-shadow:inset 0 0 0 1.5px var(--sky)}
 .lp-band a:hover svg{transform:scale(1.02)}
 .lp-band a:focus-visible{outline-offset:-4px}
 
@@ -126,7 +135,7 @@
 .lp-rows{border-top:1px solid var(--line)}
 .lp-rows li{border-bottom:1px solid var(--line)}
 .lp-row{display:grid;grid-template-columns:90px 150px minmax(0,1fr) 110px 170px 110px;align-items:center;gap:var(--s-3);min-height:56px;padding:0 var(--s-2);transition:background var(--t-fast) var(--ease)}
-.lp-row:hover{background:var(--mist)}
+.lp-row:hover{background:var(--mist-2)}
 .lp-row-no{font:500 13px/1 var(--font-mono)}
 .lp-row-when{font:500 12px/1.2 var(--font-mono);color:var(--ink-3)}
 .lp-row-name{overflow:hidden;font:500 14px/1.3 var(--font-ui);white-space:nowrap;text-overflow:ellipsis}
@@ -139,7 +148,8 @@
 .lp-receipt-title{font-family:var(--font-disp);font-weight:660;font-size:clamp(36px,5vw,72px);line-height:1;letter-spacing:-.024em;font-stretch:92%;text-wrap:balance}
 .lp-receipt-text{font:400 16px/1.5 var(--font-ui);color:var(--ink);text-wrap:pretty}
 .lp-slip-edge{display:block;width:100%;height:12px;margin-bottom:-1px}
-.lp-slip-body{display:flex;flex-direction:column;gap:var(--s-2);padding:var(--s-5) var(--s-6) var(--s-5);background:var(--white);border-radius:0 0 var(--r-1) var(--r-1)}
+.lp-slip-edge path{fill:var(--card)}
+.lp-slip-body{display:flex;flex-direction:column;gap:var(--s-2);padding:var(--s-5) var(--s-6) var(--s-5);background:var(--card);border:solid var(--line-2);border-width:0 1px 1px;border-radius:0 0 var(--r-1) var(--r-1)}
 .lp-slip-head{font:650 20px/1.2 var(--font-disp)}
 .lp-slip-sub{font:500 12px/1.35 var(--font-mono);color:var(--ink-3)}
 .lp-slip-body dl{display:flex;flex-direction:column;margin-top:var(--s-3)!important}
@@ -176,7 +186,7 @@
   .lp-honest{margin-top:var(--s-2)!important}
   .lp-cta{position:static;width:auto;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3);margin-top:var(--s-4)}
   .lp-chips>span{flex-basis:auto}
-  .lp-enter{display:inline-flex;align-items:center;gap:var(--s-2);min-height:44px;padding:0 var(--s-4);border-radius:var(--r-2);background:var(--solid);color:var(--white)!important;font:500 14px/1 var(--font-ui)}
+  .lp-enter{display:inline-flex;align-items:center;gap:var(--s-2);min-height:44px;padding:0 var(--s-4);border-radius:var(--r-2);background:var(--solid);color:var(--on-solid)!important;font:500 14px/1 var(--font-ui)}
   .lp-enter:hover{background:var(--solid-hover)}
   .lp-map-wide,.lp-panel-float{display:none}
   .lp-map-low{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:var(--s-5);margin-top:var(--s-5)}
@@ -188,7 +198,8 @@
   .lp-ledger{grid-template-columns:repeat(6,minmax(0,1fr));justify-content:stretch;row-gap:var(--s-4);padding:var(--s-4) var(--gutter)!important}
   .lp-ledger>div{border-left:0;padding-left:0}
   .lp-ledger dt{white-space:normal}
-  .lp-all{background:var(--white);border-radius:var(--r-3);color:var(--ink)}
+  .lp-all{background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-3);color:var(--ink)}
+  .lp-all summary:hover{background:var(--mist);border-radius:var(--r-3)}
   .lp-all summary{display:flex;align-items:center;min-height:48px;padding:0 var(--s-4);font:600 14px/1.2 var(--font-ui);cursor:pointer}
   .lp-all-hint{padding:0 var(--s-4) var(--s-2)!important;font:400 13px/1.4 var(--font-ui);color:var(--ink-2)}
   .lp-all ul{padding:0 var(--s-4) var(--s-3)!important}
@@ -247,4 +258,16 @@
 /* Between the phone rail and the wide one the stops and the controls do not fit on one line, so the controls take a second. */
 @media (min-width:720px) and (max-width:1099px){
   .lp-rail{flex-wrap:wrap;row-gap:var(--s-2);padding-block:var(--s-2)}
+}
+
+/*
+ * The first screen's sky, over the shared field. Everything gathers on the right and along the bottom, so the headline keeps pure black behind it,
+ * and a blurred ribbon runs up from the bottom edge through the map like the curtain of an aurora. The ribbon is static, so the blur costs one paint.
+ */
+.lp-hero.f-landing{background:linear-gradient(180deg,transparent calc(100% - min(140px,30%)),#000),radial-gradient(30% 40% at 92% 2%,rgba(140,123,255,.74),rgba(140,123,255,0) 100%),radial-gradient(38% 62% at 88% 58%,rgba(47,107,255,1),rgba(47,107,255,.34) 56%,rgba(47,107,255,0) 100%),radial-gradient(34% 34% at 68% 82%,rgba(111,211,255,.92),rgba(111,211,255,0) 100%),radial-gradient(40% 26% at 30% 88%,rgba(140,123,255,.72),rgba(140,123,255,0) 100%),radial-gradient(15% 18% at 84% 46%,rgba(185,243,255,.38),rgba(185,243,255,0) 100%),#000}
+.lp-hero.f-landing::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(112deg,rgba(111,211,255,0) 54%,rgba(111,211,255,.3) 62%,rgba(185,243,255,.22) 66%,rgba(140,123,255,.34) 72%,rgba(140,123,255,0) 82%);-webkit-mask-image:linear-gradient(0deg,transparent,#000 170px,transparent 84%);mask-image:linear-gradient(0deg,transparent,#000 170px,transparent 84%);filter:blur(22px)}
+/* A phone's hero is three screens tall, so the wide sky would stretch into a pillar down the right edge. Here it gathers behind the map instead. */
+@media (max-width:719px){
+  .lp-hero.f-landing{background:linear-gradient(180deg,transparent calc(100% - 180px),#000),radial-gradient(64% 12% at 88% 3%,rgba(140,123,255,.6),rgba(140,123,255,0) 100%),radial-gradient(120% 22% at 88% 58%,rgba(47,107,255,.95),rgba(47,107,255,0) 100%),radial-gradient(90% 15% at 8% 42%,rgba(140,123,255,.55),rgba(140,123,255,0) 100%),radial-gradient(110% 16% at 30% 88%,rgba(111,211,255,.8),rgba(111,211,255,0) 100%),#000}
+  .lp-hero.f-landing::before{display:none}
 }

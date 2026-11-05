@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup as html } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { built } from "@/i18n/dict/built";
@@ -15,6 +16,39 @@ const { LandingScreen } = await import("@/landing/LandingScreen");
 const { BuiltScreen } = await import("@/built/BuiltScreen");
 
 const NUMBERS = ["435", "65", "45", "64", "87", "1'134", "1'301", "195", "60", "53", "2"];
+
+const read = (path: string) => readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
+
+describe("the public pages on black", () => {
+  const OWNED = ["src/landing/landing.css", "src/landing/LandingScreen.tsx", "src/landing/LiveMap.tsx", "src/map/MapCanvas.tsx", "src/built/built.css", "src/built/ArchitectureDiagram.tsx"];
+
+  it("holds none of the old light surfaces, navy inks or their shadows", () => {
+    for (const path of OWNED) {
+      const text = read(path);
+      expect(text, path).not.toMatch(/#0a1f63|#233a84|#46599e|#0f1730|#39425c|#5c6580|#143bb0|#7286d0|#f4f8ff|#e9f1ff|#d8e4ff|#b6cbfa|#e8f0ff|#e4ecff|#e9f9ff|#c6f4ff|#9be6ff/i);
+      expect(text, path).not.toMatch(/rgba\((10,31,99|15,23,48),/);
+      expect(text, path).not.toMatch(/background:var\(--white\)|color:var\(--white\)|fill="#fff"/);
+    }
+  });
+  it("gives the hero a black page and a sky-to-violet third line", () => {
+    const css = read("src/landing/landing.css");
+    expect(css).toMatch(/\.lp\{background:var\(--page\)/);
+    expect(css).toContain(".lp-h1 em{background:linear-gradient(90deg,#6fd3ff,#8c7bff)");
+  });
+  it("fills the hubs and people from the map's own gradient", () => {
+    const page = html(<LandingScreen />);
+    expect(page).toContain('id="lp-hub"');
+    expect(read("src/landing/landing.css")).toMatch(/data-kind="hub"\],\[data-kind="person"\]\) \.ui-map-box\{fill:url\(#lp-hub\)/);
+  });
+  it("redraws the wire words above the moving packet, in a layer hidden from readers", () => {
+    const page = html(<LandingScreen />);
+    const layer = page.slice(page.indexOf('class="lp-story"'));
+    const svg = layer.slice(0, layer.indexOf("</svg>"));
+    expect(svg).toContain('class="ui-map-label"');
+    expect(svg).not.toContain("<rect");
+    expect(page).toMatch(/<svg class="lp-story"[^>]*aria-hidden="true"/);
+  });
+});
 
 describe("landing", () => {
   const page = html(<LandingScreen />);

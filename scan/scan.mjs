@@ -62,7 +62,6 @@ const URL_RE = /https?:\/\/[^\s"'`<>)\\]*/gi;
 const URL_OK = /^https?:\/\/(?:www\.w3\.org\/2000\/svg|www\.w3\.org\/1999\/xlink|(?:[a-z0-9-]+\.)*example\.com(?:[/:?#]|$)|\$\{SHOP_DOMAIN\})/i;
 const PICTO = /\p{Extended_Pictographic}/gu;
 const PICTO_OK = new Set([0xa9, 0xae, 0x2122]);
-const BLACK = /#000000\b|#000\b|rgba?\(\s*0\s*,\s*0\s*,\s*0\b|\bblack\b/i;
 const ENV = /\bprocess\.env\b(?!\.NEXT_PUBLIC_BASE_PATH\b|\.NODE_ENV\b)|\bimport\.meta\.env\b/;
 const IMG_EXT = "png|jpe?g|gif|webp|avif|bmp|ico|tiff?|heic";
 /** An image in a position that would load it. Seed data may name files by metadata; nothing may load them. */
@@ -78,7 +77,6 @@ const GENERICS = [
   ["card-field", (l) => /cc-number|autocomplete\s*=\s*["']cc-|kartennummer|card number/i.test(l)],
   ["sharp-s", (l) => /ß/.test(l)],
   ["pictograph", (l) => [...l.matchAll(PICTO)].some((m) => !PICTO_OK.has(m[0].codePointAt(0)))],
-  ["black", (l) => !/mask/i.test(l) && BLACK.test(l)],
   ["banned-next-module", (l) => /next\/font\/google|next\/image/.test(l)],
   ["banned-import", (l) => /(?:\bfrom\s+|\bimport\s*\(?\s*|\brequire\(\s*)["'](?:framer-motion|sharp)(?:\/[^"']*)?["']/.test(l)],
   ["env-read", (l) => ENV.test(l)],

@@ -10,7 +10,7 @@
 
 /* The sheet */
 .cu-detail{display:flex;flex-direction:column;gap:var(--s-5);min-width:0}
-.cu-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:var(--s-3);padding:var(--s-4);border:1px solid var(--line);border-radius:16px;background:radial-gradient(62% 120% at 100% 0%,rgba(111,211,255,.24),rgba(111,211,255,0) 72%),var(--white)}
+.cu-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:var(--s-3);padding:var(--s-4);border:1px solid var(--line);border-radius:16px;background:radial-gradient(62% 120% at 100% 0%,rgba(47,107,255,.28),rgba(47,107,255,0) 72%),var(--white)}
 .cu-head-text{flex:1 1 220px;min-width:0}
 .cu-spent{flex:none;text-align:right}
 .cu-banner{display:flex;align-items:flex-start;gap:var(--s-2);padding:var(--s-3);border-radius:var(--r-2);background:var(--amber-tint);color:var(--amber)}
@@ -20,7 +20,7 @@
 .cu-orders{display:flex;flex-direction:column;list-style:none;margin:0;padding:0}
 .cu-orders li + li{border-top:1px solid var(--line)}
 .cu-order{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(84px,auto);align-items:center;gap:var(--s-3);min-height:48px;padding-block:var(--s-1);border-radius:var(--r-1)}
-.cu-order:hover{background:var(--mist)}
+.cu-order:hover{background:var(--mist-2)}
 .cu-order > .ui-money{justify-self:end}
 .cu-order > :nth-child(2){justify-self:start}
 .cu-order-id{display:flex;flex-direction:column;min-width:0}

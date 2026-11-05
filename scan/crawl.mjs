@@ -134,6 +134,12 @@ function checkText(text, lang, deny, label, problems) {
   });
 }
 
+/** Black is the page colour everywhere. The print pages are the exception: they are documents. */
+export function bodyColourProblem(pathname, colour) {
+  if (pathname.split("?")[0].startsWith("/print/")) return null;
+  return colour === "rgb(0, 0, 0)" ? null : `the body background is ${colour}, wanted black`;
+}
+
 async function visit(page, entry, ctx) {
   const { lang, viewport, deny, allowStubs, registry, basePath, problems } = ctx;
   const label = `${entry.path} [${lang} ${viewport.name}]`;
@@ -158,11 +164,14 @@ async function visit(page, entry, ctx) {
       stub: document.querySelectorAll("[data-screen-stub]").length,
       locked: document.querySelectorAll("[data-screen-locked]").length,
       lang: document.documentElement.lang,
+      bodyColour: getComputedStyle(document.body).backgroundColor,
       text: document.body.innerText,
     }));
     if (facts.over > 1) problems.push(`${label}: page scrolls sideways by ${facts.over}px`);
     if (facts.forms) problems.push(`${label}: password or card field present`);
     if (facts.lang !== lang) problems.push(`${label}: <html lang> is ${facts.lang}`);
+    const bodyColour = bodyColourProblem(entry.path, facts.bodyColour);
+    if (bodyColour) problems.push(`${label}: ${bodyColour}`);
     checkText(facts.text, lang, deny, label, problems);
 
     const bare = entry.path.split("?")[0];
@@ -198,6 +207,8 @@ async function notFoundCheck(browser, keys, basePath, problems, allowStubs) {
     if (res?.status() !== 404) problems.push(`404 check: status ${res?.status()}`);
     const links = await page.locator('a[href]').count();
     if (links === 0 && !allowStubs) problems.push("404 check: no link home");
+    const bodyColour = bodyColourProblem("/no-such-route-here/", await page.evaluate(() => getComputedStyle(document.body).backgroundColor));
+    if (bodyColour) problems.push(`404 check: ${bodyColour}`);
   } finally {
     await context.close();
   }

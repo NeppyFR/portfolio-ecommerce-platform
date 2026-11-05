@@ -41,6 +41,35 @@ export const NODE_ICONS: Record<NodeId, LucideIcon> = {
 const CHAR = 6.25;
 const LINE = 15;
 
+function WireText({ lines }: { lines: string[] }) {
+  return (
+    <text textAnchor="middle">
+      {lines.map((line, i) => (
+        <tspan key={i} x="0" y={(i - (lines.length - 1) / 2) * LINE + 4.3}>
+          {line}
+        </tspan>
+      ))}
+    </text>
+  );
+}
+
+/** The labels' words without their plates, for a layer above something that moves: it passes under the words, and they stay readable. */
+export function WireWords({ mode }: { mode: MapMode }) {
+  const lang = useLang();
+  return (
+    <g>
+      {EDGES.map((e) => {
+        const at = labelAt(e, mode);
+        return (
+          <g key={e.id} className="ui-map-label" transform={`translate(${at[0]} ${at[1]})`}>
+            <WireText lines={lang === "de" ? e.linesDe : e.linesEn} />
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 function WireLabel({ edge, mode, lines, dimmed }: { edge: MapEdge; mode: MapMode; lines: string[]; dimmed: boolean }) {
   const width = Math.max(...lines.map((l) => l.length)) * CHAR + 12;
   const height = lines.length * LINE + 5;
@@ -48,13 +77,7 @@ function WireLabel({ edge, mode, lines, dimmed }: { edge: MapEdge; mode: MapMode
   return (
     <g className="ui-map-label" data-label={edge.id} data-dim={dimmed || undefined} transform={`translate(${at[0]} ${at[1]})`}>
       <rect x={-width / 2} y={-height / 2} width={width} height={height} rx={height > 24 ? 8 : height / 2} />
-      <text textAnchor="middle">
-        {lines.map((line, i) => (
-          <tspan key={i} x="0" y={(i - (lines.length - 1) / 2) * LINE + 4.3}>
-            {line}
-          </tspan>
-        ))}
-      </text>
+      <WireText lines={lines} />
     </g>
   );
 }
@@ -92,6 +115,7 @@ function Box({ node, mode, onNode, dimmed, name, second }: { node: MapNode; mode
       onKeyDown={interactive ? onKeyDown : undefined}
     >
       <rect className="ui-map-pulse" width={b.w} height={b.h} rx={12} />
+      <rect className="ui-map-ring" x={-3} y={-3} width={b.w + 6} height={b.h + 6} rx={(person ? b.h / 2 : 12) + 3} />
       <rect className="ui-map-box" width={b.w} height={b.h} rx={person ? b.h / 2 : 12} />
       <rect className="ui-map-tile" x={tx} y={(b.h - tile) / 2} width={tile} height={tile} rx={person ? tile / 2 : 8} />
       <Icon className="ui-map-icon" x={tx + tile * 0.2} y={(b.h - tile) / 2 + tile * 0.2} width={tile * 0.6} height={tile * 0.6} aria-hidden="true" />
@@ -126,7 +150,7 @@ export function MapCanvas({ mode, labels = mode !== "phone", animated = false, o
     >
       <defs>
         <marker id={arrow} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto">
-          <path d="M0,0.8 L9.5,5 L0,9.2 z" fill="#143bb0" />
+          <path d="M0,0.8 L9.5,5 L0,9.2 z" fill="#b9f3ff" />
         </marker>
       </defs>
       <g data-layer="casing">

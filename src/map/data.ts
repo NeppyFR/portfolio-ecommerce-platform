@@ -165,7 +165,7 @@ export function labelAt(edge: MapEdge, mode: MapMode): Point {
 
 export type StoryHop = { edge: EdgeId; en: string; de: string };
 
-/** The dark packet's route, one log line per hop. */
+/** The bright packet's route, one log line per hop. */
 export const STORY: StoryHop[] = [
   { edge: "cDns", en: "Customer opens the shop", de: "Kundschaft öffnet den Shop" },
   { edge: "dnsV", en: "Domain points at the app", de: "Domain zeigt auf die App" },

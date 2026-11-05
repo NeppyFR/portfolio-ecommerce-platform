@@ -83,7 +83,7 @@ export function ProfileMenu({ phone = false }: { phone?: boolean }) {
                   disabled={!person.isActive}
                   title={person.isActive ? undefined : t.inactive}
                   onClick={() => setProfile(option)}
-                  className="flex min-h-11 w-full items-center gap-2.5 rounded-[var(--r-2)] px-2 py-1.5 text-left hover:bg-mist disabled:cursor-not-allowed disabled:opacity-45"
+                  className="flex min-h-11 w-full items-center gap-2.5 rounded-[var(--r-2)] px-2 py-1.5 text-left hover:bg-[var(--mist-2)] disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Avatar profile={option} />
                   <span className="min-w-0 flex-1">
@@ -96,7 +96,7 @@ export function ProfileMenu({ phone = false }: { phone?: boolean }) {
             );
           })}
         </ul>
-        <Link href="/desk/enter/" className="type-label mt-1 flex min-h-11 items-center gap-2.5 rounded-[var(--r-2)] px-2 text-link hover:bg-mist">
+        <Link href="/desk/enter/" className="type-label mt-1 flex min-h-11 items-center gap-2.5 rounded-[var(--r-2)] px-2 text-link hover:bg-[var(--mist-2)]">
           <UserCog size={16} strokeWidth={1.75} aria-hidden="true" />
           {t.profileChoice}
         </Link>

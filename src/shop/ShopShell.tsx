@@ -65,7 +65,7 @@ function Nav({ onPick }: { onPick?: () => void }) {
   );
 }
 
-/** Demo strip, white header with its wire into the bag, skip link, and the footer row. */
+/** Demo strip, black header with its wire into the bag, skip link, and the footer row. */
 export function ShopShell({ children }: { children: ReactNode }) {
   const t = useT(shop);
   const [menu, setMenu] = useState(false);

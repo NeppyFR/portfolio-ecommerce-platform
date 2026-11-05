@@ -107,9 +107,9 @@ export function RevenueChart({ points, series, caption, emptyText, headLabel, he
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true" className="db-chart-svg">
         <defs>
           <linearGradient id={`${uid}a`} gradientUnits="userSpaceOnUse" x1="0" x2="0" y1={M.top} y2={base}>
-            <stop offset="0" stopColor="#2f6bff" stopOpacity=".38" />
-            <stop offset=".5" stopColor="#6fd3ff" stopOpacity=".24" />
-            <stop offset="1" stopColor="#b9f3ff" stopOpacity="0" />
+            <stop offset="0" stopColor="#6fd3ff" stopOpacity=".42" />
+            <stop offset=".5" stopColor="#2f6bff" stopOpacity=".26" />
+            <stop offset="1" stopColor="#8c7bff" stopOpacity="0" />
           </linearGradient>
           <linearGradient id={`${uid}l`} gradientUnits="userSpaceOnUse" x1={M.left} x2={M.left + plotW} y1="0" y2="0">
             <stop offset="0" stopColor="#6fd3ff" />

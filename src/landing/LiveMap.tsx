@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { EDGES, VIEWBOX, edgePath, type EdgeId, type MapMode } from "@/map/data";
-import { MapCanvas } from "@/map/MapCanvas";
+import { MapCanvas, WireWords } from "@/map/MapCanvas";
 import {
   STORY_STEPS,
   advanceClock,
@@ -29,13 +29,13 @@ export type LiveMapProps = {
   viewBox?: string;
   className?: string;
   ariaLabel?: string;
-  /** With a clock the dark story packet runs too. Without one, only the ambient dots. */
+  /** With a clock the bright story packet runs too. Without one, only the ambient dots. */
   clock?: StoryClock;
 };
 
 const STORY_EDGES: EdgeId[] = Array.from(new Set(STORY_STEPS.map((s) => s.edge)));
 
-/** The gradient the public maps fill their icon tiles with. Render once per page, wherever a map shows. */
+/** The gradients the public maps fill their icon tiles and their hubs with. Render once per page, wherever a map shows. */
 export function MapDefs() {
   return (
     <svg width="0" height="0" className="lp-defs" aria-hidden="true">
@@ -44,6 +44,11 @@ export function MapDefs() {
           <stop offset="0" stopColor="#3f8dff" />
           <stop offset=".55" stopColor="#2860ee" />
           <stop offset="1" stopColor="#6a5cff" />
+        </linearGradient>
+        {/* Blue to a deep violet: white words stay at AA across the whole fill. */}
+        <linearGradient id="lp-hub" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#2860ee" />
+          <stop offset="1" stopColor="#5a48e6" />
         </linearGradient>
       </defs>
     </svg>
@@ -71,7 +76,7 @@ export function LiveMap({ mode, labels, onNode, viewBox, className, ariaLabel, c
     if (!el) return;
     const pulse = el.querySelector<SVGRectElement>(".ui-map-pulse");
     pulse?.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(1.06,1.22)" }], { duration: 400, easing: "ease-out" });
-    el.animate([{ opacity: 0.55 }, { opacity: 1 }], { duration: 300, easing: "ease-out" });
+    el.animate([{ filter: "brightness(1.5)" }, { filter: "brightness(1)" }], { duration: 300, easing: "ease-out" });
   }, []);
 
   const drawAmbient = useCallback((ms: number, still: boolean) => {
@@ -219,10 +224,11 @@ export function LiveMap({ mode, labels, onNode, viewBox, className, ariaLabel, c
   return (
     <div ref={root} className={className}>
       <MapCanvas mode={mode} labels={labels} animated={!reduced} onNode={onNode} viewBox={viewBox} packets={packets} ariaLabel={ariaLabel} />
-      {/* Wide only: the App to Database wire is nearly all label, so under the labels the story packet would vanish. The phone map has no labels. */}
+      {/* Wide only: the App to Database wire is nearly all label, so under the labels the story packet would vanish. The words go back on top of it, or a bright packet would pass over white text. The phone map has no labels. */}
       {mode !== "phone" && story ? (
         <svg className="lp-story" viewBox={viewBox ?? VIEWBOX[mode]} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           {story}
+          {labels === false ? null : <WireWords mode={mode} />}
         </svg>
       ) : null}
     </div>

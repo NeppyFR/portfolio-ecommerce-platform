@@ -5,7 +5,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { checkDeps, isForbidden } from "../../scan/deps.mjs";
 import { genericHits, loadDenylist, placeOf, privateHits, runScan, tokenise } from "../../scan/scan.mjs";
 import { checkOut } from "../../scan/out-check.mjs";
-import { outRoutes, readRegistry, readStates } from "../../scan/crawl.mjs";
+import { bodyColourProblem, outRoutes, readRegistry, readStates } from "../../scan/crawl.mjs";
 
 const root = mkdtempSync(path.join(tmpdir(), "cp-gates-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));
@@ -103,7 +103,6 @@ describe("private matching", () => {
 describe("generic patterns", () => {
   const none = { orderPrefix: null, regexes: [], tokens: [], allow: [] };
   const hit = (line: string) => genericHits(line, none);
-  const DARK = "bl" + "ack";
   const cases: [string, string][] = [
     ["plan-word", "see the PL" + "AN file"],
     ["outside-url", "ht" + "tps://elsewhere.test/a"],
@@ -112,10 +111,6 @@ describe("generic patterns", () => {
     ["card-field", "Karten" + "nummer"],
     ["sharp-s", "Gro" + String.fromCharCode(0xdf) + "e"],
     ["pictograph", "great " + String.fromCodePoint(0x1f680)],
-    [DARK, "color:#0" + "00;"],
-    [DARK, "color:#00" + "0000;"],
-    [DARK, "color:rgb(0, 0" + ", 0);"],
-    [DARK, "color:bl" + "ack;"],
     ["banned-next-module", 'import x from "next/im' + 'age";'],
     ["banned-next-module", 'import x from "next/font/goo' + 'gle";'],
     ["banned-import", 'import { x } from "framer' + '-motion";'],
@@ -141,7 +136,7 @@ describe("generic patterns", () => {
     expect(hit("`ht" + "tps://${OTHER}/track`")).toContain("outside-url");
     expect(hit("process." + "env.NEXT_PUBLIC_BASE_PATH")).toEqual([]);
     expect(hit("process." + "env.NODE_ENV")).toEqual([]);
-    expect(hit("mask-image:linear-gradient(90deg,transparent,#0" + "00 74%)")).toEqual([]);
+    expect(hit("background:#000;color:black;fill:rgba(0, 0, 0, .3)")).toEqual([]);
     expect(hit("Copyright © and ™ stay")).toEqual([]);
     expect(hit('name: "lookbook-01.jp' + 'g"')).toEqual([]);
     expect(hit("refetch" + "(x)")).toEqual([]);
@@ -272,6 +267,16 @@ describe("out-check", () => {
 });
 
 describe("crawl inputs", () => {
+  it("wants a black body on every route but the print pages", () => {
+    const black = "rgb(0, 0, 0)";
+    for (const route of ["/", "/shop/", "/desk/", "/desk/orders/?o=AL-1147", "/no-such-route-here/"]) {
+      expect(bodyColourProblem(route, black), route).toBeNull();
+      expect(bodyColourProblem(route, "rgb(255, 255, 255)"), route).toContain("wanted black");
+      expect(bodyColourProblem(route, "rgba(0, 0, 0, 0)"), route).toContain("wanted black");
+    }
+    expect(bodyColourProblem("/print/slip/?o=AL-1147", "rgb(255, 255, 255)")).toBeNull();
+    expect(bodyColourProblem("/print/labels/", "rgb(255, 255, 255)")).toBeNull();
+  });
   it("reads every registry screen", () => {
     const rows = readRegistry();
     expect(rows.length).toBe(42);

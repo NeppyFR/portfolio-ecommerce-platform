@@ -16,15 +16,17 @@ export type GarmentProps = {
 
 const SHADE = "#1b3fc4";
 const SEAM = "#0a1a52";
+/* A mini sits on a near-black row with no shading to hold its edge, so the rim is the palette's palest blue. */
+const RIM = "#b9f3ff";
 const PALE: GarmentTone[] = ["ice", "lilac"];
 
-type Paint = { tone: string; rib: string; ribDark: string; glow: string; shadeH: string; shadeV: string; mini: boolean; printed: boolean };
+type Paint = { tone: string; rib: string; ribDark: string; glow: string; shadeH: string; shadeV: string; mini: boolean; printed: boolean; printInk: string };
 type Drawing = { vb: string; cuff: string; hood: string; art: ReactNode };
 
 function Fill({ d, p, rib, tint, shaded }: { d: string; p: Paint; rib?: boolean; tint?: [string, number]; shaded?: boolean }) {
   return (
     <>
-      <path d={d} fill={p.tone} stroke={p.mini ? "#7286d0" : undefined} strokeWidth={p.mini ? 9 : undefined} />
+      <path d={d} fill={p.tone} stroke={p.mini ? RIM : undefined} strokeWidth={p.mini ? 9 : undefined} />
       {p.mini ? null : (
         <>
           {rib ? <path d={d} fill={p.rib} /> : null}
@@ -98,7 +100,7 @@ function hood(p: Paint, zip: boolean): Drawing {
   };
 }
 
-function PrintedName({ x, y, size, fill = SEAM }: { x: number; y: number; size: number; fill?: string }) {
+function PrintedName({ x, y, size, fill }: { x: number; y: number; size: number; fill: string }) {
   return (
     <text x={x} y={y} textAnchor="middle" fontStyle="italic" fontSize={size} fill={fill} letterSpacing="-1" style={{ fontFamily: "var(--font-serif)" }}>
       {LABEL.name}
@@ -123,9 +125,9 @@ function tee(p: Paint): Drawing {
             <path d={neck} fill={p.ribDark} />
             <path d="M152 70c14 28 82 28 96 0-22 14-74 14-96 0Z" fill={SEAM} opacity=".2" />
             <path d="M111 420h178M111 414h178" stroke="#fff" strokeOpacity=".5" fill="none" strokeDasharray="3 3" />
-            <path d="M66 164l36 14M334 164l-36 14" stroke="#fff" strokeOpacity=".5" strokeDasharray="3 3" />
+            <path d="M76 160l28 14M324 160l-28 14" stroke="#fff" strokeOpacity=".5" strokeDasharray="3 3" />
             <path d="M140 180c12 70 6 140-6 220M262 150c-8 80-2 160 8 240" stroke="#fff" strokeOpacity=".24" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-            {p.printed ? <PrintedName x={200} y={190} size={34} /> : null}
+            {p.printed ? <PrintedName x={200} y={190} size={34} fill={p.printInk} /> : null}
           </>
         )}
       </>
@@ -150,15 +152,15 @@ function trousers(p: Paint, cargo: boolean): Drawing {
           <>
             {cargo ? (
               <>
-                <path d="M104 212h46l-4 66h-48Z" fill="#fff" fillOpacity=".12" stroke={SEAM} strokeOpacity=".32" strokeWidth="1.5" />
-                <path d="M102 212h50v18h-52Z" fill={SEAM} opacity=".1" />
-                <path d="M296 212h-46l4 66h48Z" fill="#fff" fillOpacity=".12" stroke={SEAM} strokeOpacity=".32" strokeWidth="1.5" />
-                <path d="M298 212h-50v18h52Z" fill={SEAM} opacity=".1" />
+                <path d="M114 212h40l-4 66h-40Z" fill="#fff" fillOpacity=".12" stroke={SEAM} strokeOpacity=".32" strokeWidth="1.5" />
+                <path d="M112 212h44v18h-46Z" fill={SEAM} opacity=".1" />
+                <path d="M286 212h-40l4 66h40Z" fill="#fff" fillOpacity=".12" stroke={SEAM} strokeOpacity=".32" strokeWidth="1.5" />
+                <path d="M288 212h-44v18h46Z" fill={SEAM} opacity=".1" />
               </>
             ) : (
               <>
-                <path d="M124 56 102 404" stroke="#fff" strokeWidth="9" opacity=".92" />
-                <path d="M276 56 298 404" stroke="#fff" strokeWidth="9" opacity=".92" />
+                <path d="M133 60 112 404" stroke="#fff" strokeWidth="9" opacity=".92" />
+                <path d="M267 60 288 404" stroke="#fff" strokeWidth="9" opacity=".92" />
               </>
             )}
             <path d="M190 60c-2 16 2 34-2 46M210 60c2 16-2 34 2 46" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" />
@@ -213,7 +215,7 @@ function beanie(p: Paint): Drawing {
         {p.mini ? null : (
           <>
             <path d="M64 272c90 10 182 10 272 0" stroke="#fff" strokeOpacity=".28" strokeWidth="3" fill="none" />
-            <rect x="185" y="292" width="30" height="16" rx="3" fill="#fff" opacity=".95" />
+            <rect x="185" y="292" width="30" height="16" rx="3" fill="#b9f3ff" opacity=".95" />
           </>
         )}
       </>
@@ -232,7 +234,7 @@ function tote(p: Paint): Drawing {
     art: (
       <>
         <path d={backStrap} fill="none" stroke={p.tone} strokeWidth="15" />
-        {p.mini ? <path d={backStrap} fill="none" stroke="#7286d0" strokeWidth="6" /> : <path d={backStrap} fill="none" stroke={SEAM} strokeOpacity=".14" strokeWidth="15" />}
+        {p.mini ? <path d={backStrap} fill="none" stroke={RIM} strokeWidth="6" /> : <path d={backStrap} fill="none" stroke={SEAM} strokeOpacity=".14" strokeWidth="15" />}
         <Fill d={b} p={p} shaded />
         {p.mini ? null : (
           <>
@@ -241,7 +243,7 @@ function tote(p: Paint): Drawing {
             <path d="M147 172h15v22h-15ZM238 172h15v22h-15Z" fill="none" stroke={SEAM} strokeOpacity=".4" strokeDasharray="2 2" />
             <path d="M147 172l15 22M162 172l-15 22M238 172l15 22M253 172l-15 22" stroke={SEAM} strokeOpacity=".3" />
             <path d="M86 184h228" stroke={SEAM} strokeOpacity=".3" strokeDasharray="3 3" />
-            {p.printed ? <PrintedName x={200} y={325} size={42} /> : null}
+            {p.printed ? <PrintedName x={200} y={325} size={42} fill={p.printInk} /> : null}
           </>
         )}
       </>
@@ -273,6 +275,7 @@ export function Garment({ type, tone, view = "full", title, printed, className }
   const raw = useId().replace(/[^a-zA-Z0-9]/g, "");
   const ids = { tone: `g${raw}t`, rib: `g${raw}r`, ribDark: `g${raw}d`, glow: `g${raw}l`, shadeH: `g${raw}h`, shadeV: `g${raw}v` };
   const mini = view === "mini";
+  const pale = PALE.includes(tone);
   const paint: Paint = {
     tone: `url(#${ids.tone})`,
     rib: `url(#${ids.rib})`,
@@ -282,12 +285,12 @@ export function Garment({ type, tone, view = "full", title, printed, className }
     shadeV: `url(#${ids.shadeV})`,
     mini,
     printed: printed ?? type === "tote",
+    printInk: pale ? SEAM : "#fff",
   };
   const drawing = DRAW[type](paint);
   const crop = view === "crop-cuff" || view === "crop-hood";
   const viewBox = view === "crop-cuff" ? drawing.cuff : view === "crop-hood" ? drawing.hood : drawing.vb;
   const gradient = STOPS[tone];
-  const pale = PALE.includes(tone);
   return (
     <svg
       className={className}

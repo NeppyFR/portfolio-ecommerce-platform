@@ -1,4 +1,4 @@
-/* System screens. White hairline cards, tokens only; primitives come from src/ui.
+/* System screens. Hairline cards, tokens only; primitives come from src/ui.
    Widths react to the room the screen has (container `sy`), not the window, so a sidebar never breaks them. */
 @layer components {
   .sy-page{--sy-r:16px;container:sy / inline-size;display:flex;flex-direction:column;gap:var(--s-5);width:100%;min-width:0}
@@ -10,7 +10,7 @@
 
   /* Cards */
   .sy-panel,.sy-plain{min-width:0;padding:var(--s-5) var(--s-6);border:1px solid var(--line);border-radius:var(--sy-r);background:var(--white)}
-  .sy-soft{background:radial-gradient(460px 220px at 100% 0,rgba(185,243,255,.55),rgba(185,243,255,0) 74%),radial-gradient(360px 180px at 100% 100%,rgba(140,123,255,.10),rgba(140,123,255,0) 72%),var(--white)}
+  .sy-soft{background:radial-gradient(460px 220px at 100% 0,rgba(47,107,255,.3),rgba(47,107,255,0) 74%),radial-gradient(360px 180px at 100% 100%,rgba(140,123,255,.18),rgba(140,123,255,0) 72%),var(--white)}
   @media (max-width:719px){.sy-panel,.sy-plain{padding:var(--s-4)}}
   .sy-panel-head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2) var(--s-3);margin-bottom:var(--s-4)}
   .sy-panel-title{min-width:0}
@@ -49,7 +49,7 @@
   @media (max-width:719px){.sy-link{min-height:44px}}
 
   .sy-strip{display:flex;flex-wrap:wrap;gap:3px}
-  .sy-strip i{display:block;width:9px;height:9px;border-radius:50%;background:var(--blue)}
+  .sy-strip i{display:block;width:9px;height:9px;border-radius:50%;background:var(--ok)}
   .sy-strip i[data-state="warn"]{background:var(--amber);border-radius:2px;transform:rotate(45deg)}
   .sy-strip i[data-state="bad"]{background:var(--rose);border-radius:2px}
   .sy-strip i[data-state="off"]{background:var(--white);box-shadow:inset 0 0 0 1.5px var(--line-3)}
@@ -135,19 +135,19 @@
   .sy-swatch[data-kind="bad"]{border-color:var(--rose);border-width:2.5px}
   .sy-swatch[data-kind="unknown"]{border:1.5px dashed var(--unknown)}
   .sy-swatch[data-kind="people"]{border-color:var(--solid);background:var(--solid);border-radius:999px}
-  .sy-swatch[data-kind="hub"]{border-color:var(--ink);background:var(--ink)}
-  .sy-swatch[data-kind="dashed"]{height:0;margin-top:9px;border:0;border-top:2px dashed #143bb0;border-radius:0;background:transparent}
-  .sy-swatch[data-kind="dotted"]{height:0;margin-top:9px;border:0;border-top:2px dotted #143bb0;border-radius:0;background:transparent}
+  .sy-swatch[data-kind="hub"]{border-color:var(--solid);background:var(--solid)}
+  .sy-swatch[data-kind="dashed"]{height:0;margin-top:9px;border:0;border-top:2px dashed var(--ice);border-radius:0;background:transparent}
+  .sy-swatch[data-kind="dotted"]{height:0;margin-top:9px;border:0;border-top:2px dotted var(--ice);border-radius:0;background:transparent}
   .sy-stack-cell{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-1)}
 
   /* Toolbars and filters */
   .sy-filters{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) auto;gap:var(--s-3);align-items:end;margin-bottom:var(--s-3)}
   .sy-filters-2{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}
   @container sy (max-width:620px){.sy-filters,.sy-filters-2{grid-template-columns:minmax(0,1fr)}}
-  .sy-chips{display:flex;gap:var(--s-1);overflow-x:auto;scrollbar-width:none;margin-bottom:var(--s-3)}
+  .sy-chips{display:flex;gap:var(--s-1);overflow-x:auto;scrollbar-width:none;padding:5px;margin:-5px -5px calc(var(--s-3) - 5px)}
   .sy-chip{display:inline-flex;align-items:center;gap:6px;flex:none;height:32px;padding:0 12px;border:1.5px solid var(--line-3);border-radius:var(--r-pill);background:var(--white);color:var(--ink);font:500 13px/1 var(--font-ui);cursor:pointer;white-space:nowrap}
-  .sy-chip:hover{background:var(--mist)}
-  .sy-chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--white)}
+  .sy-chip:hover{background:var(--mist-2)}
+  .sy-chip[aria-pressed="true"]{background:var(--tint);border-color:var(--sky);color:var(--ink)}
   @media (max-width:719px){.sy-chip{height:44px}}
 
   /* Columns that give way when the screen has less room. The numbers are column positions. */
@@ -182,8 +182,9 @@
   .sy-error svg{flex:none;margin-top:2px}
   .sy-sandbox{display:flex;gap:var(--s-2);margin:0;color:var(--ink-2)}
   .sy-sandbox svg{flex:none;margin-top:2px}
-  .sy-frame{display:block;width:100%;height:70vh;min-height:420px;border:1px solid var(--line-2);border-radius:var(--r-2);background:var(--white)}
+  .sy-frame{display:block;width:100%;height:70vh;min-height:420px;border:1px solid var(--line-2);border-radius:var(--r-2);color-scheme:light;background:#fff}
   .sy-details summary{cursor:pointer;font:500 13px/1.3 var(--font-ui);padding:var(--s-2) 0}
+  .sy-details summary:hover{color:var(--link)}
   .sy-details pre{margin:0;padding:var(--s-3);border-radius:var(--r-2);background:var(--mist);font:500 12px/1.5 var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere}
   .sy-counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4);margin:var(--s-4) 0 0}
   .sy-counts > div{min-width:0}

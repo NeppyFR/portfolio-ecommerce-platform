@@ -17,7 +17,7 @@ import { Garment } from "@/ui";
 export const nameOf = (p: Pick<Product, "nameEn" | "nameDe">, lang: Lang) => (lang === "de" ? p.nameDe : p.nameEn);
 export const descOf = (p: Pick<Product, "descriptionEn" | "descriptionDe">, lang: Lang) => (lang === "de" ? p.descriptionDe : p.descriptionEn);
 
-/** Which field sits behind which piece, chosen so pale garments land on deep tiles and dark ones on pale. */
+/** Which night tile sits behind which piece, chosen so the glow falls where it lifts the garment most. */
 const TILE_BY_SLUG: Record<string, string> = {
   "essential-hoodie-cobalt": "t-mist",
   "lagoon-zip-hoodie": "t-pale",
@@ -56,7 +56,7 @@ export function PriceLine({ product, className }: { product: Product; className?
   return <span className={`sp-price type-mono ${className ?? ""}`}>{varies ? fmt(t.wall.from, { price: formatChf(lowestRappen) }) : formatChf(lowestRappen)}</span>;
 }
 
-/** The gapless wall: four columns, two on a phone, tiles 4:5, a white caption strip under each. */
+/** The gapless wall: four columns, two on a phone, tiles 4:5, a dark caption strip under each. */
 export function Wall({ products }: { products: Product[] }) {
   const lang = useLang();
   const rest = products.length % 4;
@@ -75,8 +75,8 @@ export function Wall({ products }: { products: Product[] }) {
           </Link>
         </li>
       ))}
-      {rest ? Array.from({ length: 4 - rest }, (_, i) => <li key={`d${i}`} className="sp-wall-fill f-receipt" aria-hidden="true" data-at="desktop" />) : null}
-      {products.length % 2 ? <li className="sp-wall-fill f-receipt" aria-hidden="true" data-at="phone" /> : null}
+      {rest ? Array.from({ length: 4 - rest }, (_, i) => <li key={`d${i}`} className="sp-wall-fill" aria-hidden="true" data-at="desktop" />) : null}
+      {products.length % 2 ? <li className="sp-wall-fill" aria-hidden="true" data-at="phone" /> : null}
     </ul>
   );
 }
