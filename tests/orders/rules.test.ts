@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { code128CheckValue, code128Patterns, code128Values, encodeCode128, QUIET_MODULES } from "@/desk/commerce/orders/rules/code128";
-import { colourLabel, fulfilmentState, orderActions, pageOf, shownName, paymentFee, paymentState, piecesOut, roadToBooks, suggestedTracking, trackingHint } from "@/desk/commerce/orders/rules/order-rules";
+import { colourLabel, fulfilmentState, orderActions, pageOf, shownName, paymentFee, paymentState, piecesOut, roadToBooks, sizeAndColour, suggestedTracking, trackingHint } from "@/desk/commerce/orders/rules/order-rules";
 import { nextPackCode, packIsComplete, packLines, packMinus, packNeed, packPacked, packScan, type PackLine } from "@/desk/commerce/orders/rules/pack";
 import { EMPTY_RECEIVE, MAX_PER_LINE, receiveAdd, receiveRemove, receiveStep, receiveTotal, receiveUndo } from "@/desk/commerce/orders/rules/receive";
 import { isOpenReturn, nextReturnNo, piecesPaidRappen, refundAmountProblem, returnBlock, returnableByItem, suggestedRefund } from "@/desk/commerce/orders/rules/returns";
@@ -13,7 +13,7 @@ import { getState } from "@/store/core";
 import type { Order, OrderItem, ReturnRecord } from "@/store/types";
 
 const item = (over: Partial<OrderItem> = {}): OrderItem => ({
-  id: "i1", productId: "p", variantId: "v", name: "Tee", nameDe: "Tee", color: "Cloud", size: "M", sku: "AL-TEE-CLD-M", garment: "tee", tone: "ice",
+  id: "i1", productId: "p", variantId: "v", name: "Mug", nameDe: "Tasse", color: "Cloud", size: "M", sku: "AL-MUG-CLD-M", art: "mug", tone: "ice",
   quantity: 2, unitPriceRappen: 3900, lineTotalRappen: 7800, discountRappen: 0, restocked: 0, shortfall: 0, ...over,
 });
 
@@ -67,7 +67,7 @@ describe("scan classify", () => {
   it("sorts every kind of code", () => {
     expect(classifyScan("al-1042")).toEqual({ kind: "order", number: "AL-1042" });
     expect(classifyScan(" 1042 ")).toEqual({ kind: "order", number: "AL-1042" });
-    expect(classifyScan("AL-ZIP-LAG-M")).toEqual({ kind: "sku", sku: "AL-ZIP-LAG-M" });
+    expect(classifyScan("AL-SPK-LAG-M")).toEqual({ kind: "sku", sku: "AL-SPK-LAG-M" });
     expect(classifyScan("bp123456785zz")).toEqual({ kind: "tracking", value: "BP123456785ZZ" });
     expect(classifyScan("4006381333931")).toEqual({ kind: "gtin", value: "4006381333931" });
     expect(classifyScan("hello").kind).toBe("unknown");
@@ -86,12 +86,15 @@ describe("shown colours and tiles", () => {
     expect(colourLabel("Lagoon", "de")).toBe("Lagoon");
     expect(colourLabel("Frost", "de")).toBe("Frost");
     expect(colourLabel(null, "de")).toBe("");
+    expect(sizeAndColour("S", "Ice", "de")).toBe("S · Eis");
+    expect(sizeAndColour("S", "Lagoon", "en")).toBe("S · Lagoon");
+    expect(sizeAndColour("M", "", "en")).toBe("M");
   });
   it("prints the erased placeholder in the viewer's language and leaves real names alone", () => {
     expect(shownName("Erased customer", "Gelöschte Person")).toBe("Gelöschte Person");
     expect(shownName("Noah Meier", "Gelöschte Person")).toBe("Noah Meier");
   });
-  it("gives every tone a garment tile", () => {
+  it("gives every tone a product tile", () => {
     for (const tone of ["ice", "sky", "azure", "dusk", "lilac"] as const) expect(tileFor(tone)).toMatch(/^t-/);
   });
 });
@@ -144,7 +147,7 @@ describe("order lifecycle", () => {
 });
 
 describe("pack by scanning", () => {
-  const lines: PackLine[] = packLines({ items: [item({ id: "a", sku: "AL-TEE-CLD-M", quantity: 2 }), item({ id: "b", sku: "AL-CAP-COB-OS", quantity: 1, size: "ONE_SIZE" }), item({ id: "c", sku: "AL-TOTE-CLD-OS", quantity: 1, restocked: 1, size: "ONE_SIZE" })] });
+  const lines: PackLine[] = packLines({ items: [item({ id: "a", sku: "AL-MUG-CLD-M", quantity: 2 }), item({ id: "b", sku: "AL-MUG-COB-OS", quantity: 1, size: "ONE_SIZE" }), item({ id: "c", sku: "AL-NOTE-CLD-OS", quantity: 1, restocked: 1, size: "ONE_SIZE" })] });
 
   it("needs ordered less shortfall less restocked", () => {
     expect(packNeed(lines)).toBe(3);
@@ -153,24 +156,24 @@ describe("pack by scanning", () => {
 
   it("counts a piece, refuses wrong and extra pieces, and completes", () => {
     let state = {};
-    let step = packScan(lines, state, "AL-TEE-CLD-M", "AL-1042");
+    let step = packScan(lines, state, "AL-MUG-CLD-M", "AL-1042");
     expect(step.outcome.kind).toBe("counted");
     state = step.state;
-    step = packScan(lines, state, "AL-ZIP-LAG-M", "AL-1042");
-    expect(step.outcome).toEqual({ kind: "wrong", sku: "AL-ZIP-LAG-M" });
+    step = packScan(lines, state, "AL-SPK-LAG-M", "AL-1042");
+    expect(step.outcome).toEqual({ kind: "wrong", sku: "AL-SPK-LAG-M" });
     expect(step.state).toBe(state);
-    step = packScan(lines, state, "AL-TEE-CLD-M", "AL-1042");
+    step = packScan(lines, state, "AL-MUG-CLD-M", "AL-1042");
     state = step.state;
-    step = packScan(lines, state, "AL-TEE-CLD-M", "AL-1042");
+    step = packScan(lines, state, "AL-MUG-CLD-M", "AL-1042");
     expect(step.outcome.kind).toBe("over");
-    step = packScan(lines, state, "AL-CAP-COB-OS", "AL-1042");
+    step = packScan(lines, state, "AL-MUG-COB-OS", "AL-1042");
     expect(step.outcome.kind).toBe("complete");
     expect(packIsComplete(lines, step.state)).toBe(true);
     expect(packPacked(lines, step.state)).toBe(3);
   });
 
   it("refuses a piece fully refunded before packing", () => {
-    expect(packScan(lines, {}, "AL-TOTE-CLD-OS", "AL-1042").outcome.kind).toBe("wrong");
+    expect(packScan(lines, {}, "AL-NOTE-CLD-OS", "AL-1042").outcome.kind).toBe("wrong");
   });
 
   it("knows its own slip from another order's", () => {
@@ -183,9 +186,9 @@ describe("pack by scanning", () => {
     expect(packMinus({ a: 2 }, "a")).toEqual({ a: 1 });
     const same = { a: 0 };
     expect(packMinus(same, "a")).toBe(same);
-    expect(nextPackCode(lines, {})).toBe("AL-TEE-CLD-M");
-    expect(nextPackCode(lines, { a: 2 })).toBe("AL-CAP-COB-OS");
-    expect(nextPackCode(lines, { a: 2, b: 1 })).toBe("AL-CAP-COB-OS");
+    expect(nextPackCode(lines, {})).toBe("AL-MUG-CLD-M");
+    expect(nextPackCode(lines, { a: 2 })).toBe("AL-MUG-COB-OS");
+    expect(nextPackCode(lines, { a: 2, b: 1 })).toBe("AL-MUG-COB-OS");
   });
 });
 
@@ -291,7 +294,7 @@ describe("inventory rules", () => {
     expect(counts.out).toBeGreaterThan(0);
     expect(counts.low).toBeGreaterThanOrEqual(counts.out);
     expect(filterRows(rows, "out", "").every((r) => r.onSale && r.state === "out")).toBe(true);
-    expect(filterRows(rows, "all", "al-zip-lag").every((r) => r.sku.startsWith("AL-ZIP-LAG"))).toBe(true);
+    expect(filterRows(rows, "all", "al-spk-lag").every((r) => r.sku.startsWith("AL-SPK-LAG"))).toBe(true);
     expect([...incomingByVariant(s.purchaseOrders).values()].every((n) => n > 0)).toBe(true);
     expect([...toShipByVariant(s.orders).values()].every((n) => n > 0)).toBe(true);
   });
@@ -351,10 +354,10 @@ describe("labels", () => {
   });
 
   it("thins the barcode only when the room runs out", () => {
-    expect(moduleFor("AL-TEE-CLD-M", 64)).toBe(0.3);
-    expect(moduleFor("AL-OVERSIZED-HOODIE-CLOUD-XL-EXTRA", 64)).toBeLessThan(0.25);
-    expect(hasThinBarcode([{ sku: "AL-TEE-CLD-M" }], "a4")).toBe(false);
-    expect(hasThinBarcode([{ sku: "AL-OVERSIZED-HOODIE-CLOUD-XL-EXTRA" }], "a4")).toBe(true);
+    expect(moduleFor("AL-MUG-CLD-M", 64)).toBe(0.3);
+    expect(moduleFor("AL-STANDARD-PLANTER-CLOUD-XL-EXTRA", 64)).toBeLessThan(0.25);
+    expect(hasThinBarcode([{ sku: "AL-MUG-CLD-M" }], "a4")).toBe(false);
+    expect(hasThinBarcode([{ sku: "AL-STANDARD-PLANTER-CLOUD-XL-EXTRA" }], "a4")).toBe(true);
   });
 
   it("builds the link the toolbar reads back", () => {

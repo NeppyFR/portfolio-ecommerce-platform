@@ -1,9 +1,9 @@
 import { compareVariants, variantStockState, type VariantStockState } from "@/lib/product-rules";
-import type { GarmentTone, Product, ProductStatus, PurchaseOrder, SizeCode, State, StockMoveReason } from "@/store/types";
+import type { ArtTone, Product, ProductStatus, PurchaseOrder, SizeCode, State, StockMoveReason } from "@/store/types";
 
-/** Pale garments sit on a stronger tile, dark ones on a pale one, so the small drawing stays readable. */
-const TILE: Record<GarmentTone, string> = { ice: "t-sky", sky: "t-ice", azure: "t-pale", dusk: "t-mist", lilac: "t-ice" };
-export const tileFor = (tone: GarmentTone): string => TILE[tone];
+/** Pale drawings sit on a stronger tile, dark ones on a pale one, so the small drawing stays readable. */
+const TILE: Record<ArtTone, string> = { ice: "t-sky", sky: "t-ice", azure: "t-pale", dusk: "t-mist", lilac: "t-ice" };
+export const tileFor = (tone: ArtTone): string => TILE[tone];
 
 export type AdjustReason = Extract<StockMoveReason, "delivery" | "sample_back" | "damaged" | "sample_out" | "count_correction" | "manual">;
 export type AdjustSign = "plus" | "minus" | "either";
@@ -43,7 +43,7 @@ export function parseAmount(text: string): number | null {
 
 export type InventoryRow = {
   variantId: string; productId: string; slug: string; productName: string; productNameDe: string; productStatus: ProductStatus; size: SizeCode; color: string; sku: string; isActive: boolean;
-  garment: Product["garment"]; tone: Product["tone"];
+  art: Product["art"]; tone: Product["tone"];
   onHand: number; reserved: number; available: number; toShip: number; incoming: number; threshold: number | null; effectiveThreshold: number; state: VariantStockState; onSale: boolean;
 };
 
@@ -85,7 +85,7 @@ export function inventoryRows(s: Pick<State, "products" | "orders" | "purchaseOr
     for (const variant of [...product.variants].sort(compareVariants)) {
       rows.push({
         variantId: variant.id, productId: product.id, slug: product.slug, productName: product.nameEn, productNameDe: product.nameDe, productStatus: product.status, size: variant.size, color: variant.color, sku: variant.sku, isActive: variant.isActive,
-        garment: product.garment, tone: product.tone,
+        art: product.art, tone: product.tone,
         onHand: variant.stock, reserved: variant.reserved, available: variant.stock - variant.reserved, toShip: toShip.get(variant.id) ?? 0, incoming: incoming.get(variant.id) ?? 0,
         threshold: variant.threshold, effectiveThreshold: variant.threshold ?? s.settings.lowStockDefault, state: variantStockState(variant, s.settings.lowStockDefault), onSale: product.status === "active" && variant.isActive,
       });
@@ -94,7 +94,7 @@ export function inventoryRows(s: Pick<State, "products" | "orders" | "purchaseOr
   return rows;
 }
 
-/** Low and out count only sizes on sale, the same as the shell's status and the bell. */
+/** Low and out count only variants on sale, the same as the shell's status and the bell. */
 export function filterRows(rows: InventoryRow[], filter: StockFilter, q: string): InventoryRow[] {
   const needle = q.trim().toLowerCase();
   return rows.filter((r) => {

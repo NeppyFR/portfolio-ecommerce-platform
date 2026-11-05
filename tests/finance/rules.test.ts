@@ -363,8 +363,8 @@ describe("stock count", () => {
     expect(expectedOnShelf({ variantId: null, systemQty: 2 }, live)).toBe(2);
   });
   it("sorts by product, then size order", () => {
-    const sorted = [{ ...base, size: "XL" as const }, { ...base, size: "XS" as const }, { ...base, productName: "A", size: "ONE_SIZE" as const }].sort(lineOrder);
-    expect(sorted.map((l) => l.size)).toEqual(["ONE_SIZE", "XS", "XL"]);
+    const sorted = [{ ...base, size: "XL" as const }, { ...base, size: "S" as const }, { ...base, productName: "A", size: "ONE_SIZE" as const }].sort(lineOrder);
+    expect(sorted.map((l) => l.size)).toEqual(["ONE_SIZE", "S", "XL"]);
   });
   it("writes one row per size and two footer rows", () => {
     const count = getState().stockCounts.find((c) => c.year === 2025) as StockCount;

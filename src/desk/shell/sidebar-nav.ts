@@ -2,8 +2,8 @@ import { MonitorCog, Wallet, type LucideIcon } from "lucide-react";
 import { regionScreens, screenById, subScreens, type Screen, type ScreenId } from "@/desk/registry";
 import type { FeatureKey, Lang } from "@/store/types";
 
-export type NavGroupId = "main" | "growth" | "workspace" | "system";
-export type NavItemId = "dashboard" | "products" | "inventory" | "orders" | "customers" | "discounts" | "drops" | "analytics" | "marketing" | "inbox" | "files" | "calendar" | "checklist" | "finances" | "production" | "it" | "settings" | "su";
+export type NavGroupId = "start" | "main" | "growth" | "workspace" | "system";
+export type NavItemId = "overview" | "built" | "dashboard" | "products" | "inventory" | "orders" | "customers" | "discounts" | "drops" | "analytics" | "marketing" | "inbox" | "files" | "calendar" | "checklist" | "finances" | "production" | "it" | "settings" | "su";
 
 export type NavItem = {
   id: NavItemId;
@@ -35,6 +35,7 @@ function fromScreen(id: NavItemId, screenId: ScreenId, over?: { en: string; de: 
 
 /** The sidebar, top to bottom. The registry stays the list of screens; this file only says where each one sits. */
 export const NAV_GROUPS: NavGroup[] = [
+  { id: "start", en: "Start", de: "Start", items: [fromScreen("overview", "overview"), fromScreen("built", "built")] },
   {
     id: "main",
     en: "Shop",
@@ -80,6 +81,7 @@ export function navItem(id: NavItemId): NavItem {
 
 function navIdFor(screen: Screen): NavItemId | null {
   const top = screen.parent ?? screen.id;
+  if (screen.id === "overview" || screen.id === "built") return screen.id;
   if (screen.id === "dashboard") return "dashboard";
   if (screen.region === "finance") return "finances";
   if (top === "settings") return "settings";
@@ -115,12 +117,12 @@ export function screenName(screen: Screen, lang: Lang): string {
   return screen[lang];
 }
 
-export type DockId = "dashboard" | "orders" | "products" | "finances" | "more";
+export type DockId = "overview" | "dashboard" | "orders" | "products" | "more";
 
 /** The phone's thumb dock. Everything else lives behind More, which opens the sidebar as a drawer. */
-export const DOCK_ITEMS: NavItemId[] = ["dashboard", "orders", "products", "finances"];
+export const DOCK_ITEMS: NavItemId[] = ["overview", "dashboard", "orders", "products"];
 
 export function dockActive(screen: Screen): DockId {
   const id = navIdFor(screen);
-  return id === "dashboard" || id === "orders" || id === "products" || id === "finances" ? id : "more";
+  return id === "overview" || id === "dashboard" || id === "orders" || id === "products" ? id : "more";
 }

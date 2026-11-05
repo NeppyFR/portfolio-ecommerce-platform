@@ -8,7 +8,7 @@ import { exportName } from "@/lib/download";
 import { chfTick, dayKey, formatBytes, formatChf, formatDate, formatDateTime, formatMinor, formatMonth, formatStamp, parseChf, signedChf } from "@/lib/format";
 import { deltaPercent, kpis, presetRange, previousRange, rangeProblem } from "@/lib/metrics";
 import { allocate, applyDiscount, normaliseCode, percentDiscount, priceCart, quoteCart, type QuoteLine } from "@/lib/pricing";
-import { compareVariants, publicAvailable, sizeLabel, skuFor, slugify, uniqueSlug, variantStockState } from "@/lib/product-rules";
+import { coloursOf, compareVariants, publicAvailable, sizeLabel, skuFor, slugify, toneForColour, uniqueSlug, variantStockState } from "@/lib/product-rules";
 import { isDue, runningPerMonth, unbookedIn } from "@/lib/running-costs";
 import { fold, matchesSearch, searchProducts, searchTerms } from "@/lib/search";
 import { GLOBAL_LIMIT, lockStatus, rotationDayProblem, rotationRows, rotationSummary, teamLock } from "@/lib/security-rules";
@@ -170,15 +170,21 @@ describe("discount rules", () => {
 
 describe("product rules", () => {
   it("slugs and SKUs", () => {
-    expect(slugify("Lagoon Zip-Hoodie, Grösse M")).toBe("lagoon-zip-hoodie-grosse-m");
-    expect(uniqueSlug("Frost Scarf", ["frost-scarf", "frost-scarf-2"])).toBe("frost-scarf-3");
-    expect(skuFor("ZIP", "LAG", "M")).toBe("AL-ZIP-LAG-M");
-    expect(skuFor("TOTE", "CLD", "ONE_SIZE")).toBe("AL-TOTE-CLD-OS");
+    expect(slugify("Lagoon Zip-Etui, Grösse M")).toBe("lagoon-zip-etui-grosse-m");
+    expect(uniqueSlug("Frost Candle Trio", ["frost-candle-trio", "frost-candle-trio-2"])).toBe("frost-candle-trio-3");
+    expect(coloursOf([{ color: "Ice" }, { color: "Lagoon" }, { color: "Lagoon" }])).toEqual(["Lagoon", "Ice"]);
+    const product = { tone: "azure" as const, variants: [{ color: "Ice" }, { color: "Lagoon" }, { color: "Lagoon" }] };
+    expect(toneForColour(product, "Lagoon")).toBe("azure");
+    expect(toneForColour(product, "Ice")).toBe("sky");
+    expect(toneForColour(product, "Typed by hand")).toBe("azure");
+    expect(toneForColour(product, null)).toBe("azure");
+    expect(skuFor("SPK", "LAG", "M")).toBe("AL-SPK-LAG-M");
+    expect(skuFor("NOTE", "CLD", "ONE_SIZE")).toBe("AL-NOTE-CLD-OS");
     expect(sizeLabel("ONE_SIZE", "de")).toBe("Einheitsgrösse");
   });
   it("sorts sizes in the fixed order", () => {
-    const rows = [{ size: "L" as const, color: "", sku: "" }, { size: "ONE_SIZE" as const, color: "", sku: "" }, { size: "XS" as const, color: "", sku: "" }];
-    expect([...rows].sort(compareVariants).map((r) => r.size)).toEqual(["XS", "L", "ONE_SIZE"]);
+    const rows = [{ size: "L" as const, color: "", sku: "" }, { size: "ONE_SIZE" as const, color: "", sku: "" }, { size: "S" as const, color: "", sku: "" }];
+    expect([...rows].sort(compareVariants).map((r) => r.size)).toEqual(["S", "L", "ONE_SIZE"]);
   });
   it("clamps public stock and names the stock state", () => {
     expect(publicAvailable({ stock: 30, reserved: 1 })).toBe(10);
@@ -221,20 +227,20 @@ describe("bag", () => {
 describe("search", () => {
   it("folds accents and separators", () => {
     expect(fold("Grösse_Zürich-Süd")).toBe("grosse zurich sud");
-    expect(searchTerms("  Zip-Hoodie, M! ")).toEqual(["zip", "hoodie", "m"]);
+    expect(searchTerms("  Zip-Etui, M! ")).toEqual(["zip", "etui", "m"]);
     expect(searchTerms("...")).toEqual([]);
     expect(searchTerms("a b c d e f g h i j")).toHaveLength(8);
   });
   it("needs every term, and finds either language", () => {
     expect(matchesSearch("kuhl", ["Kühlschrank"])).toBe(true);
-    expect(matchesSearch("zip kobalt", ["Zip Hoodie"])).toBe(false);
+    expect(matchesSearch("zip kobalt", ["Zip Pouch"])).toBe(false);
     expect(matchesSearch("!!!", ["anything"])).toBe(false);
     const rows = [
-      { slug: "a", nameEn: "Tote", nameDe: "Tasche", descriptionEn: "", descriptionDe: "", status: "active" },
-      { slug: "b", nameEn: "Hidden Tote", nameDe: "", descriptionEn: "", descriptionDe: "", status: "draft" },
+      { slug: "a", nameEn: "Pouch", nameDe: "Etui", descriptionEn: "", descriptionDe: "", status: "active" },
+      { slug: "b", nameEn: "Hidden Pouch", nameDe: "", descriptionEn: "", descriptionDe: "", status: "draft" },
     ];
-    expect(searchProducts(rows, "tasche").map((r) => r.slug)).toEqual(["a"]);
-    expect(searchProducts(rows, "tote").map((r) => r.slug)).toEqual(["a"]);
+    expect(searchProducts(rows, "etui").map((r) => r.slug)).toEqual(["a"]);
+    expect(searchProducts(rows, "pouch").map((r) => r.slug)).toEqual(["a"]);
   });
 });
 
@@ -251,7 +257,7 @@ describe("csv and download", () => {
     expect(rows[5]).toBe("");
   });
   it("names downloads by label, data set and day", () => {
-    expect(exportName("orders", "csv")).toBe("aerloom-orders-2027-01-08.csv");
+    expect(exportName("orders", "csv")).toBe("aerlo-orders-2027-01-08.csv");
   });
 });
 

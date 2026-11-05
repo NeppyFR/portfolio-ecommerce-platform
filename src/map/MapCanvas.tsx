@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FocusEvent, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref } from "react";
-import { Bot, CreditCard, Database, GitBranch, Globe, HardDrive, Mail, Send, Server, Shirt, UserCog, type LucideIcon } from "lucide-react";
+import { Bot, CreditCard, Database, GitBranch, Globe, HardDrive, Mail, Send, Server, UserCog, Users, type LucideIcon } from "lucide-react";
 import { useLang } from "@/i18n";
 import type { NodeId } from "@/store/types";
 import { EDGES, NODES, VIEWBOX, edgePath, labelAt, nodeBox, nodeById, type EdgeId, type MapEdge, type MapMode, type MapNode } from "./data";
@@ -32,7 +32,7 @@ export type MapCanvasProps = {
 };
 
 export const NODE_ICONS: Record<NodeId, LucideIcon> = {
-  customers: Shirt,
+  customers: Users,
   staff: UserCog,
   mail: Send,
   dns: Globe,
@@ -228,6 +228,7 @@ export function MapCanvas({ mode, labels = mode !== "phone", animated = false, o
       ref={svgRef}
       className={`ui-map ${className ?? ""}`}
       data-mode={mode === "phone" ? "phone" : "wide"}
+      data-drawing={mode}
       data-animated={animated || undefined}
       data-hover-labels={hovering || undefined}
       viewBox={viewBox ?? VIEWBOX[mode]}

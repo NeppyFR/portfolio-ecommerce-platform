@@ -14,7 +14,7 @@ import { addOrderNote } from "@/store/actions/orders";
 import { useStore } from "@/store/core";
 import { isAttentionOrder } from "@/store/selectors";
 import type { Order, OrderEvent, Tone } from "@/store/types";
-import { Button, Garment, Money, OrderStatus, RuleLine, Textarea, Thread, Tl, toast, type ThreadStop } from "@/ui";
+import { Button, ProductArt, Money, OrderStatus, RuleLine, Textarea, Thread, Tl, toast, type ThreadStop } from "@/ui";
 import { OrderActions } from "./OrderActions";
 import { OrderReturns } from "./OrderReturns";
 import { PackByScan } from "./PackByScan";
@@ -118,7 +118,7 @@ function Items({ order }: { order: Order }) {
         {order.items.map((item) => (
           <li key={item.id} className="or-item">
             <span className="or-item-thumb">
-              <Garment type={item.garment} tone={item.tone} view="mini" />
+              <ProductArt type={item.art} tone={item.tone} view="mini" />
             </span>
             <div className="or-item-text">
               <Link className="or-link" href={`/desk/products/?open=${encodeURIComponent(item.productId)}`}>

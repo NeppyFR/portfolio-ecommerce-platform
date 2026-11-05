@@ -3,7 +3,11 @@ import { renderToStaticMarkup as html } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { built } from "@/i18n/dict/built";
 import { landing } from "@/i18n/dict/landing";
+import { screenForPath } from "@/desk/registry";
+import { DOCK_ITEMS, NAV_GROUPS } from "@/desk/shell/sidebar-nav";
 import { STATIONS } from "@/map/data";
+import { getState } from "@/store/core";
+import { attentionCount, toPackCount } from "@/store/selectors";
 import { HEALTH_CHECKS } from "@/store/seed/system";
 
 vi.mock("next/navigation", () => ({
@@ -16,6 +20,9 @@ const { LandingScreen } = await import("@/landing/LandingScreen");
 const { BuiltScreen } = await import("@/built/BuiltScreen");
 
 const NUMBERS = ["435", "65", "45", "64", "87", "1'134", "1'301", "195", "60", "53", "2"];
+/** The landing's stats row leads with the screens. */
+const LANDING_NUMBERS = ["53", "435", "65", "45", "64", "87", "1'134", "1'301", "195", "60", "2"];
+const text = (markup: string) => markup.replace(/<[^>]+>/g, "").replace(/&#x27;/g, "'");
 
 const read = (path: string) => readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
 
@@ -40,10 +47,10 @@ describe("the public pages on black", () => {
     expect(page).toContain('id="lp-hub"');
     expect(read("src/landing/landing.css")).toMatch(/data-kind="hub"\],\[data-kind="person"\]\) \.ui-map-box\{fill:url\(#lp-hub\)/);
   });
-  it("keeps the wire labels to hover on the wide map, with the packets under them in one drawing", () => {
+  it("keeps the wire labels to hover on both wide drawings, with the packets under them in each", () => {
     const page = html(<LandingScreen />);
-    expect(page.match(/data-hover-labels/g)?.length).toBe(1);
-    expect(page.match(/data-label="/g)?.length).toBe(16);
+    expect(page.match(/data-hover-labels/g)?.length).toBe(2);
+    expect(page.match(/data-label="/g)?.length).toBe(32);
     expect(page).not.toContain('<svg class="lp-story"');
     expect(page.indexOf('data-star="story"')).toBeLessThan(page.indexOf('data-layer="labels"'));
     const css = read("src/styles/ui.css");
@@ -52,7 +59,9 @@ describe("the public pages on black", () => {
   });
   it("holds the map's text floor by the width the map really has, without squeezing the type or stretching the plates", () => {
     const css = read("src/landing/landing.css");
-    expect(css).toMatch(/@media \(min-width:1280px\)\{\s*@container \(max-width:1439\.98px\)\{\s*\.lp-map \.ui-map-label text,\.lp-map \.ui-map-name\{font-size:13\.7px\}/);
+    expect(css).toMatch(/@media \(min-width:1280px\)\{\s*@container \(max-width:1275\.98px\)\{\s*\.lp-map-wide\{display:none\}\s*\.lp-map-snug\{display:block\}\s*\}\s*@container \(max-width:1439\.98px\)\{\s*\.lp-map \.ui-map-label text,\.lp-map \.ui-map-name\{font-size:13\.7px\}/);
+    expect(css).toContain('.lp-map .ui-map[data-drawing="snug"] :is(.ui-map-label text,.ui-map-name,.ui-map-second){font-size:14px}');
+    expect(read("src/built/built.css")).toContain("@media (min-width:1280px){@container (max-width:1275.98px){.bt-map-wide{display:none}.bt-map-snug{display:block}}}");
     expect(css).toContain(".lp-hero-wrap{container-type:inline-size}");
     expect(read("src/built/built.css")).toContain(".bt-map-band{container-type:inline-size;");
     expect(css).not.toMatch(/ui-map-second[^}]*letter-spacing/);
@@ -67,7 +76,8 @@ describe("the public pages on black", () => {
     expect(page.match(/<details class="lp-all/g)?.length).toBe(2);
     expect(page).not.toMatch(/<details[^>]*\sopen/);
     expect(page.indexOf('class="lp-all lp-all-wide"')).toBeGreaterThan(page.indexOf('data-mode="wide"'));
-    for (const block of ['lp-panel-float', 'class="lp-cta"']) expect(page.indexOf(block), block).toBeLessThan(page.indexOf('data-mode="wide"'));
+    expect(page.indexOf("lp-panel-float")).toBeGreaterThan(0);
+    expect(page.indexOf("lp-panel-float")).toBeLessThan(page.indexOf('data-mode="wide"'));
   });
 });
 
@@ -76,16 +86,45 @@ describe("landing", () => {
 
   it("says the headline, the sentence and the honest line", () => {
     for (const line of [landing.en.headline1, landing.en.headline2, landing.en.headline3, "53-screen", "This demo runs none of it"]) expect(page).toContain(line);
-    expect(landing.en.headline1).toBe("Nine services.");
-    expect(landing.en.headline2).toBe("Sixteen connections.");
-    expect(landing.en.headline3).toBe("One clothing shop.");
-    expect(landing.de.headline1).toBe("Neun Dienste.");
+    expect([landing.en.headline1, landing.en.headline2, landing.en.headline3]).toEqual(["One online shop.", "53 staff screens.", "Everything behind it."]);
+    expect([landing.de.headline1, landing.de.headline2, landing.de.headline3]).toEqual(["Ein Onlineshop.", "53 Screens fürs Team.", "Und alles dahinter."]);
+    expect([landing.en.mapTitle1, landing.en.mapTitle2]).toEqual(["Nine services.", "Sixteen connections."]);
+    expect([landing.de.mapTitle1, landing.de.mapTitle2]).toEqual(["Neun Dienste.", "Sechzehn Verbindungen."]);
   });
 
-  it("prints the eleven ledger numbers from the allowed list", () => {
+  it("has one h1, the headline, and leaves the main landmark to the desk shell", () => {
+    expect(page.match(/<h1[\s>]/g)?.length).toBe(1);
+    expect(page).not.toMatch(/<main[\s>]/);
+    expect(page).not.toContain('id="main"');
+    expect(page).not.toMatch(/class="lp-rail[ "]/);
+  });
+
+  it("opens the dashboard from the big button, with the shop as the quiet link", () => {
+    expect(landing.en.openDesk).toBe("Open the dashboard");
+    expect(landing.de.openDesk).toBe("Dashboard öffnen");
+    expect(page).toMatch(/<a class="lp-go-main" href="\/desk\/?">Open the dashboard/);
+    expect(page).toMatch(/<a class="lp-go-quiet" href="\/shop\/?">/);
+    expect(page.indexOf('class="lp-go-main"')).toBeLessThan(page.indexOf('class="lp-go-quiet"'));
+  });
+
+  it("puts the hero, the tour, the map, the stats and the shop in that order", () => {
+    const order = ['class="lp-top"', 'class="lt"', 'id="map"', 'class="lp-ledger"', 'class="lp-shop"'].map((m) => page.indexOf(m));
+    for (const at of order) expect(at).toBeGreaterThan(0);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+  });
+
+  it("tours six areas of the desk, each with links into its screens", () => {
+    for (const id of ["orders", "stock", "launch", "money", "team", "run"]) {
+      const start = page.indexOf(`class="lt-panel lt-${id}`);
+      expect(start, id).toBeGreaterThan(0);
+      expect(page.slice(start, start + 20000), id).toMatch(/href="\/desk\//);
+    }
+  });
+
+  it("prints the eleven ledger numbers from the allowed list, the screens first", () => {
     const start = page.indexOf('class="lp-ledger"');
     const ledger = page.slice(start, page.indexOf("</dl>", start));
-    expect([...ledger.matchAll(/<dd>([^<]+)<\/dd>/g)].map((m) => m[1].replace(/&#x27;/g, "'"))).toEqual(NUMBERS);
+    expect([...ledger.matchAll(/<dd>([^<]+)<\/dd>/g)].map((m) => m[1].replace(/&#x27;/g, "'"))).toEqual(LANDING_NUMBERS);
   });
 
   it("links the story order to the real pane and offers all six stations", () => {
@@ -94,11 +133,12 @@ describe("landing", () => {
     expect(page).toContain("data-story-step=");
   });
 
-  it("has the map twice, one for each layout, with every box and a packet per running wire", () => {
-    expect(page.match(/data-mode="wide"/g)?.length).toBe(1);
+  it("has the map three times, the hero and snug drawings for the wide layout and the phone one, with every box and a packet per running wire", () => {
+    expect(page.match(/data-mode="wide"/g)?.length).toBe(2);
+    expect(page.match(/data-drawing="snug"/g)?.length).toBe(1);
     expect(page.match(/data-mode="phone"/g)?.length).toBe(1);
-    expect(page.match(/data-node="/g)?.length).toBe(22);
-    expect(page.match(/data-packet="/g)?.length).toBe(28);
+    expect(page.match(/data-node="/g)?.length).toBe(33);
+    expect(page.match(/data-packet="/g)?.length).toBe(42);
     expect(page).not.toContain('data-packet="ghSb"');
     expect(page).not.toContain('data-packet="ghR2"');
     expect(page).toContain('data-star="story"');
@@ -106,8 +146,10 @@ describe("landing", () => {
     expect(page).toContain('id="lp-tile"');
   });
 
-  it("shows the desk title from the seed, and step-in chips in hero and strip", () => {
-    expect(page).toContain("14 to pack, 3 need you.");
+  it("counts the orders from the seed, and offers the step-in chips in the hero and under the tour", () => {
+    const state = getState();
+    const need = attentionCount(state);
+    expect(text(page)).toContain(`${toPackCount(state)} to pack, ${need} ${need === 1 ? "needs" : "need"} you.`);
     expect((page.match(/>Warehouse<\/button>/g) ?? []).length).toBe(2);
   });
 
@@ -124,8 +166,32 @@ describe("landing", () => {
   });
 });
 
+describe("inside the desk", () => {
+  it("opens the overview and How it was built from the top of the sidebar, above the Dashboard", () => {
+    expect(NAV_GROUPS[0].items.map((i) => [i.id, i.route])).toEqual([["overview", "/"], ["built", "/built/"]]);
+    expect(NAV_GROUPS[1].items[0].id).toBe("dashboard");
+    expect(NAV_GROUPS[0].items.map((i) => [i.en, i.de])).toEqual([["Overview", "Übersicht"], ["How it was built", "So ist es gebaut"]]);
+    expect(DOCK_ITEMS[0]).toBe("overview");
+  });
+  it("finds the overview at the root only", () => {
+    expect(screenForPath("/")?.id).toBe("overview");
+    expect(screenForPath("/built/")?.id).toBe("built");
+    expect(screenForPath("/shop/")).toBe(undefined);
+    expect(screenForPath("/desk/")?.id).toBe("dashboard");
+  });
+  it("renders both pages inside the shell", () => {
+    for (const path of ["src/app/page.tsx", "src/app/built/page.tsx"]) expect(read(path), path).toContain("<DeskShell>");
+  });
+});
+
 describe("built", () => {
   const page = html(<BuiltScreen />);
+
+  it("has one h1 and leaves the main landmark to the desk shell", () => {
+    expect(page.match(/<h1[\s>]/g)?.length).toBe(1);
+    expect(page).not.toMatch(/<main[\s>]/);
+    expect(page).not.toContain('id="main"');
+  });
 
   it("has all seven anchors, each with its target", () => {
     for (const id of ["map", "architecture", "money-path", "security", "testing", "timeline", "demo"]) {

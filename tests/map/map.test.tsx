@@ -1,7 +1,7 @@
 import { renderToStaticMarkup as html } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ALL_NODES, SCREENS } from "@/desk/registry";
-import { EDGES, NODES, STATIONS, STORY, VIEWBOX, edgePath, elbow, heroPoints, labelAt, nodeBox, nodeById, rounded, type EdgeId, type MapEdge, type MapNode, type Point } from "@/map/data";
+import { EDGES, NODES, STATIONS, STORY, VIEWBOX, edgePath, elbow, labelAt, nodeBox, nodeById, rounded, wirePoints, type EdgeId, type MapEdge, type MapNode, type Point } from "@/map/data";
 import { MapCanvas } from "@/map/MapCanvas";
 import { MapSheet } from "@/map/MapSheet";
 
@@ -67,11 +67,14 @@ describe("map data", () => {
     expect(nodeBox(nodeById("inbox"), "hero").y).toBe(222);
     expect(VIEWBOX.wide).toBe("0 340 1440 500");
     expect(edgePath(EDGES.find((e) => e.id === "clMb")!, "hero")).toBe("M1264 196 L1264 118");
+    expect(nodeBox(nodeById("inbox"), "snug").y).toBe(236);
+    expect(VIEWBOX.snug).toBe("0 0 1180 640");
   });
   it("draws both geometries", () => {
     for (const e of EDGES) {
       expect(edgePath(e, "wide")).toMatch(/^M/);
       expect(edgePath(e, "hero")).toMatch(/^M/);
+      expect(edgePath(e, "snug")).toMatch(/^M/);
       expect(edgePath(e, "phone")).toMatch(/^M/);
     }
   });
@@ -95,39 +98,50 @@ describe("map data", () => {
   });
 });
 
-describe("the hero drawing", () => {
-  type Rect = { left: number; right: number; top: number; bottom: number };
-  /** The narrowest the drawing gets: .877 px a unit, a 1280 window with a 17 px scrollbar. */
-  const PX = 0.877;
-  /** The widest each label's text gets, as the browser draws it at that scale's 13.7 unit text. The plate is this plus 10 a side. */
-  const TEXT: Record<"en" | "de", Record<EdgeId, number>> = {
+type Drawing = "hero" | "snug";
+/**
+ * Each public drawing, at the narrowest map it shows on: the hero from a 1276 px map, the snug one from a 1020 px map, a 1280 window less the desk's sidebar.
+ * TEXT is the widest each label's text gets, as the browser draws it at the drawing's text size: 13.7 units on the hero, 14 on the snug one. The plate is this plus 10 a side.
+ */
+const DRAWINGS: { drawing: Drawing; PX: number; TEXT: Record<"en" | "de", Record<EdgeId, number>> }[] = [
+  { drawing: "hero", PX: 1276 / 1440, TEXT: {
     en: { cDns: 74.5, pDns: 108.3, dnsV: 115.3, vSb: 71, vR2: 97.8, pR2: 133.4, vSt: 111.7, cSt: 157.1, stV: 59.7, vRs: 56.2, rsC: 100.7, ghV: 155.6, ghSb: 146.1, ghR2: 112.6, clMb: 96.8, clSb: 85.2 },
     de: { cDns: 80.1, pDns: 108.5, dnsV: 108, vSb: 71.7, vR2: 113.9, pR2: 143.4, vSt: 115.7, cSt: 193.4, stV: 61.7, vRs: 60.5, rsC: 108.3, ghV: 208.2, ghSb: 156.6, ghR2: 72.5, clMb: 100.2, clSb: 120.1 },
-  };
+  } },
+  { drawing: "snug", PX: 1020 / 1180, TEXT: {
+    en: { cDns: 76.5, pDns: 111.5, dnsV: 118.5, vSb: 72.5, vR2: 100.5, pR2: 136.5, vSt: 114.5, cSt: 161.5, stV: 60.5, vRs: 57.5, rsC: 103.5, ghV: 159.5, ghSb: 149.5, ghR2: 115.5, clMb: 99.5, clSb: 87.5 },
+    de: { cDns: 82.5, pDns: 110.5, dnsV: 110.5, vSb: 73.5, vR2: 116.5, pR2: 146.5, vSt: 118.5, cSt: 198.5, stV: 63.5, vRs: 62.5, rsC: 109.5, ghV: 213.5, ghSb: 160.5, ghR2: 74.5, clMb: 102.5, clSb: 122.5 },
+  } },
+];
+
+for (const { drawing, PX, TEXT } of DRAWINGS) describe(`the ${drawing} drawing`, () => {
+  type Rect = { left: number; right: number; top: number; bottom: number };
   const units = (px: number) => px / PX;
   const boxRect = (n: MapNode): Rect => {
-    const b = nodeBox(n, "hero");
+    const b = nodeBox(n, drawing);
     return { left: b.x - b.w / 2, right: b.x + b.w / 2, top: b.y - b.h / 2, bottom: b.y + b.h / 2 };
   };
   const labelRect = (e: MapEdge, lang: "en" | "de"): Rect => {
-    const at = labelAt(e, "hero");
+    const at = labelAt(e, drawing);
     const w = TEXT[lang][e.id] + 20;
     const h = (lang === "de" ? e.linesDe : e.linesEn).length * 15 + 5;
     return { left: at[0] - w / 2, right: at[0] + w / 2, top: at[1] - h / 2, bottom: at[1] + h / 2 };
   };
   const gap = (a: Rect, b: Rect) => Math.max(a.left - b.right, b.left - a.right, a.top - b.bottom, b.top - a.bottom);
   const runs = (id: EdgeId): [Point, Point][] => {
-    const pts = heroPoints(id);
+    const pts = wirePoints(id, drawing);
     return pts.slice(1).map((p, i) => [pts[i], p]);
   };
   const runTouches = ([a, b]: [Point, Point], r: Rect) => Math.min(a[0], b[0]) <= r.right && Math.max(a[0], b[0]) >= r.left && Math.min(a[1], b[1]) <= r.bottom && Math.max(a[1], b[1]) >= r.top;
 
   it("stays on its canvas with at least 32 px between any two boxes", () => {
-    const [, , width, height] = VIEWBOX.hero.split(" ").map(Number);
+    const [, , width, height] = VIEWBOX[drawing].split(" ").map(Number);
+    /* The map runs 56 of 1440 units past the page's column on either side, so the boxes keep to the column. */
+    const margin = Math.floor((56 * width) / 1440);
     NODES.forEach((a, i) => {
       const r = boxRect(a);
-      expect(r.left, a.id).toBeGreaterThanOrEqual(56);
-      expect(r.right, a.id).toBeLessThanOrEqual(width - 56);
+      expect(r.left, a.id).toBeGreaterThanOrEqual(margin);
+      expect(r.right, a.id).toBeLessThanOrEqual(width - margin);
       expect(r.bottom, a.id).toBeLessThanOrEqual(height);
       for (const b of NODES.slice(i + 1)) expect(gap(r, boxRect(b)), `${a.id} ${b.id}`).toBeGreaterThanOrEqual(units(32));
     });
@@ -135,7 +149,7 @@ describe("the hero drawing", () => {
   it("runs every wire in straight, upright runs from one of its boxes to the other", () => {
     for (const e of EDGES) {
       for (const [a, b] of runs(e.id)) expect(a[0] === b[0] || a[1] === b[1], e.id).toBe(true);
-      const pts = heroPoints(e.id);
+      const pts = wirePoints(e.id, drawing);
       const onEdge = (p: Point, r: Rect) => (p[0] >= r.left && p[0] <= r.right && (p[1] === r.top || p[1] === r.bottom)) || (p[1] >= r.top && p[1] <= r.bottom && (p[0] === r.left || p[0] === r.right));
       expect(onEdge(pts[0], boxRect(nodeById(e.from))), `${e.id} leaves its source`).toBe(true);
       expect(onEdge(pts[pts.length - 1], boxRect(nodeById(e.to))), `${e.id} reaches its target`).toBe(true);
@@ -187,7 +201,7 @@ describe("the hero drawing", () => {
   }
   it("sits each label on its own wire", () => {
     for (const e of EDGES) {
-      const at = labelAt(e, "hero");
+      const at = labelAt(e, drawing);
       expect(runs(e.id).some((run) => runTouches(run, { left: at[0], right: at[0], top: at[1], bottom: at[1] })), e.id).toBe(true);
     }
   });

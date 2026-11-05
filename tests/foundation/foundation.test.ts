@@ -29,7 +29,7 @@ describe("registry", () => {
 
 describe("routes", () => {
   it("sends runtime records through the x param", () => {
-    expect(productHref("frost-scarf")).toBe("/shop/p/frost-scarf/");
+    expect(productHref("frost-candle-trio")).toBe("/shop/p/frost-candle-trio/");
     expect(productHref("made-today")).toBe(`/shop/p/${RUNTIME_PARAM}/?slug=made-today`);
     expect(collectionHref("lagoon")).toBe("/shop/c/lagoon/");
     expect(collectionHref("new one")).toBe(`/shop/c/${RUNTIME_PARAM}/?handle=new%20one`);

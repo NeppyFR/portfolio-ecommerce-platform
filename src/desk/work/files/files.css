@@ -51,8 +51,8 @@
 .wf-prev{display:grid;place-items:center;width:100%;aspect-ratio:3/2;overflow:hidden}
 .wf-prev[data-compact]{aspect-ratio:1;height:100%}
 .wf-prev-ink{background:var(--page)}
-.wf-prev-garment{width:auto;height:88%;max-width:90%}
-.wf-prev[data-compact] .wf-prev-garment{height:100%}
+.wf-prev-art{width:auto;height:88%;max-width:90%}
+.wf-prev[data-compact] .wf-prev-art{height:100%}
 /* Page and logo previews sit on the pale end of their drop's colour, so a wall of cards stays calm. */
 .wf-prev[data-soft].t-lil{background:radial-gradient(100% 90% at 80% 104%,rgba(140,123,255,.3),rgba(140,123,255,0) 72%),#0a0a14}
 .wf-prev[data-soft].t-sky{background:radial-gradient(100% 84% at 22% 10%,rgba(111,211,255,.24),rgba(111,211,255,0) 68%),#070d18}

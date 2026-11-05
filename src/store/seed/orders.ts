@@ -78,7 +78,11 @@ function codeForOrder(n: number, day: string, subtotal: number, byCode: Map<stri
 
 type Sellable = { product: Product; variant: Variant };
 
-const APPAREL_WEIGHT: Record<string, number> = { hoodie: 3, tee: 4, pants: 2, cap: 2, beanie: 1, tote: 2, other: 0 };
+/** How often each piece turns up in an order. A slug missing here counts once. */
+const SALES_WEIGHT: Record<string, number> = {
+  "desk-lamp": 3, "lagoon-speaker": 3, "tall-lamp": 3, "logo-mug": 4, "studio-mug": 4, "trail-bottle": 4, "stoneware-planter": 2, "shelf-speaker": 2,
+  "travel-pouch-cobalt": 2, "zip-pouch-lagoon": 2, "frost-candle": 1, "logo-notebook-cloud": 2, "frost-candle-trio": 0,
+};
 
 function sellables(products: Product[], day: string): Sellable[] {
   const out: Sellable[] = [];
@@ -86,7 +90,7 @@ function sellables(products: Product[], day: string): Sellable[] {
     if (product.status === "draft") continue;
     if (product.status === "archived" && day > "2026-11-02") continue;
     if (product.publishedAt && product.publishedAt.slice(0, 10) > day) continue;
-    const weight = APPAREL_WEIGHT[product.category] ?? 1;
+    const weight = SALES_WEIGHT[product.slug] ?? 1;
     for (const variant of product.variants) {
       for (let k = 0; k < weight; k += 1) out.push({ product, variant });
     }
@@ -153,9 +157,9 @@ export function buildOrders(rng: Rng, products: Product[], customers: Customer[]
       if (!chosen.has(pick.variant.id)) chosen.set(pick.variant.id, { ...pick, quantity: rng.chance(0.85) ? 1 : 2 });
     }
     if (n === 1147) {
-      const zip = products.find((p) => p.slug === "lagoon-zip-hoodie") as Product;
+      const speaker = products.find((p) => p.slug === "lagoon-speaker") as Product;
       chosen.clear();
-      chosen.set(zip.variants[2].id, { product: zip, variant: zip.variants[2], quantity: 1 });
+      chosen.set(speaker.variants[2].id, { product: speaker, variant: speaker.variants[2], quantity: 1 });
     }
     const lines: QuoteLine[] = [...chosen.values()].map((c) => ({ variantId: c.variant.id, productId: c.product.id, collectionIds: c.product.collectionIds, unitPriceRappen: effectivePrice(c.product, c.variant), quantity: c.quantity }));
 
@@ -167,7 +171,7 @@ export function buildOrders(rng: Rng, products: Product[], customers: Customer[]
       const { product, variant } = chosen.get(line.variantId) as Sellable;
       return {
         id: `oi_${n}_${k + 1}`, productId: product.id, variantId: variant.id, name: product.nameEn, nameDe: product.nameDe, color: variant.color, size: variant.size, sku: variant.sku,
-        garment: product.garment, tone: product.tone, quantity: line.quantity, unitPriceRappen: line.unitPriceRappen, lineTotalRappen: line.lineTotalRappen, discountRappen: line.discountRappen, restocked: 0, shortfall: 0,
+        art: product.art, tone: product.tone, quantity: line.quantity, unitPriceRappen: line.unitPriceRappen, lineTotalRappen: line.lineTotalRappen, discountRappen: line.discountRappen, restocked: 0, shortfall: 0,
       };
     });
 
@@ -279,7 +283,7 @@ function addRefundsAndReturns(rng: Rng, orders: Order[]): { returns: ReturnRecor
 
   const plans: { no: number; order: Order; status: ReturnStatus; reason: ReturnReason; note: string; full: boolean }[] = [
     { no: 1, order: refunded[3], status: "refunded", reason: "size", note: "Wants a size larger next time.", full: true },
-    { no: 2, order: refunded[4], status: "refunded", reason: "quality", note: "Seam opened after one wash.", full: true },
+    { no: 2, order: refunded[4], status: "refunded", reason: "quality", note: "Handle came loose after one week.", full: true },
     { no: 3, order: partialReturnA, status: "refunded", reason: "changed_mind", note: "", full: false },
     { no: 4, order: partialReturnB, status: "refunded", reason: "damaged", note: "Parcel crushed in transit.", full: false },
     { no: 5, order: closedA, status: "closed", reason: "wrong_item", note: "Parcel never arrived back.", full: false },
@@ -324,9 +328,9 @@ function buildHolds(products: Product[]): Hold[] {
     };
   };
   return [
-    make(1, "4f1c9a27", zurich(DEMO_TODAY, 13, 44), "open", false, [{ variant: variant("essential-hoodie-cobalt", 2), product: "essential-hoodie-cobalt", quantity: 1, price: 8900 }]),
-    make(2, "a83e05d1", zurich(DEMO_TODAY, 13, 57), "processing", false, [{ variant: variant("logo-tee-cloud", 2), product: "logo-tee-cloud", quantity: 2, price: 3900 }, { variant: variant("canvas-tote-cloud", 0), product: "canvas-tote-cloud", quantity: 1, price: 2900 }]),
-    make(3, "c27b6e90", zurich(DEMO_TODAY, 13, 5), "open", true, [{ variant: variant("track-pants-cobalt", 2), product: "track-pants-cobalt", quantity: 1, price: 9900 }]),
+    make(1, "4f1c9a27", zurich(DEMO_TODAY, 13, 44), "open", false, [{ variant: variant("desk-lamp", 2), product: "desk-lamp", quantity: 1, price: 8900 }]),
+    make(2, "a83e05d1", zurich(DEMO_TODAY, 13, 57), "processing", false, [{ variant: variant("logo-mug", 2), product: "logo-mug", quantity: 2, price: 3900 }, { variant: variant("logo-notebook-cloud", 0), product: "logo-notebook-cloud", quantity: 1, price: 2900 }]),
+    make(3, "c27b6e90", zurich(DEMO_TODAY, 13, 5), "open", true, [{ variant: variant("shelf-speaker", 2), product: "shelf-speaker", quantity: 1, price: 9900 }]),
   ];
 }
 
@@ -358,6 +362,10 @@ type RawMove = { at: string; variantId: string; delta: number; reason: StockMove
 function buildMovements(rng: Rng, products: Product[], orders: Order[]): StockMove[] {
   const TARGET = 400;
   const variantIds = products.flatMap((p) => p.variants.map((v) => v.id));
+  /* A draft is still in sampling and holds no stock yet. A random adjustment that lands on one goes to the archived piece instead, so the draw stays the same and no live stock moves. */
+  const drafts = new Set(products.filter((p) => p.status === "draft").flatMap((p) => p.variants.map((v) => v.id)));
+  const shelf = products.find((p) => p.status === "archived")?.variants[0]?.id;
+  const notDraft = (id: string) => (drafts.has(id) && shelf ? shelf : id);
   const moves: RawMove[] = [];
   for (const order of orders) {
     if (!order.paidAt) continue;
@@ -371,7 +379,7 @@ function buildMovements(rng: Rng, products: Product[], orders: Order[]): StockMo
   const adjust = TARGET - moves.length - variantIds.length;
   const reasons: { reason: StockMoveReason; sign: number; note: string }[] = [
     { reason: "count_correction", sign: 1, note: "Found on the wrong shelf" },
-    { reason: "sample_out", sign: -1, note: "Sent to a stylist" },
+    { reason: "sample_out", sign: -1, note: "Sent to a reviewer" },
     { reason: "sample_back", sign: 1, note: "Back from the shoot" },
     { reason: "damaged", sign: -1, note: "Print flawed" },
     { reason: "delivery", sign: 1, note: "Top-up from the manufacturer" },
@@ -381,7 +389,7 @@ function buildMovements(rng: Rng, products: Product[], orders: Order[]): StockMo
   for (let i = 0; i < adjust; i += 1) {
     const plan = reasons[i % reasons.length];
     const day = addDays(DEMO_TODAY, -rng.int(1, 85));
-    moves.push({ at: zurich(day, rng.int(8, 17), rng.int(0, 59)), variantId: rng.pick(variantIds), delta: plan.sign, reason: plan.reason, note: plan.note, actor: rng.pick(actors), orderNumber: null });
+    moves.push({ at: zurich(day, rng.int(8, 17), rng.int(0, 59)), variantId: notDraft(rng.pick(variantIds)), delta: plan.sign, reason: plan.reason, note: plan.note, actor: rng.pick(actors), orderNumber: null });
   }
   if (moves.length + variantIds.length !== TARGET) throw new Error(`Seed: ${moves.length + variantIds.length} stock moves, wanted ${TARGET}`);
 

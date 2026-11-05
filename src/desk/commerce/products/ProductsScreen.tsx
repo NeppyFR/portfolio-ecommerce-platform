@@ -14,7 +14,7 @@ import type { Product, ProductStatus, Tone } from "@/store/types";
 import { Button, Empty, Select, Table, Tabs, type Column } from "@/ui";
 import { ProductSheet } from "./ProductSheet";
 import { filterProducts, PRODUCT_SORTS, productCounts, sortProducts, totalStock, type ProductSort } from "./rules";
-import { GarmentThumb, SearchField, TableCard, TabLabel, useOpenParam } from "./shared";
+import { ArtThumb, SearchField, TableCard, TabLabel, useOpenParam } from "./shared";
 import { Status } from "@/ui";
 
 const STATUS_TONE: Record<ProductStatus, Tone> = { active: "ok", draft: "warn", archived: "off" };
@@ -61,7 +61,7 @@ export function ProductsScreen() {
       header: t.list.colProduct,
       cell: (p) => (
         <div className="cat-prod">
-          <GarmentThumb type={p.garment} tone={p.tone} />
+          <ArtThumb type={p.art} tone={p.tone} />
           <span className="cat-prod-text">
             <span className="cat-name">{nameOf(p)}</span>
             <span className="type-mono-s cat-sub">{p.slug}</span>
@@ -77,7 +77,7 @@ export function ProductsScreen() {
   ];
   const phoneRow = (p: Product) => (
     <div className="cat-prod">
-      <GarmentThumb type={p.garment} tone={p.tone} />
+      <ArtThumb type={p.art} tone={p.tone} />
       <div className="cat-card" style={{ flex: 1 }}>
         <div className="cat-card-top">
           <span className="cat-name">{nameOf(p)}</span>

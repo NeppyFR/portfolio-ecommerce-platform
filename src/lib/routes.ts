@@ -3,19 +3,19 @@
  * and the seed must use exactly these slugs and handles (a test in tests/ can assert it).
  */
 export const PRODUCT_TITLES: Record<string, string> = {
-  "essential-hoodie-cobalt": "Essential Hoodie, Cobalt",
-  "lagoon-zip-hoodie": "Lagoon Zip Hoodie",
-  "oversized-hoodie-cloud": "Oversized Hoodie, Cloud",
-  "logo-tee-cloud": "Logo Tee, Cloud",
-  "logo-tee-cobalt": "Logo Tee, Cobalt",
-  "heavyweight-tee-lilac": "Heavyweight Tee, Lilac",
-  "relaxed-cargo-pants": "Relaxed Cargo Pants, Ice",
-  "track-pants-cobalt": "Track Pants, Cobalt",
-  "logo-cap-cobalt": "Logo Cap, Cobalt",
-  "washed-cap-lagoon": "Washed Cap, Lagoon",
-  "rib-beanie-frost": "Rib Beanie, Frost",
-  "canvas-tote-cloud": "Canvas Tote, Cloud",
-  "frost-scarf": "Frost Scarf",
+  "desk-lamp": "Desk Lamp",
+  "lagoon-speaker": "Lagoon Speaker",
+  "tall-lamp": "Tall Lamp",
+  "logo-mug": "Logo Mug",
+  "studio-mug": "Studio Mug",
+  "trail-bottle": "Trail Bottle",
+  "stoneware-planter": "Stoneware Planter",
+  "shelf-speaker": "Shelf Speaker",
+  "travel-pouch-cobalt": "Travel Pouch, Cobalt",
+  "zip-pouch-lagoon": "Zip Pouch, Lagoon",
+  "frost-candle": "Frost Candle",
+  "logo-notebook-cloud": "Logo Notebook, Cloud",
+  "frost-candle-trio": "Frost Candle Trio",
 };
 
 export const HIDDEN_COLLECTION_HANDLE = "frost-archive";
@@ -23,7 +23,7 @@ export const HIDDEN_COLLECTION_HANDLE = "frost-archive";
 export const COLLECTION_TITLES: Record<string, string> = {
   essentials: "Essentials",
   lagoon: "Lagoon",
-  accessories: "Accessories",
+  "desk-and-travel": "Desk and travel",
   [HIDDEN_COLLECTION_HANDLE]: "Frost archive",
 };
 

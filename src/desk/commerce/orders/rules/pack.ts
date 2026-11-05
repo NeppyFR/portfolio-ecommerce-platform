@@ -1,7 +1,7 @@
 import type { Order, SizeCode } from "@/store/types";
 import { classifyScan } from "./scan";
 
-export type PackLine = { itemId: string; sku: string; name: string; nameDe: string; size: SizeCode; need: number };
+export type PackLine = { itemId: string; sku: string; name: string; nameDe: string; size: SizeCode; color: string; need: number };
 /** Pieces already in the box, by order item. */
 export type PackState = Record<string, number>;
 
@@ -16,7 +16,7 @@ export type PackOutcome =
 
 /** What has to go in the box: ordered, less what was missing at payment and what is already back in stock. */
 export function packLines(order: Pick<Order, "items">): PackLine[] {
-  return order.items.map((i) => ({ itemId: i.id, sku: i.sku, name: i.name, nameDe: i.nameDe, size: i.size, need: Math.max(0, i.quantity - i.shortfall - i.restocked) }));
+  return order.items.map((i) => ({ itemId: i.id, sku: i.sku, name: i.name, nameDe: i.nameDe, size: i.size, color: i.color, need: Math.max(0, i.quantity - i.shortfall - i.restocked) }));
 }
 
 export const packNeed = (lines: PackLine[]): number => lines.reduce((sum, l) => sum + l.need, 0);

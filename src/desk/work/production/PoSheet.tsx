@@ -9,6 +9,7 @@ import { production as dict } from "@/i18n/dict/production";
 import { seedText } from "@/i18n/dict/seed-text";
 import { hasFullPowers } from "@/lib/features";
 import { formatChf, formatDate, formatMinor } from "@/lib/format";
+import { sizeAndColour } from "@/desk/commerce/orders/rules/order-rules";
 import { compareVariants, sizeLabel } from "@/lib/product-rules";
 import { addPoLine, createPurchaseOrder, createSupplier, linkPoLedger, receivePurchaseOrder, removePoLine, savePurchaseOrder, saveSupplier, type PoInput, type SupplierInput } from "@/store/actions/production";
 import { DEMO_TODAY } from "@/store/clock";
@@ -270,7 +271,7 @@ function AddLineForm({ order, t }: { order: PurchaseOrder; t: T }) {
               .sort(compareVariants)
               .map((v) => (
                 <option key={v.id} value={v.id} disabled={taken.has(v.id)}>
-                  {sizeLabel(v.size, lang)} · {v.sku}
+                  {sizeAndColour(v.size, v.color, lang)} · {v.sku}
                 </option>
               ))}
           </optgroup>

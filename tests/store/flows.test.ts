@@ -6,8 +6,8 @@ import { addOrderEvent, emailHtml, findVariant, logActivity, moveStock, nextOrde
 import { renderEmailParts } from "@/store/emails";
 import type { Bag } from "@/store/types";
 
-const VARIANT = "var_logo-tee-cloud_m";
-const OTHER = "var_logo-tee-cobalt_m";
+const VARIANT = "var_logo-mug_m";
+const OTHER = "var_studio-mug_m";
 const bag = (over: Partial<Bag> = {}): Bag => ({ lines: [{ variantId: VARIANT, quantity: 2 }], code: null, ...over });
 const details = { ...CHECKOUT_DEFAULTS };
 const stockOf = (id = VARIANT) => findVariant(getState(), id)!.variant;
@@ -67,7 +67,7 @@ describe("reserve and release", () => {
     expect(stockOf().reserved).toBe(before.reserved);
   });
   it("refuses more than is available", () => {
-    const result = reserve({ lines: [{ variantId: "var_rib-beanie-frost_one_size", quantity: 1 }], code: null });
+    const result = reserve({ lines: [{ variantId: "var_frost-candle_one_size", quantity: 1 }], code: null });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.code).toBe("OUT_OF_STOCK");
   });

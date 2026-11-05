@@ -1,8 +1,11 @@
 import type { NodeId } from "@/store/types";
 
 export type NodeKind = "person" | "hub" | "service";
-/** `hero` is the roomy drawing on the public pages, whose labels show on hover. `wide` is the desk's. */
-export type MapMode = "wide" | "hero" | "phone";
+/**
+ * `hero` is the roomy drawing on the public pages, whose labels show on hover. `snug` is the same map redrawn for a map under 1276 px wide,
+ * as the public pages have it beside the desk's sidebar. `wide` is the desk's.
+ */
+export type MapMode = "wide" | "hero" | "snug" | "phone";
 export type Point = [number, number];
 export type EdgeId =
   | "cDns" | "pDns" | "dnsV" | "vSb" | "vR2" | "pR2" | "vSt" | "cSt" | "stV"
@@ -84,7 +87,7 @@ export const EDGES: MapEdge[] = [
 /** Offsets that keep the two parallel wires apart on the phone map. */
 export const PHONE_SHIFT: Partial<Record<EdgeId, Point>> = { vSt: [0, -9], stV: [0, 9], cSt: [-10, 0], rsC: [10, 0], ghSb: [0, 0] };
 
-export const VIEWBOX: Record<MapMode, string> = { wide: "0 340 1440 500", hero: "0 0 1440 620", phone: "0 0 390 490" };
+export const VIEWBOX: Record<MapMode, string> = { wide: "0 340 1440 500", hero: "0 0 1440 620", snug: "0 0 1180 640", phone: "0 0 390 490" };
 
 /**
  * The public pages' drawing, on a four-column grid:
@@ -128,6 +131,48 @@ const HERO_EDGES: Record<EdgeId, { pts: Point[]; at: Point }> = {
   clSb: { pts: [[1264, 248], [1264, 326]], at: [1264, 287] },
 };
 
+/**
+ * The public pages' drawing for a map under 1276 px wide, where the hero's 13.7 unit text would fall under 12 px.
+ * Its text is 14 units and it is 1180 units wide, at most 85 units per unit of text, so the text stays at or above 12 px down to a 1020 px map:
+ * a 1280 window less the desk's sidebar. The rows are the hero's, further apart; the columns are closer, so the labels that sat in the gaps
+ * between boxes in a row move onto the upright runs, and the gaps that keep a label are wide enough to hold it with air either side.
+ */
+const SNUG_NODES: Record<NodeId, Point> = {
+  customers: [136, 236],
+  staff: [136, 536],
+  mail: [300, 96],
+  dns: [280, 376],
+  code: [348, 536],
+  payments: [690, 96],
+  app: [668, 376],
+  files: [690, 536],
+  database: [1016, 376],
+  inbox: [1004, 236],
+  mailbox: [1004, 96],
+};
+
+/** Each box holds its longer line at 14 units, in either language, with about 20 units of air on the right. */
+const SNUG_WIDTHS: Record<NodeId, number> = { customers: 180, staff: 180, mail: 164, dns: 164, code: 164, payments: 248, app: 224, files: 176, database: 212, inbox: 252, mailbox: 176 };
+
+const SNUG_EDGES: Record<EdgeId, { pts: Point[]; at: Point }> = {
+  cDns: { pts: [[226, 236], [270, 236], [270, 350]], at: [270, 300] },
+  pDns: { pts: [[136, 506], [136, 376], [198, 376]], at: [136, 441] },
+  dnsV: { pts: [[362, 376], [556, 376]], at: [447, 376] },
+  vSb: { pts: [[780, 376], [910, 376]], at: [845, 376] },
+  vR2: { pts: [[720, 402], [720, 510]], at: [720, 438] },
+  pR2: { pts: [[136, 566], [136, 606], [690, 606], [690, 562]], at: [400, 606] },
+  vSt: { pts: [[626, 350], [626, 122]], at: [626, 180] },
+  cSt: { pts: [[86, 206], [86, 26], [690, 26], [690, 70]], at: [330, 26] },
+  stV: { pts: [[750, 122], [750, 350]], at: [750, 290] },
+  vRs: { pts: [[556, 360], [532, 360], [532, 96], [382, 96]], at: [532, 236] },
+  rsC: { pts: [[218, 96], [184, 96], [184, 206]], at: [184, 164] },
+  ghV: { pts: [[304, 510], [304, 436], [600, 436], [600, 402]], at: [452, 436] },
+  ghSb: { pts: [[392, 510], [392, 470], [1060, 470], [1060, 402]], at: [940, 470] },
+  ghR2: { pts: [[430, 536], [602, 536]], at: [516, 536] },
+  clMb: { pts: [[1004, 210], [1004, 122]], at: [1004, 166] },
+  clSb: { pts: [[1004, 262], [1004, 350]], at: [1004, 306] },
+};
+
 const BY_ID = new Map<NodeId, MapNode>(NODES.map((n) => [n.id, n]));
 export function nodeById(id: NodeId): MapNode {
   const node = BY_ID.get(id);
@@ -140,6 +185,7 @@ export type NodeBox = { x: number; y: number; w: number; h: number };
 export function nodeBox(node: MapNode, mode: MapMode): NodeBox {
   if (mode === "wide") return { x: node.x, y: node.y, w: node.w, h: node.h };
   if (mode === "hero") return { x: HERO_NODES[node.id][0], y: HERO_NODES[node.id][1], w: HERO_WIDTHS[node.id] ?? node.w, h: node.h };
+  if (mode === "snug") return { x: SNUG_NODES[node.id][0], y: SNUG_NODES[node.id][1], w: SNUG_WIDTHS[node.id], h: node.h };
   const person = node.kind === "person";
   return { x: node.px, y: node.py, w: person ? 178 : 118, h: person ? 56 : 46 };
 }
@@ -177,13 +223,15 @@ export function rounded(pts: Point[], r = 12): string {
   return `${d} L${e[0]} ${e[1]}`;
 }
 
-/** The wire's corner points on the hero drawing, for checks that need its straight runs. */
-export const heroPoints = (id: EdgeId): Point[] => HERO_EDGES[id].pts;
+/** The wire's corner points on a public drawing, for checks that need its straight runs. */
+export const wirePoints = (id: EdgeId, mode: "hero" | "snug"): Point[] => (mode === "hero" ? HERO_EDGES : SNUG_EDGES)[id].pts;
+export const heroPoints = (id: EdgeId): Point[] => wirePoints(id, "hero");
 
 /** The wire's path data in either geometry. The packets sample this same path. */
 export function edgePath(edge: MapEdge, mode: MapMode): string {
   if (mode === "wide") return rounded(edge.pts);
   if (mode === "hero") return rounded(HERO_EDGES[edge.id].pts, 14);
+  if (mode === "snug") return rounded(SNUG_EDGES[edge.id].pts, 14);
   if (edge.id === "pR2") return rounded([[290, 40], [350, 40], [384, 74], [384, 256], [360, 280]], 10);
   /* The inbox and the mailbox sit either side of the database, so this wire runs under it. */
   if (edge.id === "clMb") return rounded([[66, 430], [66, 474], [324, 474], [324, 430]], 10);
@@ -195,7 +243,9 @@ export function edgePath(edge: MapEdge, mode: MapMode): string {
 
 /** Where a wire's label sits on a drawing with labels. */
 export function labelAt(edge: MapEdge, mode: MapMode): Point {
-  return mode === "hero" ? HERO_EDGES[edge.id].at : edge.at;
+  if (mode === "hero") return HERO_EDGES[edge.id].at;
+  if (mode === "snug") return SNUG_EDGES[edge.id].at;
+  return edge.at;
 }
 
 export type StoryHop = { edge: EdgeId; en: string; de: string };

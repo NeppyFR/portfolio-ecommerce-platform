@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Boxes, History, Minus, PackageOpen, Plus, Printer, Trash2 } from "lucide-react";
 import { ScanBar, type ScanMessage } from "@/desk/commerce/orders/ScanBar";
-import { colourLabel, pageOf } from "@/desk/commerce/orders/rules/order-rules";
+import { colourLabel, pageOf, sizeAndColour } from "@/desk/commerce/orders/rules/order-rules";
 import { classifyScan } from "@/desk/commerce/orders/rules/scan";
 import { MAX_LINES, MAX_PER_LINE, receiveTotal } from "@/desk/commerce/orders/rules/receive";
 import { PageHead } from "@/desk/shell/PageHead";
@@ -18,7 +18,7 @@ import { bookDelivery, discardDelivery, removeFromDelivery, scanDelivery, stepDe
 import { getState, useStore } from "@/store/core";
 import { stockAlerts } from "@/store/selectors";
 import type { StockMove, Tone } from "@/store/types";
-import { Button, Dialog, Empty, Garment, IconButton, Input, Pager, RuleLine, Segmented, Status, Table, Tabs, toast, usePageSize, type Column } from "@/ui";
+import { Button, Dialog, Empty, ProductArt, IconButton, Input, Pager, RuleLine, Segmented, Status, Table, Tabs, toast, usePageSize, type Column } from "@/ui";
 import { labelsHref } from "@/print/label-rules";
 import { AdjustDialog } from "./AdjustDialog";
 import { filterCounts, filterRows, inventoryRows, tileFor, type InventoryRow, type StockFilter } from "./rules";
@@ -122,7 +122,7 @@ export function InventoryScreen() {
     setMessage({ tone: "ok", text: fmt(t.scan.added, { sku: scan.sku, quantity: added.quantity, total: added.total }) });
   };
 
-  /** Demo: walks the sizes that run low first, so each press shows something worth doing. */
+  /** Demo: walks the variants that run low first, so each press shows something worth doing. */
   const nextCode = (): string | null => {
     const pool = [...allRows.filter((r) => r.onSale && r.state !== "ok"), ...allRows.filter((r) => r.onSale && r.state === "ok")];
     if (pool.length === 0) return null;
@@ -223,7 +223,7 @@ function StockTable({ rows, flash, onAdjust, emptyText }: { rows: InventoryRow[]
       cell: (r) => (
         <span className="in-product" data-off={!r.onSale || undefined}>
           <span className={`in-thumb ${tileFor(r.tone)}`}>
-            <Garment type={r.garment} tone={r.tone} view="mini" />
+            <ProductArt type={r.art} tone={r.tone} view="mini" />
           </span>
           <span className="in-product-text">
             <Link className="in-product-link" href={`/desk/products/?open=${encodeURIComponent(r.productId)}`}>{name(r)}</Link>
@@ -269,7 +269,7 @@ function StockTable({ rows, flash, onAdjust, emptyText }: { rows: InventoryRow[]
           <div className="in-card">
             <div className="in-card-top">
               <span className={`in-thumb ${tileFor(r.tone)}`}>
-                <Garment type={r.garment} tone={r.tone} view="mini" />
+                <ProductArt type={r.art} tone={r.tone} view="mini" />
               </span>
               <span className="in-product-text">
                 <span className="in-product-link">{name(r)}</span>
@@ -377,6 +377,11 @@ function HistoryList() {
     for (const p of products) for (const v of p.variants) out.set(v.id, lang === "de" ? p.nameDe : p.nameEn);
     return out;
   }, [products, lang]);
+  const colourByVariant = useMemo(() => {
+    const out = new Map<string, string>();
+    for (const p of products) for (const v of p.variants) out.set(v.id, v.color);
+    return out;
+  }, [products]);
   const rows = useMemo(() => [...movements].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, HISTORY_ROWS), [movements]);
   const pageSize = usePageSize();
   const [page, setPage] = useState(1);
@@ -395,7 +400,7 @@ function HistoryList() {
             </span>
             <div className="in-move-text">
               <span className="type-label">
-                {nameByVariant.get(m.variantId) ?? m.productName} · {sizeLabel(m.size, lang)}
+                {nameByVariant.get(m.variantId) ?? m.productName} · {sizeAndColour(m.size, colourByVariant.get(m.variantId), lang)}
               </span>
               <span className="type-small or-muted">
                 {meta(m)}

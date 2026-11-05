@@ -4,21 +4,21 @@ import { ArrowRight, CircleAlert, Search, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
-import { Checkbox, Garment, Input } from "@/ui";
+import { Checkbox, ProductArt, Input } from "@/ui";
 import { parseChf } from "@/lib/format";
 import { setParam } from "@/lib/routes";
-import type { GarmentTone, GarmentType, Tone } from "@/store/types";
+import type { ArtTone, ProductArtType, Tone } from "@/store/types";
 import "./catalogue.css";
 
-const TILE: Record<GarmentTone, string> = { ice: "t-sky", sky: "t-ice", azure: "t-pale", dusk: "t-mist", lilac: "t-ice" };
+const TILE: Record<ArtTone, string> = { ice: "t-sky", sky: "t-ice", azure: "t-pale", dusk: "t-mist", lilac: "t-ice" };
 
-/** A tile that keeps the drawing readable: pale garments sit on the sky tile, dark ones on a pale one. */
-export const tileFor = (tone: GarmentTone): string => TILE[tone];
+/** A tile that keeps the drawing readable: pale drawings sit on the sky tile, dark ones on a pale one. */
+export const tileFor = (tone: ArtTone): string => TILE[tone];
 
-export function GarmentThumb({ type, tone, size, printed, title }: { type: GarmentType; tone: GarmentTone; size?: "s" | "l"; printed?: boolean; title?: string }) {
+export function ArtThumb({ type, tone, size, printed, title }: { type: ProductArtType; tone: ArtTone; size?: "s" | "l"; printed?: boolean; title?: string }) {
   return (
     <span className={`cat-thumb ${tileFor(tone)}`} data-size={size}>
-      <Garment type={type} tone={tone} view="mini" printed={printed} title={title} />
+      <ProductArt type={type} tone={tone} view="mini" printed={printed} title={title} />
     </span>
   );
 }

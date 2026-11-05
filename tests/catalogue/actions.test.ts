@@ -17,8 +17,8 @@ const firstVariant = (slug: string): string => {
   if (!variant) throw new Error(`seed: ${slug}`);
   return variant.id;
 };
-const capVariant = () => firstVariant("logo-cap-cobalt");
-const teeVariant = () => firstVariant("logo-tee-cloud");
+const capVariant = () => firstVariant("travel-pouch-cobalt");
+const teeVariant = () => firstVariant("logo-mug");
 
 beforeEach(() => resetStore());
 
@@ -90,7 +90,7 @@ describe("drops", () => {
     if (!result.ok) throw new Error(result.code);
     const tasks = getState().tasks.filter((t) => t.listId === result.data.listId);
     expect(tasks).toHaveLength(10);
-    expect(tasks[0].title).toBe("Muster freigegeben und Grössen geprüft");
+    expect(tasks[0].title).toBe("Muster freigegeben und Varianten geprüft");
     expect(tasks[0].dueOn).toBe("2027-03-01");
     expect(startDropChecklist(created.data.id, "de")).toMatchObject({ ok: false, code: "exists" });
   });
@@ -176,33 +176,33 @@ describe("production", () => {
 describe("marketing", () => {
   it("plans, edits and deletes without touching the code or products", () => {
     const code = getState().discounts[0];
-    const result = createCampaign(campaign({ discountId: code.id, productIds: ["prod_frost-scarf"] }));
+    const result = createCampaign(campaign({ discountId: code.id, productIds: ["prod_frost-candle-trio"] }));
     if (!result.ok) throw new Error(result.code);
     expect(saveCampaign(result.data.id, campaign({ name: "Renamed", status: "scheduled" })).ok).toBe(true);
     expect(getState().campaigns.find((c) => c.id === result.data.id)?.status).toBe("scheduled");
     expect(saveCampaign(result.data.id, campaign({ startsOn: "2027-02-01", endsOn: "2027-01-01" }))).toMatchObject({ code: "dates" });
     expect(deleteCampaign(result.data.id).ok).toBe(true);
     expect(getState().discounts[0]).toBe(code);
-    expect(getState().products.some((p) => p.id === "prod_frost-scarf")).toBe(true);
+    expect(getState().products.some((p) => p.id === "prod_frost-candle-trio")).toBe(true);
     expect(createCampaign(campaign({ name: " " }))).toMatchObject({ code: "name" });
   });
 });
 
 describe("products", () => {
-  const base = { nameEn: "Cloud Socks", nameDe: "Wolken-Socken", descriptionEn: "", descriptionDe: "", category: "other" as const, priceRappen: 1900, costRappen: null, garment: "tote" as const, tone: "ice" as const, printedName: false, collectionIds: [], tagIds: [] };
+  const base = { nameEn: "Cloud Coaster", nameDe: "Wolken-Untersetzer", descriptionEn: "", descriptionDe: "", category: "other" as const, priceRappen: 1900, costRappen: null, art: "pouch" as const, tone: "ice" as const, printedName: false, collectionIds: [], tagIds: [] };
   it("creates a draft, adds a size, toggles it, deletes it, deletes the product", () => {
     const made = createProduct(base);
     if (!made.ok) throw new Error(made.code);
     const row = () => getState().products.find((p) => p.id === made.data.id);
     expect(row()?.status).toBe("draft");
-    const size = addVariant(made.data.id, { size: "M", color: "Ice", sku: "AL-SOCK-ICE-M", priceOverrideRappen: null, threshold: null, openingStock: 5 });
+    const size = addVariant(made.data.id, { size: "M", color: "Ice", sku: "AL-COAST-ICE-M", priceOverrideRappen: null, threshold: null, openingStock: 5 });
     if (!size.ok) throw new Error(size.code);
     expect(row()?.variants[0].stock).toBe(5);
     const vid = row()?.variants[0].id as string;
     expect(toggleVariant(made.data.id, vid).ok).toBe(true);
     expect(row()?.variants[0].isActive).toBe(false);
-    expect(saveVariant(made.data.id, vid, { size: "L", color: "Ice", sku: "AL-SOCK-ICE-L", priceOverrideRappen: 2100, threshold: 2 }).ok).toBe(true);
-    expect(row()?.variants[0].sku).toBe("AL-SOCK-ICE-L");
+    expect(saveVariant(made.data.id, vid, { size: "L", color: "Ice", sku: "AL-COAST-ICE-L", priceOverrideRappen: 2100, threshold: 2 }).ok).toBe(true);
+    expect(row()?.variants[0].sku).toBe("AL-COAST-ICE-L");
     expect(deleteVariant(made.data.id, vid).ok).toBe(true);
     expect(row()?.variants).toHaveLength(0);
     expect(saveProduct(made.data.id, { ...base, nameEn: "Cloud Socks 2" }).ok).toBe(true);

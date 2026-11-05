@@ -15,13 +15,13 @@ import { sizeLabel } from "@/lib/product-rules";
 import { orderHref } from "@/lib/routes";
 import { addTask, tickTask } from "@/store/actions/tasks";
 import { DEMO_NOW_MS, DEMO_TODAY } from "@/store/clock";
-import { registerReset, useStore } from "@/store/core";
-import { simulateIncomingOrder } from "@/store/flows";
+import { useStore } from "@/store/core";
 import { isAttentionOrder, stockAlerts } from "@/store/selectors";
 import type { FeatureKey, Order, OrderStatus, Profile } from "@/store/types";
-import { Checkbox, Empty, Garment, toast } from "@/ui";
+import { Checkbox, Empty, ProductArt, toast } from "@/ui";
 import { useReducedMotion } from "@/ui/useReducedMotion";
 import { CollectionDonut } from "./CollectionDonut";
+import { incomingOrderPlayed, playIncomingOrder } from "./incoming-order";
 import { RevenueChart, type ChartPoint } from "./RevenueChart";
 import {
   NO_COLLECTION,
@@ -51,11 +51,6 @@ const THUMBS = 2;
 const INSERT_DELAY_MS = 1200;
 const EASE = [0.2, 0.7, 0.2, 1] as const;
 
-let insertPlayed = false;
-registerReset(() => {
-  insertPlayed = false;
-});
-
 const francs = (rappen: number): string => formatChf(roundToFranc(rappen)).replace(/\.00$/, "");
 
 export function DashboardScreen() {
@@ -72,11 +67,10 @@ export function DashboardScreen() {
   const lowCount = [seesOrders, seesStock, seesTasks].filter(Boolean).length;
 
   useEffect(() => {
-    if (insertPlayed || !seesOrders) return;
+    if (incomingOrderPlayed() || !seesOrders) return;
     const timer = window.setTimeout(() => {
-      insertPlayed = true;
-      const result = simulateIncomingOrder();
-      if (result.ok && result.data.orderNumber && !document.querySelector("dialog[open]")) toast(fmt(t.newOrder, { number: result.data.orderNumber }));
+      const result = playIncomingOrder();
+      if (result?.ok && result.data.orderNumber && !document.querySelector("dialog[open]")) toast(fmt(t.newOrder, { number: result.data.orderNumber }));
     }, INSERT_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, [seesOrders, t.newOrder]);
@@ -152,7 +146,7 @@ function Kpi({ icon: Icon, label, value, exact, delta, versus, accent }: { icon:
   );
 }
 
-function KpiRow({ rangeId, revenue, orders: seesOrders }: { rangeId: RangeId; revenue: boolean; orders: boolean }) {
+export function KpiRow({ rangeId, revenue, orders: seesOrders }: { rangeId: RangeId; revenue: boolean; orders: boolean }) {
   const t = useT(dashboard);
   const orders = useStore((s) => s.orders);
   const k = useMemo(() => dashboardKpis(orders, rangeFor(rangeId, DEMO_TODAY)), [orders, rangeId]);
@@ -168,7 +162,7 @@ function KpiRow({ rangeId, revenue, orders: seesOrders }: { rangeId: RangeId; re
   );
 }
 
-function RevenueCard({ rangeId, onRange }: { rangeId: RangeId; onRange: (id: RangeId) => void }) {
+export function RevenueCard({ rangeId, onRange }: { rangeId: RangeId; onRange: (id: RangeId) => void }) {
   const t = useT(dashboard);
   const lang = useLang();
   const orders = useStore((s) => s.orders);
@@ -208,7 +202,7 @@ function RevenueCard({ rangeId, onRange }: { rangeId: RangeId; onRange: (id: Ran
   );
 }
 
-function CollectionCard({ rangeId }: { rangeId: RangeId }) {
+export function CollectionCard({ rangeId }: { rangeId: RangeId }) {
   const t = useT(dashboard);
   const lang = useLang();
   const orders = useStore((s) => s.orders);
@@ -233,10 +227,10 @@ function CollectionCard({ rangeId }: { rangeId: RangeId }) {
   );
 }
 
-function Thumb({ type, tone, printed, size }: { type: Order["items"][number]["garment"]; tone: Order["items"][number]["tone"]; printed?: boolean; size: "s" | "l" }) {
+function Thumb({ type, tone, printed, size }: { type: Order["items"][number]["art"]; tone: Order["items"][number]["tone"]; printed?: boolean; size: "s" | "l" }) {
   return (
     <span className="db-thumb" data-size={size} data-tone={tone}>
-      <Garment type={type} tone={tone} view="full" printed={printed} />
+      <ProductArt type={type} tone={tone} view="full" printed={printed} />
     </span>
   );
 }
@@ -261,11 +255,11 @@ function StatusChip({ order }: { order: Order }) {
   );
 }
 
-function RecentOrders() {
+export function RecentOrders({ count = RECENT_ROWS }: { count?: number }) {
   const t = useT(dashboard);
   const orders = useStore((s) => s.orders);
   const reduced = useReducedMotion();
-  const rows = useMemo(() => newestOrders(orders, RECENT_ROWS), [orders]);
+  const rows = useMemo(() => newestOrders(orders, count), [orders, count]);
   return (
     <section className="db-card db-orders">
       <CardHead title={t.recent} href="/desk/orders/" more={t.viewAll} />
@@ -313,7 +307,7 @@ function OrderCells({ order }: { order: Order }) {
       </span>
       <span role="cell" className="db-cell-thumbs" aria-label={label}>
         {shown.map((item) => (
-          <Thumb key={item.id} type={item.garment} tone={item.tone} size="s" />
+          <Thumb key={item.id} type={item.art} tone={item.tone} size="s" />
         ))}
         {extra > 0 ? <span className="db-thumb-more">+{extra}</span> : null}
       </span>
@@ -342,7 +336,7 @@ function StockAlerts() {
           {rows.map(({ product, variant, left }) => (
             <li key={variant.id}>
               <Link href="/desk/inventory/?filter=low" className="db-stock-row">
-                <Thumb type={product.garment} tone={product.tone} printed={product.printedName} size="l" />
+                <Thumb type={product.art} tone={product.tone} printed={product.printedName} size="l" />
                 <span className="db-stock-text">
                   <span className="db-stock-name">{plainName(lang === "de" ? product.nameDe : product.nameEn)}</span>
                   <span className="db-stock-sub">{`${sizeLabel(variant.size, lang)} / ${t.colors[variant.color] ?? variant.color}`}</span>

@@ -10,6 +10,7 @@ import { finance } from "@/i18n/dict/finance";
 import { LABEL } from "@/lib/brand";
 import { downloadText } from "@/lib/download";
 import { dayKey, formatChf, formatDate } from "@/lib/format";
+import { colourLabel } from "@/desk/commerce/orders/rules/order-rules";
 import { sizeLabel } from "@/lib/product-rules";
 import { BOOKS_START_YEAR, confirmCount, discardCount, reopenCount, saveCountLines, startCount, type LinePatch } from "@/store/actions/finance";
 import { identityOf } from "@/store/actions/profile";
@@ -242,7 +243,7 @@ function CountView({ count, isSuper, lang }: { count: StockCount; isSuper: boole
     setConfirmError(messages[result.code] ?? result.message);
   };
 
-  const sizeLine = (line: StockCountLine) => `${[sizeLabel(line.size, lang), line.color, line.sku].filter(Boolean).join(" · ")}${line.sizeDeleted ? t.sizeDeleted : ""}`;
+  const sizeLine = (line: StockCountLine) => `${[sizeLabel(line.size, lang), colourLabel(line.color, lang), line.sku].filter(Boolean).join(" · ")}${line.sizeDeleted ? t.sizeDeleted : ""}`;
   const startedBy = identityOf(count.startedBy).name;
   const confirmedBy = count.confirmedBy ? identityOf(count.confirmedBy).name : "";
 

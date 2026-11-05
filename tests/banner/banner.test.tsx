@@ -52,7 +52,7 @@ describe("the loop", () => {
       }
     });
 
-    it(`${variant}: something other than decoration moves, except around the seam`, () => {
+    it(`${variant}: something other than decoration moves, except around the loop point`, () => {
       const still: number[] = [];
       for (let i = 0; i < 240; i++) {
         const t = i * 0.05;
@@ -75,7 +75,7 @@ describe("the loop", () => {
 
 describe("storyboard, wide", () => {
   const f = (t: number) => frame(t, "wide");
-  it("starts with a click on the button, and the hoodie reaches the bag", () => {
+  it("starts with a click on the button, and the lamp reaches the bag", () => {
     expect(f(0.8)["w.cur"].o).toBeGreaterThan(0.9);
     expect(f(1.05)["w.cta"].s).toBeLessThan(1);
     expect(f(1.5)["w.mini"].o).toBe(1);
@@ -217,10 +217,20 @@ describe("the contract", () => {
   });
   it("draws both products with real numbers from the desk's first load", () => {
     const out = html(<CommercePreview lang="en" />);
-    for (const name of ["Online shop", "Staff system", "Essential Hoodie", "CHF 89.00", "Add to bag", "Payments", "Database", "Mail", "Total Revenue", "Recent Orders", "AL-1150", "CHF 158.00", "AL-1149", "CHF 297.00", "AL-1151"]) {
+    for (const name of ["Online shop", "Staff system", "Aerlo", "Everyday Lamp", "CHF 89.00", "Add to bag", "Payments", "Database", "Mail", "Total Revenue", "Recent Orders", "AL-1150", "CHF 158.00", "AL-1149", "CHF 297.00", "AL-1151"]) {
       expect(out, name).toContain(`>${name}</text>`);
     }
     expect(out).not.toContain('opacity="0.25"');
+  });
+  it("sells the lamp the shop draws, with the shade and base of its art", () => {
+    const art = readFileSync(new URL("../../src/art/ProductArt.tsx", import.meta.url), "utf8");
+    for (const name of ["LAMP_SHADE", "LAMP_BASE"]) {
+      const d = source.match(new RegExp(`const ${name} = "([^"]+)"`))?.[1] ?? "";
+      expect(d.length, name).toBeGreaterThan(20);
+      expect(art, name).toContain(d);
+    }
+    expect(COMMERCE_PREVIEW_LABELS.en.alt).toContain("adds a lamp to the bag");
+    expect(COMMERCE_PREVIEW_LABELS.de.alt).toContain("legt eine Lampe in den Warenkorb");
   });
   it("keeps every word at 16 units in the wide art and 24 in the compact", () => {
     const out = html(<CommercePreview lang="en" />);

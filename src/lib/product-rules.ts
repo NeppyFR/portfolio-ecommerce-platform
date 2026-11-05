@@ -1,8 +1,8 @@
-import type { Lang, Product, Rappen, SizeCode, Variant } from "@/store/types";
+import type { ArtTone, Lang, Product, Rappen, SizeCode, Variant } from "@/store/types";
 import { SKU_PREFIX } from "./brand";
 
-export const SIZES: SizeCode[] = ["XS", "S", "M", "L", "XL", "ONE_SIZE"];
-export const APPAREL_SIZES: SizeCode[] = ["XS", "S", "M", "L", "XL"];
+export const SIZES: SizeCode[] = ["S", "M", "L", "XL", "ONE_SIZE"];
+export const SIZE_RANGE: SizeCode[] = ["S", "M", "L", "XL"];
 export const PUBLIC_STOCK_CAP = 10;
 
 const ONE_SIZE_LABEL: Record<Lang, string> = { en: "One size", de: "Einheitsgrösse" };
@@ -34,9 +34,9 @@ export function uniqueSlug(text: string, taken: Iterable<string>): string {
   }
 }
 
-const SIZE_SKU: Record<SizeCode, string> = { XS: "XS", S: "S", M: "M", L: "L", XL: "XL", ONE_SIZE: "OS" };
+const SIZE_SKU: Record<SizeCode, string> = { S: "S", M: "M", L: "L", XL: "XL", ONE_SIZE: "OS" };
 
-/** `AL-` + type + tone + size, e.g. `AL-ZIP-LAG-M`, `AL-TOTE-CLD-OS`. */
+/** `AL-` + type + tone + size, e.g. `AL-SPK-LAG-M`, `AL-NOTE-CLD-OS`. */
 export const skuFor = (type: string, tone: string, size: SizeCode): string => `${SKU_PREFIX}${type}-${tone}-${SIZE_SKU[size]}`;
 
 export const effectivePrice = (product: Pick<Product, "priceRappen">, variant: Pick<Variant, "priceOverrideRappen">): Rappen => variant.priceOverrideRappen ?? product.priceRappen;
@@ -45,6 +45,21 @@ export const effectivePrice = (product: Pick<Product, "priceRappen">, variant: P
 export const publicAvailable = (v: Pick<Variant, "stock" | "reserved">): number => Math.min(PUBLIC_STOCK_CAP, Math.max(0, v.stock - v.reserved));
 
 export const isSoldOut = (v: Pick<Variant, "stock" | "reserved">): boolean => v.stock - v.reserved <= 0;
+
+/** Every colour a product comes in, the one most of its sizes share first. */
+export function coloursOf(variants: Pick<Variant, "color">[]): string[] {
+  const count = new Map<string, number>();
+  for (const v of variants) count.set(v.color, (count.get(v.color) ?? 0) + 1);
+  return [...count.keys()].sort((a, b) => (count.get(b) ?? 0) - (count.get(a) ?? 0));
+}
+
+const COLOUR_TONE: Record<string, ArtTone> = { Cobalt: "dusk", Lagoon: "azure", Cloud: "ice", Ice: "sky", Lilac: "lilac", Frost: "lilac" };
+
+/** The tone to draw a variant in: a second colour shows as itself, the main one as the product was drawn. */
+export function toneForColour(product: { tone: ArtTone; variants: Pick<Variant, "color">[] }, color: string | null | undefined): ArtTone {
+  if (!color || color === coloursOf(product.variants)[0]) return product.tone;
+  return COLOUR_TONE[color] ?? product.tone;
+}
 
 export const isVariantOnSale = (product: Pick<Product, "status">, v: Pick<Variant, "isActive">): boolean => product.status === "active" && v.isActive;
 

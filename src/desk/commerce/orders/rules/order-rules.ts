@@ -1,9 +1,10 @@
 import { addDays, weekdayIndex } from "@/lib/dates";
 import { dayKey } from "@/lib/format";
 import { checkTracking, makeTracking } from "@/lib/tracking";
+import { sizeLabel } from "@/lib/product-rules";
 import { DEMO_TODAY } from "@/store/clock";
 import { ERASED_NAME } from "@/store/seed/people";
-import type { Order, OrderItem, Rappen } from "@/store/types";
+import type { Order, OrderItem, Rappen, SizeCode } from "@/store/types";
 import { remainingRappen } from "./returns";
 
 /** An erased person's stored name is one fixed English placeholder. Screens print it in the viewer's language. */
@@ -15,6 +16,9 @@ export const shownName = (name: string, erasedLabel: string): string => (name ==
 const COLOUR_DE: Record<string, string> = { Cobalt: "Kobalt", Cloud: "Wolke", Lilac: "Flieder", Ice: "Eis" };
 /** Colours are stored in English. Lagoon and Frost are names and stay the same in German. */
 export const colourLabel = (colour: string | null | undefined, lang: "en" | "de"): string => (colour ? (lang === "de" ? COLOUR_DE[colour] ?? colour : colour) : "");
+
+/** Size and colour together, because two runs of one product can share a size. */
+export const sizeAndColour = (size: SizeCode, colour: string | null | undefined, lang: "en" | "de"): string => [sizeLabel(size, lang), colourLabel(colour, lang)].filter(Boolean).join(" · ");
 
 export type PaymentState = "pending" | "paid" | "partially_refunded" | "refunded";
 export type FulfilmentState = "unfulfilled" | "packed" | "shipped" | "delivered" | "cancelled";

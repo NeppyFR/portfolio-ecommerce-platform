@@ -149,31 +149,31 @@ function monthlyGross(orders: Order[], month: string): Rappen {
 
 const MANUAL: EntryInput[] = [
   { amount: 500000, title: "Studio lead's starting deposit", on: "2026-01-03", category: "cat_partner-deposit", account: "acc_bank", counterparty: "Mara Keller", by: "owner" },
-  { amount: -82000, title: "Sample run, first knit tests", on: "2026-02-10", category: "cat_production-samples", account: "acc_bank", counterparty: "Filati Sud", drop: "drop_frost", receipts: ["sample-run-knit.pdf"] },
-  { amount: -46000, title: "Label and swing tag design", on: "2026-02-24", category: "cat_production-samples", account: "acc_bank", counterparty: "Studio Nord" },
+  { amount: -82000, title: "Sample run, first wax tests", on: "2026-02-10", category: "cat_production-samples", account: "acc_bank", counterparty: "Cera Sud", drop: "drop_frost", receipts: ["sample-run-wax.pdf"] },
+  { amount: -46000, title: "Label and product tag design", on: "2026-02-24", category: "cat_production-samples", account: "acc_bank", counterparty: "Studio Nord" },
   { amount: -38500, title: "Terms of sale, legal check", on: "2026-03-09", category: "cat_legal-admin", account: "acc_bank", counterparty: "Example notary", receipts: ["terms-legal-check.pdf"] },
   { amount: -72000, title: "Shelving and a label printer", on: "2026-03-20", category: "cat_equipment", account: "acc_bank", counterparty: "Example supplies", receipts: ["shelving-printer.pdf"] },
-  { amount: -68000, title: "Frost production deposit", on: "2026-05-04", category: "cat_production-samples", account: "acc_bank", counterparty: "Filati Sud", drop: "drop_frost", originalMinor: 72300, currency: "EUR" },
-  { amount: -94000, title: "Frost production final", on: "2026-06-18", category: "cat_production-samples", account: "acc_bank", counterparty: "Filati Sud", drop: "drop_frost", originalMinor: 100000, currency: "EUR", id: "led_po_1", source: "production", receipts: ["po-0001-invoice.pdf"] },
+  { amount: -68000, title: "Frost production deposit", on: "2026-05-04", category: "cat_production-samples", account: "acc_bank", counterparty: "Cera Sud", drop: "drop_frost", originalMinor: 72300, currency: "EUR" },
+  { amount: -94000, title: "Frost production final", on: "2026-06-18", category: "cat_production-samples", account: "acc_bank", counterparty: "Cera Sud", drop: "drop_frost", originalMinor: 100000, currency: "EUR", id: "led_po_1", source: "production", receipts: ["po-0001-invoice.pdf"] },
   { amount: -21500, title: "Mailing boxes, first batch", on: "2026-06-22", category: "cat_packaging-shipping", account: "acc_bank", counterparty: "Pack and Print" },
   { amount: -34000, title: "Launch shoot, Frost", on: "2026-06-26", category: "cat_marketing", account: "acc_bank", drop: "drop_frost", counterparty: "Example photographer" },
   { amount: -900, title: "Parcel tape", on: "2026-07-02", category: null, account: "acc_cash", description: "Paid in cash, category still open." },
   { amount: 260000, title: "Second deposit for Lagoon", on: "2026-07-01", category: "cat_partner-deposit", account: "acc_bank", counterparty: "Mara Keller", by: "owner" },
-  { amount: -191000, title: "Lagoon production deposit", on: "2026-07-06", category: "cat_production-samples", account: "acc_bank", counterparty: "Tessuti Lago", drop: "drop_lagoon", originalMinor: 203200, currency: "EUR", receipts: ["lagoon-deposit.pdf"] },
-  { amount: -309000, title: "Lagoon production final", on: "2026-08-27", category: "cat_production-samples", account: "acc_bank", counterparty: "Tessuti Lago", drop: "drop_lagoon", originalMinor: 328700, currency: "EUR", id: "led_po_2", source: "production", receipts: ["po-0002-invoice.pdf"] },
+  { amount: -191000, title: "Lagoon production deposit", on: "2026-07-06", category: "cat_production-samples", account: "acc_bank", counterparty: "Ceramica Lago", drop: "drop_lagoon", originalMinor: 203200, currency: "EUR", receipts: ["lagoon-deposit.pdf"] },
+  { amount: -309000, title: "Lagoon production final", on: "2026-08-27", category: "cat_production-samples", account: "acc_bank", counterparty: "Ceramica Lago", drop: "drop_lagoon", originalMinor: 328700, currency: "EUR", id: "led_po_2", source: "production", receipts: ["po-0002-invoice.pdf"] },
   { amount: -28800, title: "Mailing boxes, second batch", on: "2026-09-01", category: "cat_packaging-shipping", account: "acc_bank", counterparty: "Pack and Print" },
-  { amount: -52000, title: "Lagoon lookbook shoot", on: "2026-09-08", category: "cat_marketing", account: "acc_bank", drop: "drop_lagoon", counterparty: "Example photographer", receipts: ["lagoon-shoot.pdf"], vat: VAT_STANDARD_BP },
+  { amount: -52000, title: "Lagoon catalogue shoot", on: "2026-09-08", category: "cat_marketing", account: "acc_bank", drop: "drop_lagoon", counterparty: "Example photographer", receipts: ["lagoon-shoot.pdf"], vat: VAT_STANDARD_BP },
   { amount: -14900, title: "Customs on the Lagoon delivery", on: "2026-09-02", category: "cat_taxes-duties", account: "acc_bank", counterparty: "Customs", drop: "drop_lagoon", receipts: ["customs-lagoon.pdf"] },
   { amount: -12000, title: "Trade register fee", on: "2026-09-15", category: "cat_legal-admin", account: "acc_bank", counterparty: "Example registry" },
-  { amount: 18500, title: "Sold leftover fabric", on: "2026-09-21", category: "cat_other-income", account: "acc_cash", counterparty: "Studio Nord", vat: VAT_STANDARD_BP },
+  { amount: 18500, title: "Sold leftover packaging", on: "2026-09-21", category: "cat_other-income", account: "acc_cash", counterparty: "Studio Nord", vat: VAT_STANDARD_BP },
   { amount: -60000, title: "Partner withdrawal, October", on: "2026-10-05", category: "cat_partner-withdrawal", account: "acc_bank", counterparty: "Nico Steiner" },
   { amount: -19900, title: "Scanner and label rolls", on: "2026-10-12", category: "cat_equipment", account: "acc_bank", counterparty: "Example supplies" },
-  { amount: -8800, title: "Fit samples, Aurora", on: "2026-10-14", category: "cat_production-samples", account: "acc_bank", counterparty: "Knit Studio", drop: "drop_aurora" },
+  { amount: -8800, title: "Test samples, Aurora", on: "2026-10-14", category: "cat_production-samples", account: "acc_bank", counterparty: "Proto Studio", drop: "drop_aurora" },
   { amount: -35900, title: "Tissue paper and stickers", on: "2026-11-05", category: "cat_packaging-shipping", account: "acc_bank", counterparty: "Pack and Print", vat: VAT_STANDARD_BP },
-  { amount: -24500, title: "End of summer sale ads", on: "2026-11-16", category: "cat_marketing", account: "acc_stripe", counterparty: "Example ad network", vat: VAT_STANDARD_BP },
-  { amount: -17200, title: "Fit samples, second round", on: "2026-11-27", category: "cat_production-samples", account: "acc_bank", counterparty: "Knit Studio", drop: "drop_aurora", receipts: ["fit-samples-2.pdf"], vat: VAT_ZERO_BP },
+  { amount: -24500, title: "Last chance campaign ads", on: "2026-11-16", category: "cat_marketing", account: "acc_stripe", counterparty: "Example ad network", vat: VAT_STANDARD_BP },
+  { amount: -17200, title: "Test samples, second round", on: "2026-11-27", category: "cat_production-samples", account: "acc_bank", counterparty: "Proto Studio", drop: "drop_aurora", receipts: ["test-samples-2.pdf"], vat: VAT_ZERO_BP },
   { amount: -9800, title: "Insurance, half year", on: "2026-12-01", category: "cat_legal-admin", account: "acc_bank", counterparty: "Example insurer", vat: VAT_ZERO_BP },
-  { amount: -41000, title: "Aurora production deposit", on: "2026-12-07", category: "cat_production-samples", account: "acc_bank", counterparty: "Tessuti Lago", drop: "drop_aurora", originalMinor: 43600, currency: "EUR", receipts: ["aurora-deposit.pdf"] },
+  { amount: -41000, title: "Aurora production deposit", on: "2026-12-07", category: "cat_production-samples", account: "acc_bank", counterparty: "Ceramica Lago", drop: "drop_aurora", originalMinor: 43600, currency: "EUR", receipts: ["aurora-deposit.pdf"] },
   { amount: -13400, title: "Parcel surcharge, peak season", on: "2026-12-30", category: "cat_packaging-shipping", account: "acc_bank", counterparty: "Beispielpost", vat: VAT_STANDARD_BP },
   { amount: -6500, title: "Coffee for the stock count", on: "2027-01-04", category: "cat_other", account: "acc_cash", vat: VAT_REDUCED_BP },
   { amount: -11900, title: "Mailing boxes, top-up", on: "2027-01-06", category: "cat_packaging-shipping", account: "acc_bank", counterparty: "Pack and Print" },
@@ -253,7 +253,7 @@ export function createStockCounts(products: Product[], movements: StockMove[], o
   });
   const belowZero = draftLines.find((line) => line.counted !== null && line.systemQty > 0);
   if (belowZero) Object.assign(belowZero, { counted: 0, toShip: 1, stockAtCount: belowZero.systemQty });
-  draftLines.push({ id: "scl_2026_gone", variantId: null, productName: "Frost Scarf", size: "ONE_SIZE", color: "Ash", sku: "AL-SCARF-ASH-OS", systemQty: 2, counted: 2, toShip: 0, stockAtCount: 2, productCostRappen: null, typedCostRappen: null, sizeDeleted: true });
+  draftLines.push({ id: "scl_2026_gone", variantId: null, productName: "Frost Candle Trio", size: "ONE_SIZE", color: "Ash", sku: "AL-TRIO-ASH-OS", systemQty: 2, counted: 2, toShip: 0, stockAtCount: 2, productCostRappen: null, typedCostRappen: null, sizeDeleted: true });
 
   const confirmedLines: StockCountLine[] = variants.filter(({ product }) => product.publishedAt !== null && product.publishedAt < zurich("2026-07-01", 0)).map(({ product, variant }, i) => {
     const counted = 10 + ((i * 7) % 24);

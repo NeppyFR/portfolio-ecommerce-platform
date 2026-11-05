@@ -6,40 +6,41 @@ import { useEffect, useMemo, useState } from "react";
 import { fmt, useLang, useT } from "@/i18n";
 import { products as dict } from "@/i18n/dict/products";
 import { formatChf, formatDate } from "@/lib/format";
-import { compareVariants, SIZES, sizeLabel, effectivePrice } from "@/lib/product-rules";
+import { colourLabel } from "@/desk/commerce/orders/rules/order-rules";
+import { coloursOf, compareVariants, SIZES, sizeLabel, effectivePrice } from "@/lib/product-rules";
 import { hasFullPowers } from "@/lib/features";
 import { productHref } from "@/lib/routes";
 import { addVariant, archiveProduct, createProduct, deleteProduct, deleteVariant, duplicateProduct, saveProduct, saveVariant, toggleVariant, unarchiveProduct, type ProductInput, type VariantInput } from "@/store/actions/products";
 import { useStore } from "@/store/core";
-import type { GarmentTone, GarmentType, Product, ProductCategory, ProductStatus, SizeCode, Variant } from "@/store/types";
-import { Button, Dialog, Garment, IconButton, Input, MoneyInput, RuleLine, Select, Sheet, Switch, Table, Textarea, toast, type Column } from "@/ui";
-import { GARMENT_TONES, GARMENT_TYPES, PRODUCT_CATEGORIES, hasOrders, reservedUnits, suggestSku, variantDeleteBlock } from "./rules";
+import type { ArtTone, ProductArtType, Product, ProductCategory, ProductStatus, SizeCode, Variant } from "@/store/types";
+import { Button, Dialog, ProductArt, IconButton, Input, MoneyInput, RuleLine, Select, Sheet, Switch, Table, Textarea, toast, type Column } from "@/ui";
+import { ART_TONES, ART_TYPES, PRODUCT_CATEGORIES, hasOrders, reservedUnits, suggestSku, variantDeleteBlock } from "./rules";
 import { CheckList, FormError, parseWhole, tileFor } from "./shared";
 
 /** The sheet footer saves the form from outside it, so one button stays in reach however far the sheet scrolls. */
 const FORM_ID = "cat-product-form";
 
-const emptyInput = (): ProductInput => ({ nameEn: "", nameDe: "", descriptionEn: "", descriptionDe: "", category: "hoodie", priceRappen: null, costRappen: null, garment: "hoodie", tone: "ice", printedName: false, collectionIds: [], tagIds: [] });
+const emptyInput = (): ProductInput => ({ nameEn: "", nameDe: "", descriptionEn: "", descriptionDe: "", category: "drinkware", priceRappen: null, costRappen: null, art: "mug", tone: "ice", printedName: false, collectionIds: [], tagIds: [] });
 
-const inputOf = (p: Product): ProductInput => ({ nameEn: p.nameEn, nameDe: p.nameDe, descriptionEn: p.descriptionEn, descriptionDe: p.descriptionDe, category: p.category, priceRappen: p.priceRappen, costRappen: p.costRappen, garment: p.garment, tone: p.tone, printedName: p.printedName, collectionIds: p.collectionIds, tagIds: p.tagIds, status: p.status });
+const inputOf = (p: Product): ProductInput => ({ nameEn: p.nameEn, nameDe: p.nameDe, descriptionEn: p.descriptionEn, descriptionDe: p.descriptionDe, category: p.category, priceRappen: p.priceRappen, costRappen: p.costRappen, art: p.art, tone: p.tone, printedName: p.printedName, collectionIds: p.collectionIds, tagIds: p.tagIds, status: p.status });
 
 function LookPicker({ value, onChange }: { value: ProductInput; onChange: (next: ProductInput) => void }) {
   const t = useT(dict);
   return (
     <section className="cat-section" aria-label={t.look.title}>
       <div className={`cat-stage ${value.tone === "ice" || value.tone === "lilac" ? "f-region" : "t-ice"}`}>
-        <Garment type={value.garment} tone={value.tone} printed={value.printedName || undefined} />
+        <ProductArt type={value.art} tone={value.tone} printed={value.printedName || undefined} />
       </div>
       <p className="type-small cat-sub">{t.look.hint}</p>
       <div>
-        <p className="type-label mb-2">{t.look.garment}</p>
-        <div className="cat-picks" role="group" aria-label={t.look.garment}>
-          {GARMENT_TYPES.map((type: GarmentType) => (
-            <button key={type} type="button" className="cat-pick" aria-pressed={value.garment === type} onClick={() => onChange({ ...value, garment: type })}>
+        <p className="type-label mb-2">{t.look.art}</p>
+        <div className="cat-picks" role="group" aria-label={t.look.art}>
+          {ART_TYPES.map((type: ProductArtType) => (
+            <button key={type} type="button" className="cat-pick" aria-pressed={value.art === type} onClick={() => onChange({ ...value, art: type })}>
               <span className="cat-pick-glyph">
-                <Garment type={type} tone="sky" view="mini" />
+                <ProductArt type={type} tone="sky" view="mini" />
               </span>
-              {t.look.garments[type]}
+              {t.look.arts[type]}
             </button>
           ))}
         </div>
@@ -47,10 +48,10 @@ function LookPicker({ value, onChange }: { value: ProductInput; onChange: (next:
       <div>
         <p className="type-label mb-2">{t.look.tone}</p>
         <div className="cat-picks" role="group" aria-label={t.look.tone}>
-          {GARMENT_TONES.map((tone: GarmentTone) => (
+          {ART_TONES.map((tone: ArtTone) => (
             <button key={tone} type="button" className="cat-pick" aria-pressed={value.tone === tone} onClick={() => onChange({ ...value, tone })}>
               <span className={`cat-pick-glyph cat-thumb ${tileFor(tone)}`} data-size="s">
-                <Garment type={value.garment} tone={tone} view="mini" />
+                <ProductArt type={value.art} tone={tone} view="mini" />
               </span>
               {t.look.tones[tone]}
             </button>
@@ -119,7 +120,7 @@ function AddVariantForm({ product }: { product: Product }) {
   const t = useT(dict);
   const lang = useLang();
   const [size, setSize] = useState<SizeCode>(() => SIZES.find((s) => !product.variants.some((v) => v.size === s)) ?? "M");
-  const [color, setColor] = useState(product.variants[0]?.color ?? "");
+  const [color, setColor] = useState(coloursOf(product.variants)[0] ?? "");
   const [sku, setSku] = useState<string | null>(null);
   const [price, setPrice] = useState<number | null>(null);
   const [threshold, setThreshold] = useState("");
@@ -210,7 +211,7 @@ function VariantsSection({ product }: { product: Product }) {
   };
   const columns: Column<Variant>[] = [
     { key: "size", header: t.variants.colSize, cell: (v) => sizeLabel(v.size, lang) },
-    { key: "colour", header: t.variants.colColour, cell: (v) => v.color || "–" },
+    { key: "colour", header: t.variants.colColour, cell: (v) => colourLabel(v.color, lang) || "–" },
     { key: "sku", header: t.variants.colSku, cell: (v) => <span className="cat-mono">{v.sku}</span> },
     { key: "price", header: t.variants.colPrice, align: "right", cell: (v) => (v.priceOverrideRappen === null ? <span className="cat-sub">{t.variants.default}</span> : <span className="cat-mono">{formatChf(v.priceOverrideRappen)}</span>) },
     { key: "threshold", header: t.variants.colThreshold, align: "right", cell: (v) => (v.threshold === null ? <span className="cat-sub">{t.variants.default}</span> : v.threshold) },
@@ -233,7 +234,7 @@ function VariantsSection({ product }: { product: Product }) {
       <div className="cat-card-top">
         <span className="cat-name">
           {sizeLabel(v.size, lang)}
-          {v.color ? ` · ${v.color}` : ""}
+          {v.color ? ` · ${colourLabel(v.color, lang)}` : ""}
         </span>
         <Switch aria-label={fmt(t.variants.onSaleLabel, { sku: v.sku })} checked={v.isActive} onChange={() => toggle(v)} />
       </div>

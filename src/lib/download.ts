@@ -1,7 +1,7 @@
 import { LABEL } from "./brand";
 import { DEMO_TODAY } from "@/store/clock";
 
-/** `aerloom-orders-2027-01-08.csv` */
+/** `aerlo-orders-2027-01-08.csv` */
 export const exportName = (dataset: string, ext: "csv" | "json", day: string = DEMO_TODAY): string => `${LABEL.name.toLowerCase()}-${dataset}-${day}.${ext}`;
 
 /** Hands the viewer a file through a Blob and a temporary `a[download]`. Nothing leaves the browser. */

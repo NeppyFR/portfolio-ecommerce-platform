@@ -108,9 +108,9 @@ describe("setParams and session history", () => {
   it("replaces for filters and typed search", () => {
     const tab = fakeBrowser("https://shop.example.com/desk/inventory/");
     setParams({ filter: "low" });
-    setParams({ q: "hood" });
+    setParams({ q: "lamp" });
     expect(tab.length).toBe(1);
-    expect(tab.url).toBe("/desk/inventory/?filter=low&q=hood");
+    expect(tab.url).toBe("/desk/inventory/?filter=low&q=lamp");
   });
 
   it("closes through replace when the same call also changes a filter", () => {

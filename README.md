@@ -1,6 +1,6 @@
 # Commerce Platform
 
-A static showcase of a complete online clothing shop and the staff system behind it, for the fictional label Aerloom. It has a storefront, a checkout with four outcomes, and a staff desk with orders, inventory, products, drops, finances, inbox, files, a calendar, a checklist, access control and system screens. Everything runs in your browser. It also has a hosting map, and `/built/` explains how the real system behind this demo is put together.
+A static showcase of a complete staff system, the desk, and the online shop it runs. The store is the fictional Aerlo, which sells useful things for home, desk and travel. The desk has orders, inventory, products, drops, finances, inbox, files, a calendar, a checklist, access control and system screens. In front of it sit a storefront and a checkout with four outcomes. Everything runs in your browser. It also has a hosting map, and `/built/` explains how the real system behind this demo is put together.
 
 It is available in English and German, at desktop and phone width.
 
@@ -19,7 +19,7 @@ To look at the real output, build it and serve `out/` with any static file serve
 npm run build
 ```
 
-Start at `/` for the map, `/shop/` for the shop and `/desk/` for the staff desk. `/desk/enter/` lets you step in as one of four invented people or as `superUser`. Each profile sees different screens, and with no profile chosen, a deep link opens as the owner.
+Start at `/` for the map, `/desk/` for the staff desk and `/shop/` for the shop. `/desk/enter/` lets you step in as one of four invented people or as `superUser`. Each profile sees different screens, and with no profile chosen, a deep link opens as the owner.
 
 ## What is fake
 
@@ -30,7 +30,7 @@ All of it, on purpose:
 - **No real mail.** Emails are rendered and previewed in the page. They are never sent, and `rendered` is the last status they can reach.
 - **No real files.** The Files screen keeps names and sizes only and never reads the bytes of what you pick.
 - **No real sign-in.** There is a profile choice and no password field.
-- **Invented data.** The label, products, people, customers, orders, carrier, ledger, logs, deploys and tracking numbers are made up. The seed is fixed and the clock starts at 8 January 2027 14:02, so every visit starts the same.
+- **Invented data.** The store, products, people, customers, orders, carrier, ledger, logs, deploys and tracking numbers are made up. The seed is fixed and the clock starts at 8 January 2027 14:02, so every visit starts the same.
 - **Nothing is kept.** Changes live in memory and reset when you reload. Only the language and the chosen profile are stored in your browser.
 
 The map on the landing page shows the hosting setup of the real system this demo was rebuilt from. Not all of it runs yet, and the demo runs none of it.
@@ -85,6 +85,7 @@ node scan/scan.mjs --denylist <path outside the project>
 ```
 src/app/      route files only
 src/landing/  src/built/  src/shop/  src/desk/  src/print/   the surfaces
+src/art/      the drawn products
 src/store/    in-memory store, seed, shared flows, actions
 src/lib/      pure rules and helpers
 src/i18n/     dictionaries, one per area

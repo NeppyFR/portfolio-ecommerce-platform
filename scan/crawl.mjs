@@ -147,13 +147,18 @@ export function bodyColourProblem(pathname, colour) {
   return colour === "rgb(0, 0, 0)" ? null : `the body background is ${colour}, wanted black`;
 }
 
+/** The desk's screens, plus the overview and How it was built, which render inside the same shell. */
+export function inDeskShell(bare) {
+  return (bare.startsWith("/desk/") && !bare.startsWith("/desk/enter")) || bare === "/" || bare === "/built/";
+}
+
 async function visit(page, entry, ctx) {
   const { lang, viewport, deny, allowStubs, registry, basePath, problems } = ctx;
   const label = `${entry.path} [${lang} ${viewport.name}]`;
   try {
     await page.goto(`${ORIGIN}${basePath}${entry.path}`, { waitUntil: "load" });
     // The static HTML is the default profile until hydration reads the stored one.
-    if (entry.path.startsWith("/desk/") && !entry.path.startsWith("/desk/enter")) {
+    if (inDeskShell(entry.path.split("?")[0])) {
       await page.waitForSelector('.dk-root[data-profile="superUser"]', { timeout: 8000 }).catch(() => {});
     }
     await page.waitForTimeout(entry.wait ?? 150);
@@ -171,6 +176,8 @@ async function visit(page, entry, ctx) {
       stub: document.querySelectorAll("[data-screen-stub]").length,
       locked: document.querySelectorAll("[data-screen-locked]").length,
       lang: document.documentElement.lang,
+      shell: document.querySelectorAll(".dk-root:not([data-frame]) .dk-side-nav").length,
+      mains: document.querySelectorAll("main").length,
       bodyColour: getComputedStyle(document.body).backgroundColor,
       text: document.body.innerText,
     }));
@@ -182,8 +189,10 @@ async function visit(page, entry, ctx) {
     checkText(facts.text, lang, deny, label, problems);
 
     const bare = entry.path.split("?")[0];
-    if (bare.startsWith("/desk/")) {
+    if (bare.startsWith("/desk/") || inDeskShell(bare)) {
       const screen = registry.find((s) => s.route === bare);
+      if (inDeskShell(bare) && !facts.shell) problems.push(`${label}: renders outside the desk shell`);
+      if (inDeskShell(bare) && facts.mains !== 1) problems.push(`${label}: has ${facts.mains} main landmarks`);
       if (!screen) problems.push(`${label}: route is not in the registry`);
       else if (!facts.text.toLowerCase().includes(screen[lang].toLowerCase())) problems.push(`${label}: registry title not rendered`);
       if (facts.locked) problems.push(`${label}: renders the locked state`);
@@ -335,7 +344,7 @@ async function endToEnd(browser, keys, basePath, problems) {
   const { context, page } = await newPage(browser, VIEWPORTS[0], "en", "owner", keys);
   watch(page, problems, "flow");
   try {
-    await page.goto(`${ORIGIN}${basePath}/shop/p/logo-tee-cloud/`, { waitUntil: "load" });
+    await page.goto(`${ORIGIN}${basePath}/shop/p/logo-mug/`, { waitUntil: "load" });
     const size = page.locator('button[aria-pressed]:not([disabled])', { hasText: /^(M|L|S|XL)$/ }).first();
     if (await size.count()) await size.click();
     await page.getByRole("button", { name: "Add to bag" }).click();

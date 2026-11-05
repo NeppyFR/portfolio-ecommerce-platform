@@ -7,38 +7,41 @@ import { fmt, useLang, useT } from "@/i18n";
 import { shop } from "@/i18n/dict/shop";
 import { LABEL } from "@/lib/brand";
 import { formatChf } from "@/lib/format";
-import { isProductSoldOut, priceRange } from "@/lib/product-rules";
+import { coloursOf, isProductSoldOut, priceRange } from "@/lib/product-rules";
 import { productHref } from "@/lib/routes";
 import { bagView, type BagView } from "@/store/actions/bag";
 import { useStore } from "@/store/core";
-import type { Lang, Product } from "@/store/types";
-import { Garment } from "@/ui";
+import type { ArtTone, ArtView, Lang, Product, Variant } from "@/store/types";
+import { ProductArt } from "@/ui";
 
 export const nameOf = (p: Pick<Product, "nameEn" | "nameDe">, lang: Lang) => (lang === "de" ? p.nameDe : p.nameEn);
+/** The colour word for a variant, only when its product comes in more than one colour. */
+export const colourWord = (product: Pick<Product, "variants">, variant: Pick<Variant, "color">, words: Record<string, string>): string | null =>
+  coloursOf(product.variants).length > 1 ? (words[variant.color] ?? variant.color) : null;
 export const descOf = (p: Pick<Product, "descriptionEn" | "descriptionDe">, lang: Lang) => (lang === "de" ? p.descriptionDe : p.descriptionEn);
 
-/** Which night tile sits behind which piece, chosen so the glow falls where it lifts the garment most. */
+/** Which night tile sits behind which piece, chosen so the glow falls where it lifts the drawing most. */
 const TILE_BY_SLUG: Record<string, string> = {
-  "essential-hoodie-cobalt": "t-mist",
-  "lagoon-zip-hoodie": "t-pale",
-  "oversized-hoodie-cloud": "t-deep",
-  "logo-tee-cloud": "t-sky",
-  "logo-tee-cobalt": "t-ice",
-  "heavyweight-tee-lilac": "t-cob",
-  "relaxed-cargo-pants": "t-lil",
-  "track-pants-cobalt": "t-pale",
-  "logo-cap-cobalt": "t-mist",
-  "washed-cap-lagoon": "t-lil",
-  "rib-beanie-frost": "t-vio",
-  "canvas-tote-cloud": "t-deep",
-  "frost-scarf": "t-sky",
+  "desk-lamp": "t-mist",
+  "lagoon-speaker": "t-pale",
+  "tall-lamp": "t-deep",
+  "logo-mug": "t-sky",
+  "studio-mug": "t-ice",
+  "trail-bottle": "t-cob",
+  "stoneware-planter": "t-lil",
+  "shelf-speaker": "t-pale",
+  "travel-pouch-cobalt": "t-mist",
+  "zip-pouch-lagoon": "t-lil",
+  "frost-candle": "t-vio",
+  "logo-notebook-cloud": "t-deep",
+  "frost-candle-trio": "t-sky",
 };
 const TILE_BY_TONE: Record<Product["tone"], string> = { ice: "t-sky", sky: "t-lil", azure: "t-pale", dusk: "t-mist", lilac: "t-cob" };
 
 export const tileFor = (p: Pick<Product, "slug" | "tone">) => TILE_BY_SLUG[p.slug] ?? TILE_BY_TONE[p.tone];
 
-export function PieceGarment({ product, view = "full", title, className }: { product: Product; view?: "full" | "crop-cuff" | "crop-hood" | "mini"; title?: string; className?: string }) {
-  return <Garment type={product.garment} tone={product.tone} view={view} printed={product.printedName} title={title} className={className} />;
+export function PieceArt({ product, tone, view = "full", title, className }: { product: Product; tone?: ArtTone; view?: ArtView; title?: string; className?: string }) {
+  return <ProductArt type={product.art} tone={tone ?? product.tone} view={view} printed={product.printedName} title={title} className={className} />;
 }
 
 /** `CHF 39.00`, `from CHF 119.00`, or a Ban icon and `Sold out`. */
@@ -66,7 +69,7 @@ export function Wall({ products }: { products: Product[] }) {
         <li key={p.id}>
           <Link href={productHref(p.slug)} className="sp-wall-link">
             <span className={`sp-wall-tile ${tileFor(p)}`}>
-              <PieceGarment product={p} className="sp-tile-g" />
+              <PieceArt product={p} className="sp-tile-art" />
             </span>
             <span className="sp-cap">
               <span className="type-shop-name">{nameOf(p, lang)}</span>

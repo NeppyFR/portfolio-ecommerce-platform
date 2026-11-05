@@ -224,7 +224,7 @@ function writeOrder({ input, quote, number, conflict, sessionId }: WriteOrder): 
     const shortfall = conflict ? Math.min(line.quantity, i === 0 ? Math.max(short, 1) : short) : 0;
     return {
       id: uid(`oi_${i + 1}`), productId: found.product.id, variantId: found.variant.id, name: found.product.nameEn, nameDe: found.product.nameDe, color: found.variant.color, size: found.variant.size, sku: found.variant.sku,
-      garment: found.product.garment, tone: found.product.tone, quantity: line.quantity, unitPriceRappen: line.unitPriceRappen, lineTotalRappen: line.lineTotalRappen, discountRappen: line.discountRappen, restocked: 0, shortfall,
+      art: found.product.art, tone: found.product.tone, quantity: line.quantity, unitPriceRappen: line.unitPriceRappen, lineTotalRappen: line.lineTotalRappen, discountRappen: line.discountRappen, restocked: 0, shortfall,
     };
   });
   const flagged = conflict;
@@ -347,7 +347,7 @@ export function placeOrder(checkout: CheckoutInput, outcome: CheckoutOutcome): A
 export function simulateIncomingOrder(): ActionResult<PlacedOrder> {
   const s = getState();
   let variantId: string | null = null;
-  for (const slug of ["logo-tee-cloud", "canvas-tote-cloud", "logo-tee-cobalt"]) {
+  for (const slug of ["logo-mug", "logo-notebook-cloud", "studio-mug"]) {
     const product = s.products.find((p) => p.slug === slug && p.status === "active");
     const variant = product?.variants.find((v) => v.isActive && publicAvailable(v) > 0);
     if (variant) {

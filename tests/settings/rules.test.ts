@@ -41,7 +41,7 @@ describe("inbox rules", () => {
   });
 
   it("searches sender, subject, summary and text with accents folded", () => {
-    const hits = visibleMails(mails(), { tab: "open", query: "tessuti", newest: false });
+    const hits = visibleMails(mails(), { tab: "open", query: "ceramica", newest: false });
     expect(hits.length).toBeGreaterThan(0);
     expect(visibleMails(mails(), { tab: "open", query: "nothing-matches-this", newest: false })).toEqual([]);
   });

@@ -2,27 +2,28 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { StepInChips } from "@/desk/enter/StepInChips";
 import { fmt, useDocTitle, useLang, useT } from "@/i18n";
 import { landing } from "@/i18n/dict/landing";
 import { LABEL, PROJECT } from "@/lib/brand";
-import { formatChf, formatDateTime } from "@/lib/format";
-import { orderHref, productHref } from "@/lib/routes";
+import { formatChf } from "@/lib/format";
+import { productHref } from "@/lib/routes";
 import { EDGES, VIEWBOX, nodeById } from "@/map/data";
 import { MapSheet } from "@/map/MapSheet";
 import { createClock } from "@/map/packets";
-import { useStore } from "@/store/core";
-import { attentionCount, isAttentionOrder, toPackCount } from "@/store/selectors";
-import type { GarmentTone, GarmentType, NodeId, OrderStop } from "@/store/types";
-import { Garment, GlyphCluster, LangToggle, Mark, Stops, Track } from "@/ui";
+import type { ArtTone, ProductArtType, NodeId } from "@/store/types";
+import { ProductArt, Mark } from "@/ui";
+import { DeskMini } from "./DeskMini";
+import { DeskTour } from "./DeskTour";
 import { LiveMap, MapDefs } from "./LiveMap";
-import { PublicRail } from "./PublicRail";
 import { StoryPanel } from "./StoryPanel";
 import "./landing.css";
+import "./desk.css";
 
 const LEDGER: { value: string; key: keyof typeof landing.en.ledger }[] = [
+  { value: "53", key: "screens" },
   { value: "435", key: "commits" },
   { value: "65", key: "prs" },
   { value: "45", key: "migrations" },
@@ -32,17 +33,16 @@ const LEDGER: { value: string; key: keyof typeof landing.en.ledger }[] = [
   { value: "1'301", key: "unit" },
   { value: "195", key: "browser" },
   { value: "60", key: "probes" },
-  { value: "53", key: "screens" },
   { value: "2", key: "languages" },
 ];
 
-const STRIP: { slug: string; type: GarmentType; tone: GarmentTone; tile: string; en: string; de: string; printed?: boolean }[] = [
-  { slug: "lagoon-zip-hoodie", type: "zip", tone: "azure", tile: "t-mist", en: "Lagoon Zip Hoodie", de: "Lagoon Zip-Hoodie" },
-  { slug: "heavyweight-tee-lilac", type: "tee", tone: "lilac", tile: "t-deep", en: "Heavyweight Tee, Lilac", de: "Heavyweight-Tee, Flieder" },
-  { slug: "essential-hoodie-cobalt", type: "hoodie", tone: "dusk", tile: "t-ice", en: "Essential Hoodie, Cobalt", de: "Essential Hoodie, Kobalt" },
-  { slug: "washed-cap-lagoon", type: "cap", tone: "sky", tile: "t-vio", en: "Washed Cap, Lagoon", de: "Washed Cap, Lagoon" },
-  { slug: "relaxed-cargo-pants", type: "cargo", tone: "sky", tile: "t-lil", en: "Relaxed Cargo Pants, Ice", de: "Relaxed Cargo-Hose, Eis" },
-  { slug: "canvas-tote-cloud", type: "tote", tone: "ice", tile: "t-cob", en: "Canvas Tote, Cloud", de: "Canvas-Tasche, Wolke", printed: true },
+const STRIP: { slug: string; type: ProductArtType; tone: ArtTone; tile: string; en: string; de: string; printed?: boolean }[] = [
+  { slug: "lagoon-speaker", type: "speaker", tone: "azure", tile: "t-mist", en: "Lagoon Speaker", de: "Lagoon-Lautsprecher" },
+  { slug: "trail-bottle", type: "bottle", tone: "lilac", tile: "t-deep", en: "Trail Bottle", de: "Trail-Flasche" },
+  { slug: "desk-lamp", type: "lamp", tone: "dusk", tile: "t-ice", en: "Desk Lamp", de: "Schreibtischlampe" },
+  { slug: "zip-pouch-lagoon", type: "pouch", tone: "sky", tile: "t-vio", en: "Zip Pouch, Lagoon", de: "Zip-Etui, Lagoon" },
+  { slug: "stoneware-planter", type: "planter", tone: "sky", tile: "t-lil", en: "Stoneware Planter", de: "Steinzeug-Topf" },
+  { slug: "logo-notebook-cloud", type: "notebook", tone: "ice", tile: "t-cob", en: "Logo Notebook, Cloud", de: "Logo-Notizbuch, Wolke", printed: true },
 ];
 
 /** Every wire in words, closed until asked for. The drawing's labels only show under a pointer, so this is the way in without one. */
@@ -73,6 +73,37 @@ function AllConnections({ className }: { className?: string }) {
 
 function Hero() {
   const t = useT(landing);
+  return (
+    <section className="lp-top" aria-labelledby="lp-title">
+      <div className="lp-top-stage">
+        <div className="lp-top-head">
+          <h1 id="lp-title" className="lp-h1">
+            <span>{t.headline1}</span>
+            <span>{t.headline2}</span>
+            <em>{t.headline3}</em>
+          </h1>
+          <div className="lp-top-side">
+            <p className="lp-sentence">{fmt(t.sentence, { label: LABEL.name })}</p>
+            <div className="lp-go">
+              <Link href="/desk/" className="lp-go-main">
+                {t.openDesk}
+                <ArrowRight size={18} aria-hidden="true" />
+              </Link>
+              <Link href="/shop/" className="lp-go-quiet">
+                {t.enterShop}
+              </Link>
+              <StepInChips className="lp-chips-row" />
+            </div>
+          </div>
+        </div>
+        <DeskMini />
+      </div>
+    </section>
+  );
+}
+
+function HostingMap() {
+  const t = useT(landing);
   const router = useRouter();
   const clock = useRef(createClock()).current;
   const [sheet, setSheet] = useState<NodeId | null>(null);
@@ -84,31 +115,23 @@ function Hero() {
   };
 
   return (
-    <div className="lp-hero-wrap">
-      <section className="lp-hero f-landing" aria-labelledby="lp-title">
+    <>
+      <section id="map" className="lp-hero f-landing" aria-labelledby="lp-map-title">
         <div className="lp-stage">
-          <PublicRail active="map" />
-          <div className="lp-copy" id="main">
-            <h1 id="lp-title" className="lp-h1">
-              <span>{t.headline1}</span>
-              <span>{t.headline2}</span>
-              <em>{t.headline3}</em>
-            </h1>
+          <div className="lp-copy">
+            <h2 id="lp-map-title" className="lp-h1">
+              <span>{t.mapTitle1}</span>
+              <span>{t.mapTitle2}</span>
+            </h2>
+            <div className="lp-side">
+              <p className="lp-sentence">{t.mapSentence}</p>
+              <p className="lp-honest">{t.honesty}</p>
+            </div>
           </div>
           <StoryPanel clock={clock} className="lp-panel-float" />
-          <div className="lp-side">
-            <p className="lp-sentence">{t.sentence}</p>
-            <p className="lp-honest">{t.honesty}</p>
-          </div>
-          <div className="lp-cta">
-            <StepInChips className="lp-chips" />
-            <Link href="/shop/" className="lp-enter">
-              {t.enterShop}
-              <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </div>
           <MapDefs />
           <LiveMap mode="hero" viewBox={VIEWBOX.hero} onNode={onNode} clock={clock} className="lp-map lp-map-wide" ariaLabel={t.mapAria} />
+          <LiveMap mode="snug" viewBox={VIEWBOX.snug} onNode={onNode} clock={clock} className="lp-map lp-map-snug" ariaLabel={t.mapAria} />
           <AllConnections className="lp-all-wide" />
           <div className="lp-map-low">
             <LiveMap mode="phone" labels={false} onNode={onNode} clock={clock} className="lp-map lp-map-phone" ariaLabel={t.mapAria} />
@@ -119,16 +142,22 @@ function Hero() {
           </div>
         </div>
       </section>
-      <dl className="lp-ledger" aria-label={t.ledgerAria}>
-        {LEDGER.map((c) => (
-          <div key={c.key}>
-            <dt>{t.ledger[c.key]}</dt>
-            <dd>{c.value}</dd>
-          </div>
-        ))}
-      </dl>
       <MapSheet node={sheet} onClose={() => setSheet(null)} />
-    </div>
+    </>
+  );
+}
+
+function Ledger() {
+  const t = useT(landing);
+  return (
+    <dl className="lp-ledger" aria-label={t.ledgerAria}>
+      {LEDGER.map((c) => (
+        <div key={c.key}>
+          <dt>{t.ledger[c.key]}</dt>
+          <dd>{c.value}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -137,82 +166,27 @@ function ShopStrip() {
   const lang = useLang();
   return (
     <section className="lp-shop" aria-labelledby="lp-shop-title">
-      <div className="lp-shop-head">
-        <h2 id="lp-shop-title" className="lp-shop-line">
-          {LABEL.tagline[lang]}
-        </h2>
-        <p className="lp-shop-copy">{t.shopSentence}</p>
+      <div className="lp-shop-bar">
+        <ul className="lp-band">
+          {STRIP.map((g) => {
+            const name = lang === "de" ? g.de : g.en;
+            return (
+              <li key={g.slug} className={g.tile}>
+                <Link href={productHref(g.slug)} aria-label={fmt(t.shopTileAria, { name })}>
+                  <ProductArt type={g.type} tone={g.tone} printed={g.printed} />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="lp-shop-words">
+          <h2 id="lp-shop-title" className="lp-shop-line">
+            {LABEL.tagline[lang]}
+          </h2>
+          <p className="lp-shop-copy">{t.shopSentence}</p>
+        </div>
         <Link href="/shop/" className="lp-shop-link">
           {t.shopLink}
-          <ArrowRight size={16} aria-hidden="true" />
-        </Link>
-      </div>
-      <ul className="lp-band">
-        {STRIP.map((g) => {
-          const name = lang === "de" ? g.de : g.en;
-          return (
-            <li key={g.slug} className={g.tile}>
-              <Link href={productHref(g.slug)} aria-label={fmt(t.shopTileAria, { name })}>
-                <Garment type={g.type} tone={g.tone} printed={g.printed} />
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
-
-function DeskStrip() {
-  const t = useT(landing);
-  const router = useRouter();
-  const orders = useStore((s) => s.orders);
-  const toPack = useStore(toPackCount);
-  const need = useStore(attentionCount);
-  const counts = useMemo(() => {
-    const out: Partial<Record<OrderStop, number>> = {};
-    for (const o of orders) {
-      out[o.status] = (out[o.status] ?? 0) + 1;
-      if (isAttentionOrder(o)) out.attention = (out.attention ?? 0) + 1;
-    }
-    return out;
-  }, [orders]);
-  const newest = useMemo(() => [...orders].sort((a, b) => (a.placedAt < b.placedAt ? 1 : -1)).slice(0, 3), [orders]);
-  return (
-    <section className="lp-desk" aria-labelledby="lp-desk-title">
-      <div className="lp-desk-head">
-        <p className="lp-eyebrow">{t.deskEyebrow}</p>
-        <h2 id="lp-desk-title" className="lp-desk-title">
-          {fmt(need === 1 ? t.deskTitleOne : t.deskTitle, { n: toPack, a: need })}
-        </h2>
-        <p className="lp-desk-copy">{t.deskSentence}</p>
-      </div>
-      <Stops
-        active={null}
-        counts={counts}
-        className="lp-desk-stops"
-        onChange={(stop) => {
-          if (stop) router.push(`/desk/orders/?status=${stop}`);
-        }}
-      />
-      <ul className="lp-rows" aria-label={t.deskAria}>
-        {newest.map((o) => (
-          <li key={o.id}>
-            <Link href={orderHref(o.orderNumber)} className="lp-row">
-              <span className="lp-row-no">{o.orderNumber}</span>
-              <span className="lp-row-when">{formatDateTime(o.placedAt)}</span>
-              <span className="lp-row-name">{o.customerName}</span>
-              <GlyphCluster className="lp-row-glyphs" items={o.items.map((i) => ({ type: i.garment, tone: i.tone }))} />
-              <Track className="lp-row-track" status={o.status} attention={isAttentionOrder(o)} />
-              <span className="lp-row-total">{formatChf(o.totalRappen)}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <div className="lp-desk-foot">
-        <StepInChips />
-        <Link href="/desk/orders/" className="lp-shop-link">
-          {t.deskAll}
           <ArrowRight size={16} aria-hidden="true" />
         </Link>
       </div>
@@ -277,20 +251,24 @@ function Footer() {
         {PROJECT.title}
       </span>
       <span className="lp-foot-note">{t.footerNote}</span>
-      <LangToggle />
     </footer>
   );
 }
 
+/** The overview. It renders inside the desk shell, which brings the sidebar, the header cluster and the one main landmark. */
 export function LandingScreen() {
   useDocTitle(null);
   return (
-    <main className="lp">
-      <Hero />
-      <ShopStrip />
-      <DeskStrip />
-      <Receipt />
-      <Footer />
-    </main>
+    <div className="lp lp-in-desk">
+      <div className="lp-hero-wrap">
+        <Hero />
+        <DeskTour />
+        <HostingMap />
+        <Ledger />
+        <ShopStrip />
+        <Receipt />
+        <Footer />
+      </div>
+    </div>
   );
 }

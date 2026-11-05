@@ -1,9 +1,9 @@
 /** The drop-day checklist, in order. One list per drop. */
 export const DROP_CHECKLIST: { en: string; de: string }[] = [
-  { en: "Samples approved and sizes checked", de: "Muster freigegeben und Grössen geprüft" },
+  { en: "Samples approved and variants checked", de: "Muster freigegeben und Varianten geprüft" },
   { en: "Production delivered and counted into stock", de: "Produktion geliefert und ins Lager gezählt" },
   { en: "Product photos and texts ready (EN and DE)", de: "Produktfotos und Texte bereit (EN und DE)" },
-  { en: "Prices, sizes and stock set on every product", de: "Preise, Grössen und Bestand bei jedem Produkt gesetzt" },
+  { en: "Prices, variants and stock set on every product", de: "Preise, Varianten und Bestand bei jedem Produkt gesetzt" },
   { en: "Drop page and announcement posts scheduled", de: "Drop-Seite und Ankündigungen geplant" },
   { en: "Waitlist told the launch time", de: "Warteliste über die Startzeit informiert" },
   { en: "Test order placed and refunded", de: "Testbestellung aufgegeben und erstattet" },

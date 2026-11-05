@@ -6,3 +6,5 @@ export function readRegistry(root?: string): RegistryRow[];
 export function outRoutes(outDir?: string): string[];
 export function readStates(root?: string): CrawlState[];
 export function bodyColourProblem(pathname: string, colour: string): string | null;
+/** The desk's screens, plus the overview and How it was built, which render inside the same shell. */
+export function inDeskShell(bare: string): boolean;

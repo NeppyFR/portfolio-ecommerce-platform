@@ -143,7 +143,7 @@ describe("rows", () => {
     expect(shortName("Anna Muster", false)).toBe("A. Muster");
     expect(shortName("Anna Maria Muster", false)).toBe("A. Muster");
     expect(shortName("Erased customer", true)).toBe("Erased customer");
-    expect(plainName("Essential Hoodie, Cobalt")).toBe("Essential Hoodie");
+    expect(plainName("Travel Pouch, Cobalt")).toBe("Travel Pouch");
   });
 
   it("stock alerts put the emptiest first", () => {

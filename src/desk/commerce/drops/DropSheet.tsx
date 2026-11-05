@@ -4,11 +4,12 @@ import { Pencil, Plus, Send, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { dropHub, percent, seesDropMoney, seesDropNumbers, seesWaitlistAddresses, sellThrough, type DropHub, type DropProduct } from "@/desk/commerce/products/rules";
-import { CheckList, emptyToNull, FormError, GarmentThumb, MoreLink } from "@/desk/commerce/products/shared";
+import { CheckList, emptyToNull, FormError, ArtThumb, MoreLink } from "@/desk/commerce/products/shared";
 import { fmt, plural, useLang, useT } from "@/i18n";
 import { drops as dict } from "@/i18n/dict/drops";
 import { seedText } from "@/i18n/dict/seed-text";
 import { formatChf } from "@/lib/format";
+import { colourLabel } from "@/desk/commerce/orders/rules/order-rules";
 import { sizeLabel } from "@/lib/product-rules";
 import { addProductsToDrop, addToWaitlist, createDrop, dropFormValues, markWaitlistTold, removeFromWaitlist, removeProductFromDrop, saveDrop, startDropChecklist, type DropInput } from "@/store/actions/drops";
 import { getState, useStore } from "@/store/core";
@@ -114,7 +115,7 @@ function ProductBlock({ row, drop, numbers, removable }: { row: DropProduct; dro
     <div className="cat-hub-product">
       <div className="cat-card-top">
         <div className="cat-prod">
-          <GarmentThumb type={product.garment} tone={product.tone} printed={product.printedName || undefined} />
+          <ArtThumb type={product.art} tone={product.tone} printed={product.printedName || undefined} />
           <span className="cat-prod-text">
             <Link className="cat-name cat-link" href={`/desk/products/?open=${encodeURIComponent(product.id)}`}>
               {name}
@@ -158,7 +159,7 @@ function ProductBlock({ row, drop, numbers, removable }: { row: DropProduct; dro
               <tr key={variant.id}>
                 <td>
                   {sizeLabel(variant.size, lang)}
-                  {variant.color ? <span className="cat-sub"> · {variant.color}</span> : null}
+                  {variant.color ? <span className="cat-sub"> · {colourLabel(variant.color, lang)}</span> : null}
                 </td>
                 <td data-align="right">{available <= 0 ? <span className="cat-amber">{t.hub.soldOut}</span> : available}</td>
                 <td data-align="right">{sold}</td>

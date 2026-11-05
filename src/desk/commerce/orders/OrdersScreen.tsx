@@ -242,7 +242,7 @@ function OrderRow({ order, selected, onSelect }: { order: Order; selected: boole
           <span className="or-row-name">{shownName(order.customerName, t.erasedName)}</span>
           <Track status={order.status} attention={attention} attentionLabel={t.list.needsAttention} />
         </span>
-        <GlyphCluster items={order.items.map((i) => ({ type: i.garment, tone: i.tone }))} label={fmt(pieces === 1 ? t.list.itemsOne : t.list.itemsOther, { count: pieces })} className="or-row-glyphs" />
+        <GlyphCluster items={order.items.map((i) => ({ type: i.art, tone: i.tone }))} label={fmt(pieces === 1 ? t.list.itemsOne : t.list.itemsOther, { count: pieces })} className="or-row-glyphs" />
         <span className="or-row-total">
           <Money value={order.totalRappen} />
         </span>

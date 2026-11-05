@@ -23,7 +23,7 @@ export const extensionOf = (name: string): string => {
   return at > 0 ? name.slice(at + 1).toLowerCase() : "";
 };
 
-/** `hoodie_front-graphic.pdf` gives `hoodie front graphic`. */
+/** `lamp_front-graphic.pdf` gives `lamp front graphic`. */
 export const titleFromName = (name: string): string => {
   const at = name.lastIndexOf(".");
   return (at > 0 ? name.slice(0, at) : name).replace(/[-_]+/g, " ").trim().slice(0, 120);

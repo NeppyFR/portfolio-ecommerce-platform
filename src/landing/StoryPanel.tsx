@@ -9,7 +9,7 @@ import { orderHref } from "@/lib/routes";
 import { STATIONS } from "@/map/data";
 import { STATION_STEP, STORY_STEPS, logTime, logWindow, seekClock, stationIndexOfStep, type StoryClock } from "@/map/packets";
 import { useStore } from "@/store/core";
-import { Garment } from "@/ui";
+import { ProductArt } from "@/ui";
 import { Track } from "@/ui/Track";
 
 type LogEl = HTMLDivElement & { seek?: (step: number) => void };
@@ -68,7 +68,7 @@ export function StoryPanel({ clock, className }: { clock: StoryClock; className?
       <Link className="lp-order" href={orderHref(STORY_ORDER)} aria-label={fmt(t.orderLink, { id: STORY_ORDER })}>
         {item ? (
           <span className="lp-order-glyph">
-            <Garment type={item.garment} tone={item.tone} view="mini" />
+            <ProductArt type={item.art} tone={item.tone} view="mini" />
           </span>
         ) : null}
         <span className="lp-order-no">{STORY_ORDER}</span>

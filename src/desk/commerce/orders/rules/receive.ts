@@ -9,7 +9,7 @@ export const EMPTY_RECEIVE: ReceiveState = { lines: [], scans: [] };
 
 export const receiveTotal = (state: ReceiveState): number => state.lines.reduce((sum, l) => sum + l.quantity, 0);
 
-/** Each scan adds 1 to its size, newest size first. */
+/** Each scan adds 1 to its variant, newest variant first. */
 export function receiveAdd(state: ReceiveState, sku: string, variantId: string): ReceiveAdd {
   const line = state.lines.find((l) => l.sku === sku);
   if (line && line.quantity >= MAX_PER_LINE) return { state, result: "line_full", quantity: line.quantity, total: receiveTotal(state) };

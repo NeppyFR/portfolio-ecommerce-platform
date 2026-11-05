@@ -163,9 +163,9 @@ describe("campaign rules", () => {
 
 describe("catalogue rules", () => {
   it("suggests a SKU from the product's own stem", () => {
-    const [product] = getState().products.filter((p) => p.slug === "lagoon-zip-hoodie");
-    expect(suggestSku(product, "XS")).toBe("AL-ZIP-AZU-XS".replace("AZU", product.variants[0].sku.split("-")[2]));
-    expect(suggestSku({ garment: "tote", tone: "ice", variants: [] }, "ONE_SIZE")).toBe("AL-TOTE-ICE-OS");
+    const [product] = getState().products.filter((p) => p.slug === "lagoon-speaker");
+    expect(suggestSku(product, "ONE_SIZE")).toBe("AL-SPK-LAG-OS");
+    expect(suggestSku({ art: "notebook", tone: "ice", variants: [] }, "ONE_SIZE")).toBe("AL-NOTE-ICE-OS");
   });
   it("blocks deleting a size that sold or sits in a checkout", () => {
     expect(variantDeleteBlock({ ordered: 1, reserved: 0 })).toBe("ordered");

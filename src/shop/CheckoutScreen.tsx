@@ -9,7 +9,7 @@ import { shop } from "@/i18n/dict/shop";
 import { LABEL } from "@/lib/brand";
 import { DISCOUNT_MESSAGES } from "@/lib/discount-rules";
 import { formatChf } from "@/lib/format";
-import { sizeLabel } from "@/lib/product-rules";
+import { sizeLabel, toneForColour } from "@/lib/product-rules";
 import { checkoutResultHref } from "@/lib/routes";
 import { bagView } from "@/store/actions/bag";
 import { checkForm, demoForm, endCheckout, firstProblem, type CheckoutForm, type FormField, type FormProblem, type FormProblems } from "@/store/actions/checkout";
@@ -18,7 +18,7 @@ import { findVariant } from "@/store/flows";
 import type { CheckoutOutcome, DiscountRejection, Lang } from "@/store/types";
 import { Button, Empty, Input, RuleLine } from "@/ui";
 import { ResultPanel } from "./ResultPanel";
-import { PieceGarment, SummaryList, nameOf, useBagView } from "./parts";
+import { PieceArt, SummaryList, colourWord, nameOf, useBagView } from "./parts";
 
 const PENDING_MS = 900;
 
@@ -32,11 +32,11 @@ function OrderAside() {
       <ul className="sp-co-lines">
         {view.rows.map((row) => (
           <li key={row.variantId}>
-            <span className="sp-co-thumb">{row.product ? <PieceGarment product={row.product} view="mini" className="sp-tile-g" /> : null}</span>
+            <span className="sp-co-thumb">{row.product ? <PieceArt product={row.product} tone={toneForColour(row.product, row.variant?.color)} view="mini" className="sp-tile-art" /> : null}</span>
             <span className="sp-co-name">
               <span className="type-label">{row.product ? nameOf(row.product, lang) : ""}</span>
               <span className="type-small">
-                {[row.variant && row.variant.size !== "ONE_SIZE" ? sizeLabel(row.variant.size, lang) : null, fmt(t.checkout.qty, { n: row.quantity })].filter(Boolean).join(" · ")}
+                {[row.variant && row.variant.size !== "ONE_SIZE" ? sizeLabel(row.variant.size, lang) : null, row.product && row.variant ? colourWord(row.product, row.variant, t.colours) : null, fmt(t.checkout.qty, { n: row.quantity })].filter(Boolean).join(" · ")}
               </span>
             </span>
             <span className="type-mono">{row.lineRappen !== null ? formatChf(row.lineRappen) : ""}</span>

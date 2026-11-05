@@ -1,6 +1,6 @@
 import { renderToStaticMarkup as html } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { Garment, GlyphCluster } from "@/garments/Garment";
+import { ProductArt, GlyphCluster } from "@/art/ProductArt";
 import { common } from "@/i18n/dict/common";
 import { Button } from "@/ui/Button";
 import { Bars, BarList, Delta, Spark } from "@/ui/charts";
@@ -19,19 +19,19 @@ import { Thread } from "@/ui/Thread";
 import { Tl } from "@/ui/Tl";
 import { Track } from "@/ui/Track";
 import { DemoPill } from "@/ui/DemoPill";
-import type { GarmentTone, GarmentType, Tone } from "@/store/types";
+import type { ArtTone, ProductArtType, Tone } from "@/store/types";
 
-const TYPES: GarmentType[] = ["hoodie", "zip", "tee", "pants", "cargo", "cap", "beanie", "tote"];
-const TONES: GarmentTone[] = ["ice", "sky", "azure", "dusk", "lilac"];
+const TYPES: ProductArtType[] = ["mug", "bottle", "lamp", "notebook", "candle", "planter", "speaker", "pouch"];
+const TONES: ArtTone[] = ["ice", "sky", "azure", "dusk", "lilac"];
 
-describe("Garment", () => {
+describe("ProductArt", () => {
   it("draws every type, tone and view", () => {
     for (const type of TYPES) {
       for (const tone of TONES) {
-        for (const view of ["full", "crop-cuff", "crop-hood", "mini"] as const) {
-          const out = html(<Garment type={type} tone={tone} view={view} />);
+        for (const view of ["full", "crop-detail", "crop-top", "mini"] as const) {
+          const out = html(<ProductArt type={type} tone={tone} view={view} />);
           expect(out, `${type} ${tone} ${view}`).toContain("<path");
-          expect(out).toContain(`data-garment="${type}"`);
+          expect(out).toContain(`data-art="${type}"`);
         }
       }
     }
@@ -39,46 +39,46 @@ describe("Garment", () => {
   it("keeps gradient ids per instance", () => {
     const out = html(
       <>
-        <Garment type="tee" tone="ice" />
-        <Garment type="tee" tone="dusk" />
+        <ProductArt type="mug" tone="ice" />
+        <ProductArt type="mug" tone="dusk" />
       </>,
     );
     const ids = [...out.matchAll(/<linearGradient id="([^"]+)"/g)].map((m) => m[1]);
     expect(new Set(ids).size).toBe(ids.length);
   });
   it("drops shading on mini and keeps a readable outline", () => {
-    const mini = html(<Garment type="hoodie" tone="ice" view="mini" />);
+    const mini = html(<ProductArt type="lamp" tone="ice" view="mini" />);
     expect(mini).not.toContain("<pattern");
     expect(mini).not.toContain("radialGradient");
     expect(mini).toContain('stroke="#b9f3ff"');
   });
-  it("uses the blue rib overlay on pale tones and white on the rest", () => {
-    expect(html(<Garment type="beanie" tone="ice" />)).toMatch(/fill="#2f6bff" opacity="0.14"/);
-    expect(html(<Garment type="beanie" tone="lilac" />)).toMatch(/fill="#2f6bff" opacity="0.14"/);
-    expect(html(<Garment type="beanie" tone="dusk" />)).toMatch(/fill="#fff" opacity="0.55"/);
+  it("uses the blue grain overlay on pale tones and white on the rest", () => {
+    expect(html(<ProductArt type="pouch" tone="ice" />)).toMatch(/fill="#2f6bff" opacity="0.14"/);
+    expect(html(<ProductArt type="pouch" tone="lilac" />)).toMatch(/fill="#2f6bff" opacity="0.14"/);
+    expect(html(<ProductArt type="pouch" tone="dusk" />)).toMatch(/fill="#fff" opacity="0.55"/);
   });
-  it("draws the hood opening flat at .42", () => {
-    expect(html(<Garment type="hoodie" tone="sky" />)).toMatch(/d="M156 94[^"]*" fill="#1b3fc4" opacity=".42"/);
+  it("draws the mug's opening dark and flat at .62", () => {
+    expect(html(<ProductArt type="mug" tone="sky" />)).toMatch(/d="M86 110[^"]*" fill="#0a1a52" opacity="0.62"/);
   });
   it("prints in navy on a pale tone and in white on a deep one", () => {
-    expect(html(<Garment type="tee" tone="ice" printed />)).toMatch(/<text[^>]*fill="#0a1a52"/);
-    expect(html(<Garment type="tee" tone="dusk" printed />)).toMatch(/<text[^>]*fill="#fff"/);
+    expect(html(<ProductArt type="mug" tone="ice" printed />)).toMatch(/<text[^>]*fill="#0a1a52"/);
+    expect(html(<ProductArt type="mug" tone="dusk" printed />)).toMatch(/<text[^>]*fill="#fff"/);
   });
-  it("prints the label name on tote and printed tee, nowhere else", () => {
-    expect(html(<Garment type="tote" tone="ice" />)).toContain("Aerloom");
-    expect(html(<Garment type="tee" tone="ice" printed />)).toContain("Aerloom");
-    expect(html(<Garment type="tee" tone="dusk" />)).not.toContain("Aerloom");
-    for (const type of ["hoodie", "zip", "pants", "cargo", "cap", "beanie"] as const) expect(html(<Garment type={type} tone="ice" />), type).not.toContain("<text");
-    expect(html(<Garment type="tote" tone="ice" view="mini" />)).not.toContain("<text");
+  it("prints the store name on the notebook and the printed mug, nowhere else", () => {
+    expect(html(<ProductArt type="notebook" tone="ice" />)).toContain("Aerlo");
+    expect(html(<ProductArt type="mug" tone="ice" printed />)).toContain("Aerlo");
+    expect(html(<ProductArt type="mug" tone="dusk" />)).not.toContain("Aerlo");
+    for (const type of ["bottle", "lamp", "candle", "planter", "speaker", "pouch"] as const) expect(html(<ProductArt type={type} tone="ice" />), type).not.toContain("<text");
+    expect(html(<ProductArt type="notebook" tone="ice" view="mini" />)).not.toContain("<text");
   });
   it("names itself only when given a title", () => {
-    expect(html(<Garment type="cap" tone="sky" title="A cap" />)).toContain('aria-label="A cap"');
-    expect(html(<Garment type="cap" tone="sky" />)).toContain('aria-hidden="true"');
+    expect(html(<ProductArt type="candle" tone="sky" title="A candle" />)).toContain('aria-label="A candle"');
+    expect(html(<ProductArt type="candle" tone="sky" />)).toContain('aria-hidden="true"');
   });
   it("clusters at most three minis", () => {
     const items = TYPES.slice(0, 5).map((type) => ({ type, tone: "sky" as const }));
     const out = html(<GlyphCluster items={items} />);
-    expect(out.match(/data-garment=/g)?.length).toBe(3);
+    expect(out.match(/data-art=/g)?.length).toBe(3);
     expect(out).toContain("+2");
   });
 });

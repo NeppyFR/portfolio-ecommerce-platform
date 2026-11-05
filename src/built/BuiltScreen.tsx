@@ -9,10 +9,9 @@ import { PROJECT } from "@/lib/brand";
 import { EDGES, VIEWBOX, nodeById } from "@/map/data";
 import { MapSheet } from "@/map/MapSheet";
 import { LiveMap, MapDefs } from "@/landing/LiveMap";
-import { PublicRail } from "@/landing/PublicRail";
 import { HEALTH_CHECKS } from "@/store/seed/system";
 import type { NodeId } from "@/store/types";
-import { LangToggle, Mark, Status, Table, type Column } from "@/ui";
+import { Mark, Status, Table, type Column } from "@/ui";
 import { ArchitectureDiagram } from "./ArchitectureDiagram";
 import "@/landing/landing.css";
 import "./built.css";
@@ -116,6 +115,7 @@ function MapSection() {
       <div className="bt-map-band f-landing">
         <MapDefs />
         <LiveMap mode="hero" viewBox={VIEWBOX.hero} onNode={onNode} className="lp-map lp-map-wide-k bt-map-wide" ariaLabel={t.mapAria} />
+        <LiveMap mode="snug" viewBox={VIEWBOX.snug} onNode={onNode} className="lp-map bt-map-snug" ariaLabel={t.mapAria} />
         <LiveMap mode="phone" labels={false} onNode={onNode} className="lp-map bt-map-phone" ariaLabel={t.mapAria} />
       </div>
       <div className="bt-col">
@@ -411,12 +411,9 @@ export function BuiltScreen() {
   const t = useT(built);
   useDocTitle(useT(shell).built);
   return (
-    <main className="lp bt">
+    <div className="lp lp-in-desk bt">
       <div className="bt-top f-landing">
-        <div className="bt-top-rail">
-          <PublicRail active="built" />
-        </div>
-        <div className="bt-col bt-hero" id="main">
+        <div className="bt-col bt-hero">
           <p className="bt-eyebrow">{t.metaEyebrow}</p>
           <h1 className="bt-h1">{t.title}</h1>
           <p className="bt-intro">{t.intro}</p>
@@ -436,8 +433,7 @@ export function BuiltScreen() {
           {PROJECT.title}
         </span>
         <span className="lp-foot-note">{t.footerNote}</span>
-        <LangToggle />
       </footer>
-    </main>
+    </div>
   );
 }

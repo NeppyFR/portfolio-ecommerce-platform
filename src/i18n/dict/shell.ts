@@ -10,9 +10,10 @@ export const en = {
   closeMenu: "Close the menu",
   more: "More",
   projectMenu: "Project menu",
-  startPage: "Start page",
+  startPage: "Overview",
   shop: "Shop",
   built: "How it was built",
+  visitShop: "Visit the shop",
   subScreensLabel: "Sections of this screen",
 
 
@@ -105,7 +106,7 @@ export const en = {
     refundDetail: { one: "{amount} · order {order}", other: "{amount} in total · latest order {order}" },
     inboxTitle: { one: "{count} priority mail open", other: "{count} priority mails open" },
     inboxDetail: "Sorted as urgent by the inbox task",
-    lowStockTitle: { one: "{count} size low or out", other: "{count} sizes low or out" },
+    lowStockTitle: { one: "{count} variant low or out", other: "{count} variants low or out" },
     lowStockDetail: "Active products at or below their threshold",
     passwordTitle: { one: "{count} failed superUser password in 24 hours", other: "{count} failed superUser passwords in 24 hours" },
     passwordDetail: "Wrong passwords for the superUser profile",
@@ -128,9 +129,10 @@ export const de: typeof en = {
   closeMenu: "Menü schliessen",
   more: "Mehr",
   projectMenu: "Projektmenü",
-  startPage: "Startseite",
+  startPage: "Übersicht",
   shop: "Shop",
-  built: "Wie es gebaut ist",
+  built: "So ist es gebaut",
+  visitShop: "Zum Shop",
   subScreensLabel: "Teile dieser Seite",
 
 
@@ -223,7 +225,7 @@ export const de: typeof en = {
     refundDetail: { one: "{amount} · Bestellung {order}", other: "Total {amount} · zuletzt Bestellung {order}" },
     inboxTitle: { one: "{count} offene Prio-Mail", other: "{count} offene Prio-Mails" },
     inboxDetail: "Von der Inbox-Aufgabe als dringend eingestuft",
-    lowStockTitle: { one: "{count} Grösse knapp oder leer", other: "{count} Grössen knapp oder leer" },
+    lowStockTitle: { one: "{count} Variante knapp oder leer", other: "{count} Varianten knapp oder leer" },
     lowStockDetail: "Aktive Produkte auf oder unter ihrem Mindestbestand",
     passwordTitle: { one: "{count} falsches superUser-Passwort in 24 Stunden", other: "{count} falsche superUser-Passwörter in 24 Stunden" },
     passwordDetail: "Falsche Passwörter für das superUser-Profil",

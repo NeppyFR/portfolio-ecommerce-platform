@@ -19,7 +19,7 @@ import { identityOf } from "@/store/actions/profile";
 import { DEMO_NOW_MS } from "@/store/clock";
 import { useStore } from "@/store/core";
 import type { Drop, FileCategory, FileKind, FileRecord, Lang, Person, Product } from "@/store/types";
-import { Button, Dialog, Garment, IconButton, Input, Segmented, Select, Sheet, Table, Tabs, Textarea, toast, type Column } from "@/ui";
+import { Button, Dialog, ProductArt, IconButton, Input, Segmented, Select, Sheet, Table, Tabs, Textarea, toast, type Column } from "@/ui";
 import { Mark } from "@/ui/Mark";
 import { Avatar, WorkEmpty, usePeople } from "../checklist/parts";
 
@@ -43,18 +43,18 @@ const placeOf = (places: Places, file: Pick<FileRecord, "dropId">) => places.get
 
 const KIND_ICONS: Record<FileKind, LucideIcon> = { image: ImageIcon, pdf: FileText, design: PenTool, archive: Archive, video: Film };
 
-const SAMPLE: PickedFile = { name: "hoodie_front-graphic.pdf", size: 420_000, type: "application/pdf" };
+const SAMPLE: PickedFile = { name: "lamp_front-graphic.pdf", size: 420_000, type: "application/pdf" };
 
-/** Pictures have no bytes here, so a piece that shows a garment gets that garment, drawn. */
-type Drawn = { type: Product["garment"]; tone: Product["tone"]; view: "full" | "crop-hood" | "crop-cuff"; tile: string };
+/** Pictures have no bytes here, so a file that shows a product gets that product, drawn. */
+type Drawn = { type: Product["art"]; tone: Product["tone"]; view: "full" | "crop-top" | "crop-detail"; tile: string };
 function drawnFor(file: FileRecord): Drawn | null {
   if (file.kind !== "image") return null;
   const title = file.title.toLowerCase();
-  if (title.includes("zip")) return { type: "zip", tone: "azure", view: "full", tile: "t-pale" };
-  if (title.includes("lining")) return { type: "hoodie", tone: "ice", view: "crop-hood", tile: "t-sky" };
-  if (title.includes("hoodie")) return { type: "hoodie", tone: "ice", view: "full", tile: "t-sky" };
-  if (title.includes("tee")) return { type: "tee", tone: "lilac", view: "full", tile: "t-cob" };
-  if (title.includes("beanie")) return { type: "beanie", tone: "lilac", view: "full", tile: "t-vio" };
+  if (title.includes("speaker")) return { type: "speaker", tone: "azure", view: "full", tile: "t-pale" };
+  if (title.includes("shade")) return { type: "lamp", tone: "ice", view: "crop-top", tile: "t-sky" };
+  if (title.includes("lamp")) return { type: "lamp", tone: "ice", view: "full", tile: "t-sky" };
+  if (title.includes("bottle")) return { type: "bottle", tone: "lilac", view: "full", tile: "t-cob" };
+  if (title.includes("candle")) return { type: "candle", tone: "lilac", view: "full", tile: "t-vio" };
   return null;
 }
 
@@ -63,7 +63,7 @@ function LogoArt({ file, dropName }: { file: FileRecord; dropName: string | null
   return <span className="wf-logo-word">{dropName ?? LABEL.name}</span>;
 }
 
-/** Stands in for the file. Logos and garment pictures are drawn, everything else is a folded page with its extension. */
+/** Stands in for the file. Logos and product pictures are drawn, everything else is a folded page with its extension. */
 function Preview({ file, places, compact }: { file: FileRecord; places: Places; compact?: boolean }) {
   const place = placeOf(places, file);
   const drawn = drawnFor(file);
@@ -80,7 +80,7 @@ function Preview({ file, places, compact }: { file: FileRecord; places: Places; 
   if (drawn) {
     return (
       <span className={`wf-prev ${drawn.tile}`} data-compact={compact || undefined}>
-        <Garment type={drawn.type} tone={drawn.tone} view={drawn.view} className="wf-prev-garment" />
+        <ProductArt type={drawn.type} tone={drawn.tone} view={drawn.view} className="wf-prev-art" />
       </span>
     );
   }

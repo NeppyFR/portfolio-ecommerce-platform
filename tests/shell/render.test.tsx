@@ -48,6 +48,16 @@ describe("shell in static HTML", () => {
     expect(html).toMatch(/aria-current="true"[^>]*href="\/desk\/orders\/?"/);
   });
 
+  it("puts the shop link under the brand, before the list, so a short window still shows it", () => {
+    const html = shell("/desk/");
+    const side = html.indexOf('class="dk-side-brand"');
+    const link = html.indexOf('class="dk-side-shop"');
+    expect(side).toBeGreaterThan(-1);
+    expect(link).toBeGreaterThan(side);
+    expect(link).toBeLessThan(html.indexOf('class="dk-side-nav"'));
+    expect(html).toMatch(/<a(?=[^>]*class="dk-side-shop")(?=[^>]*href="\/shop\/?")[^>]*>/);
+  });
+
   it("lights Finances and IT for every screen under them, and hides superUser from the owner", () => {
     expect(shell("/desk/finance/costs/")).toMatch(/aria-current="true"[^>]*href="\/desk\/finance\/?"/);
     const itScreen = shell("/desk/system/health/");

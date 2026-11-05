@@ -1,15 +1,16 @@
 import {
   Boxes, CalendarDays, ChartColumn, ClipboardList, CreditCard, Database, Factory, FileSpreadsheet,
-  FolderOpen, GitBranch, HeartPulse, History, House, Inbox, KeyRound, Layers, ListChecks, Mail, Map as MapIcon, Megaphone,
+  FolderOpen, GitBranch, Hammer, HeartPulse, History, House, Inbox, KeyRound, Layers, ListChecks, Mail, Map as MapIcon, Megaphone,
   MonitorCog, Package, Printer, Receipt, ReceiptText, Rocket, Settings, ShieldAlert, ShieldCheck, ShieldUser,
   SlidersHorizontal, Tag, Tags, ToggleRight, TriangleAlert, Undo2, UserCog, Users,
-  UsersRound, Wallet, type LucideIcon,
+  UsersRound, Wallet, Waypoints, type LucideIcon,
 } from "lucide-react";
 import type { FeatureKey, NodeId } from "@/store/types";
 
 export type RegionId = "commerce" | "growth" | "work" | "finance" | "system";
 
 export type ScreenId =
+  | "overview" | "built"
   | "dashboard" | "enter"
   | "drops" | "products" | "collections" | "inventory" | "orders" | "returns" | "customers" | "discounts"
   | "analytics" | "marketing" | "inbox"
@@ -35,12 +36,16 @@ export type Screen = {
   outsideShell?: boolean;
   /** Tabs hidden unless the profile is superUser; a direct link shows the locked state. */
   superUserOnly?: boolean;
+  /** A public page shown inside the desk shell: its own headline is the page title, and it runs edge to edge. */
+  page?: boolean;
 };
 
 export const ALL_NODES: NodeId[] = ["customers", "staff", "mail", "dns", "code", "payments", "app", "files", "database", "inbox", "mailbox"];
 export const LIVE_NODES: NodeId[] = ["database", "payments", "mail", "inbox"];
 
 export const SCREENS: Screen[] = [
+  { id: "overview", region: null, route: "/", icon: Waypoints, en: "Overview", de: "Übersicht", touches: [], feature: "shell", page: true },
+  { id: "built", region: null, route: "/built/", icon: Hammer, en: "How it was built", de: "So ist es gebaut", touches: [], feature: "shell", page: true },
   { id: "dashboard", region: null, route: "/desk/", icon: House, en: "Dashboard", de: "Dashboard", touches: ["app", "database"], feature: "shell" },
   { id: "enter", region: null, route: "/desk/enter/", icon: UserCog, en: "Who are you?", de: "Wer bist du?", touches: ["app"], feature: "shell" },
 
@@ -117,7 +122,9 @@ export function screenForPath(pathname: string): Screen | undefined {
   const path = pathname.endsWith("/") ? pathname : `${pathname}/`;
   let best: Screen | undefined;
   for (const s of SCREENS) {
-    if (path.startsWith(s.route) && (!best || s.route.length > best.route.length)) best = s;
+    // The overview sits at the root, so it matches only itself: every other path would start with it.
+    const hit = s.route === "/" ? path === "/" : path.startsWith(s.route);
+    if (hit && (!best || s.route.length > best.route.length)) best = s;
   }
   return best;
 }

@@ -8,7 +8,7 @@ import { addList, addTask, deleteList, deleteTask, editTask, moveTask, tickTask 
 import { DEMO_NOW_MS, DEMO_TODAY } from "@/store/clock";
 import { getState, resetStore } from "@/store/core";
 
-const SAMPLE = { name: "hoodie_front-graphic.pdf", size: 420_000, type: "application/pdf" };
+const SAMPLE = { name: "lamp_front-graphic.pdf", size: 420_000, type: "application/pdf" };
 const DAY = 86_400_000;
 const atDaysAgo = (n: number) => new Date(DEMO_NOW_MS - n * DAY).toISOString();
 
@@ -16,7 +16,7 @@ beforeEach(() => resetStore());
 
 describe("files rules", () => {
   it("cuts the title from a name and knows the extension", () => {
-    expect(titleFromName("hoodie_front-graphic.pdf")).toBe("hoodie front graphic");
+    expect(titleFromName("lamp_front-graphic.pdf")).toBe("lamp front graphic");
     expect(extensionOf("A.B.PNG")).toBe("png");
     expect(kindOfExtension("exe")).toBeNull();
     expect(kindOfExtension("MOV")).toBe("video");
@@ -55,7 +55,7 @@ describe("files rules", () => {
     expect(lagoon.length).toBe(whereCount(files, "drop_lagoon"));
     expect(filterFiles(files, { ...NO_QUERY, where: "brand" }).every((f) => f.dropId === null)).toBe(true);
     expect(filterFiles(files, { ...NO_QUERY, category: "logo" }).every((f) => f.category === "logo")).toBe(true);
-    expect(filterFiles(files, { ...NO_QUERY, q: "SWÌNG tag" }).map((f) => f.title)).toEqual(["Swing tag front and back"]);
+    expect(filterFiles(files, { ...NO_QUERY, q: "PRÒDUCT tag" }).map((f) => f.title)).toEqual(["Product tag front and back"]);
     const byName = filterFiles(files, { ...NO_QUERY, sort: "name" }).map((f) => f.title);
     expect(byName).toEqual([...byName].sort((a, b) => a.localeCompare(b, "en", { numeric: true, sensitivity: "base" })));
     expect(isFiltered({ ...NO_QUERY, q: " " })).toBe(false);

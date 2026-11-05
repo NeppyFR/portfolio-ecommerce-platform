@@ -76,7 +76,7 @@ export function parseTypedCost(text: string): { ok: true; value: Rappen | null }
 
 export type LiveFigures = { stock: number; toShip: number };
 
-/** What each size holds now, and what is sold but not shipped. */
+/** What each variant holds now, and what is sold but not shipped. */
 export function liveFigures(products: Pick<Product, "variants">[], orders: Pick<Order, "status" | "items">[]): Map<string, LiveFigures> {
   const out = new Map<string, LiveFigures>();
   for (const product of products) for (const v of product.variants) out.set(v.id, { stock: v.stock, toShip: 0 });
@@ -90,13 +90,13 @@ export function liveFigures(products: Pick<Product, "variants">[], orders: Pick<
   return out;
 }
 
-/** What the system expects on the shelf: stock plus sold, not shipped. A size that is gone keeps its system figure. */
+/** What the system expects on the shelf: stock plus sold, not shipped. A variant that is gone keeps its system figure. */
 export const expectedOnShelf = (line: Pick<StockCountLine, "variantId" | "systemQty">, live: Map<string, LiveFigures>): number => {
   const row = line.variantId ? live.get(line.variantId) : undefined;
   return row ? Math.max(0, row.stock + row.toShip) : line.systemQty;
 };
 
-/** A line as it would save: a changed count uses the size's live figures; a size that is gone counts as unmoved. */
+/** A line as it would save: a changed count uses the variant's live figures; a variant that is gone counts as unmoved. */
 export function withCounted(line: StockCountLine, counted: number | null, live: Map<string, LiveFigures>): StockCountLine {
   if (counted === null) return { ...line, counted: null, toShip: 0, stockAtCount: null };
   const row = line.variantId ? live.get(line.variantId) : undefined;
@@ -114,7 +114,7 @@ export const stockAtCutoff = (variantId: string, current: number, movements: Pic
   return current - movements.filter((m) => m.variantId === variantId && Date.parse(m.createdAt) >= limit).reduce((sum, m) => sum + m.delta, 0);
 };
 
-/** The sizes a count holds: created before the cutoff, and on sale or holding stock at the cutoff. */
+/** The variants a count holds: created before the cutoff, and on sale or holding stock at the cutoff. */
 export function startLines(year: number, products: Product[], movements: StockMove[], existing: StockCountLine[] = []): StockCountLine[] {
   const cutoff = cutoffIso(year);
   const have = new Set(existing.map((l) => l.variantId));
@@ -147,7 +147,7 @@ export function confirmRefusal(count: StockCount, typedYear: string, nowMs: numb
 
 export const STOCK_COLUMNS = ["SKU", "Product", "Size", "Colour", "System qty 31.12", "Counted", "Sold not shipped", "Moved since 31.12", "Year-end qty", "Difference", "Unit cost CHF", "Cost source", "Value CHF"];
 
-/** One row per size, then the two footer rows. */
+/** One row per variant, then the two footer rows. */
 export function stockCountCsv(count: StockCount): string {
   const lines = count.lines.slice().sort(lineOrder);
   const rows = lines.map((line) => {

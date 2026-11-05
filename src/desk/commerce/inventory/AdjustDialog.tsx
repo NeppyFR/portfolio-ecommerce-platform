@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { fmt, useLang, useT } from "@/i18n";
 import { inventory as dict } from "@/i18n/dict/inventory";
-import { sizeLabel } from "@/lib/product-rules";
+import { sizeAndColour } from "@/desk/commerce/orders/rules/order-rules";
 import { adjustStock, setThreshold } from "@/store/actions/inventory";
 import { Button, Checkbox, Dialog, Input, RuleLine, Select, Textarea, toast } from "@/ui";
 import { ADJUST_REASONS, adjustDelta, parseAmount, reasonRule, type AdjustReason, type InventoryRow } from "./rules";
@@ -37,7 +37,7 @@ export function AdjustDialog({ row, lowStockDefault, onClose }: { row: Inventory
   const delta = amount === null ? null : adjustDelta(reason, amount);
   const after = row && delta !== null ? row.onHand + delta : null;
   const amountLabel = rule.sign === "plus" ? t.adjust.added : rule.sign === "minus" ? t.adjust.removed : t.adjust.change;
-  const label = row ? `${lang === "de" ? row.productNameDe : row.productName} · ${sizeLabel(row.size, lang)}` : "";
+  const label = row ? `${lang === "de" ? row.productNameDe : row.productName} · ${sizeAndColour(row.size, row.color, lang)}` : "";
 
   const save = () => {
     if (!row) return;

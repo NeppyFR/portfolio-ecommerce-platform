@@ -32,7 +32,7 @@ export const en = {
   orderCount: "{count} orders",
   unitsOne: "{count} unit",
   units: "{count} units",
-  category: { hoodie: "Hoodie", tee: "T-shirt", cap: "Cap", pants: "Pants", beanie: "Beanie", tote: "Tote bag", other: "Other" },
+  category: { drinkware: "Drinkware", lighting: "Lighting", audio: "Audio", plants: "Plants", desk: "Desk", travel: "Travel", other: "Other" },
   profit: {
     title: "Estimated gross profit",
     description: "Item sales after discounts minus the recorded unit cost. Before refunds and shipping.",
@@ -56,7 +56,7 @@ export const en = {
     orderItems: "Order items",
     orderItemsHint: "Every line of those orders, with costs",
     inventory: "Inventory",
-    inventoryHint: "Stock per size now, with units sold in the range",
+    inventoryHint: "Stock per variant now, with units sold in the range",
     done: "{name} downloaded",
   },
   csv: {
@@ -132,7 +132,7 @@ export const de: typeof en = {
   orderCount: "{count} Bestellungen",
   unitsOne: "{count} Stück",
   units: "{count} Stück",
-  category: { hoodie: "Hoodie", tee: "T-Shirt", cap: "Cap", pants: "Hose", beanie: "Beanie", tote: "Tote Bag", other: "Anderes" },
+  category: { drinkware: "Trinken", lighting: "Licht", audio: "Audio", plants: "Pflanzen", desk: "Schreibtisch", travel: "Reisen", other: "Anderes" },
   profit: {
     title: "Geschätzter Bruttogewinn",
     description: "Artikelumsatz nach Rabatten minus erfasste Stückkosten. Vor Rückerstattungen und Versand.",
@@ -156,7 +156,7 @@ export const de: typeof en = {
     orderItems: "Bestellpositionen",
     orderItemsHint: "Jede Position dieser Bestellungen, mit Kosten",
     inventory: "Lagerbestand",
-    inventoryHint: "Aktueller Bestand pro Grösse, mit den im Zeitraum verkauften Stück",
+    inventoryHint: "Aktueller Bestand pro Variante, mit den im Zeitraum verkauften Stück",
     done: "{name} heruntergeladen",
   },
   csv: {

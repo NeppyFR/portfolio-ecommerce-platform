@@ -3,7 +3,7 @@ import { productInputProblem, slugify, uniqueSlug } from "@/lib/product-rules";
 import { now } from "@/store/clock";
 import { getState, registerReset, update } from "@/store/core";
 import { logActivity, moveStock } from "@/store/flows";
-import type { ActionResult, Collection, GarmentTone, GarmentType, Product, ProductCategory, ProductStatus, ProductTag, Rappen, SizeCode, Variant } from "@/store/types";
+import type { ActionResult, Collection, ArtTone, ProductArtType, Product, ProductCategory, ProductStatus, ProductTag, Rappen, SizeCode, Variant } from "@/store/types";
 
 let seq = 1;
 registerReset(() => {
@@ -15,7 +15,7 @@ const fail = (code: string): { ok: false; code: string; message: string } => ({ 
 
 export type ProductInput = {
   nameEn: string; nameDe: string; descriptionEn: string; descriptionDe: string; category: ProductCategory; priceRappen: Rappen | null; costRappen: Rappen | null;
-  garment: GarmentType; tone: GarmentTone; printedName: boolean; collectionIds: string[]; tagIds: string[]; status?: ProductStatus;
+  art: ProductArtType; tone: ArtTone; printedName: boolean; collectionIds: string[]; tagIds: string[]; status?: ProductStatus;
 };
 
 function productProblem(input: ProductInput): string | null {
@@ -34,7 +34,7 @@ export function createProduct(input: ProductInput): ActionResult<{ id: string; s
   const at = now();
   const product: Product = {
     id, slug, nameEn: input.nameEn.trim(), nameDe: input.nameDe.trim(), descriptionEn: input.descriptionEn.trim(), descriptionDe: input.descriptionDe.trim(),
-    status: "draft", category: input.category, priceRappen: input.priceRappen as number, costRappen: input.costRappen, garment: input.garment, tone: input.tone, printedName: input.printedName,
+    status: "draft", category: input.category, priceRappen: input.priceRappen as number, costRappen: input.costRappen, art: input.art, tone: input.tone, printedName: input.printedName,
     collectionIds: input.collectionIds, tagIds: input.tagIds, variants: [], createdAt: at, updatedAt: at, publishedAt: null,
   };
   update((state) => ({ ...state, products: [product, ...state.products] }));
@@ -54,7 +54,7 @@ export function saveProduct(id: string, input: ProductInput): ActionResult {
       const status = input.status ?? p.status;
       return {
         ...p, nameEn: input.nameEn.trim(), nameDe: input.nameDe.trim(), descriptionEn: input.descriptionEn.trim(), descriptionDe: input.descriptionDe.trim(), category: input.category,
-        priceRappen: input.priceRappen as number, costRappen: input.costRappen, garment: input.garment, tone: input.tone, printedName: input.printedName, collectionIds: input.collectionIds, tagIds: input.tagIds,
+        priceRappen: input.priceRappen as number, costRappen: input.costRappen, art: input.art, tone: input.tone, printedName: input.printedName, collectionIds: input.collectionIds, tagIds: input.tagIds,
         status, updatedAt: at, publishedAt: p.publishedAt ?? (status === "active" ? at : null),
       };
     }),

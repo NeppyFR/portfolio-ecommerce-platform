@@ -8,17 +8,17 @@ import { fmt, useDocTitle, useLang, useT } from "@/i18n";
 import { shop } from "@/i18n/dict/shop";
 import { LABEL } from "@/lib/brand";
 import { formatChf } from "@/lib/format";
-import { effectivePrice, isSoldOut, saleVariants, sizeLabel } from "@/lib/product-rules";
+import { coloursOf, effectivePrice, isSoldOut, saleVariants, sizeLabel, toneForColour } from "@/lib/product-rules";
 import { RUNTIME_PARAM } from "@/lib/routes";
 import { addOne } from "@/store/actions/bag";
 import { useStore } from "@/store/core";
-import type { Product, Variant } from "@/store/types";
+import type { ArtTone, Product, Variant } from "@/store/types";
 import { Button, Segmented } from "@/ui";
 import { NotFoundBody } from "./NotFoundScreen";
 import { firePacket } from "./packet";
-import { PieceGarment, descOf, nameOf, tileFor } from "./parts";
+import { PieceArt, descOf, nameOf, tileFor } from "./parts";
 
-function Gallery({ product }: { product: Product }) {
+function Gallery({ product, tone }: { product: Product; tone: ArtTone }) {
   const lang = useLang();
   const t = useT(shop);
   const name = nameOf(product, lang);
@@ -26,25 +26,27 @@ function Gallery({ product }: { product: Product }) {
   return (
     <section className="sp-gal" aria-label={t.product.galleryLabel}>
       <div className="sp-gal-stage f-stage">
-        <PieceGarment product={product} title={fmt(t.product.stageAlt, { name })} className="sp-tile-g" />
+        <PieceArt product={product} tone={tone} title={fmt(t.product.stageAlt, { name })} className="sp-tile-art" />
       </div>
       <div className="sp-gal-row">
         <div className={`sp-gal-crop ${side}`}>
-          <PieceGarment product={product} view="crop-hood" title={fmt(t.product.hoodAlt, { name })} className="sp-crop-g" />
+          <PieceArt product={product} tone={tone} view="crop-top" title={fmt(t.product.topAlt, { name })} className="sp-crop-art" />
         </div>
         <div className="sp-gal-crop t-pale">
-          <PieceGarment product={product} view="crop-cuff" title={fmt(t.product.cuffAlt, { name })} className="sp-crop-g" />
+          <PieceArt product={product} tone={tone} view="crop-detail" title={fmt(t.product.detailAlt, { name })} className="sp-crop-art" />
         </div>
       </div>
     </section>
   );
 }
 
-function Details({ product }: { product: Product }) {
+function Details({ product, colour, onColour }: { product: Product; colour: string | null; onColour: (colour: string) => void }) {
   const lang = useLang();
   const t = useT(shop);
   useDocTitle(nameOf(product, lang));
-  const variants = useMemo(() => saleVariants(product), [product]);
+  const onSale = useMemo(() => saleVariants(product), [product]);
+  const colours = useMemo(() => coloursOf(onSale), [onSale]);
+  const variants = useMemo(() => (colours.length > 1 ? onSale.filter((v) => v.color === colour) : onSale), [onSale, colours, colour]);
   const [picked, setPicked] = useState<string | null>(null);
   const [state, setState] = useState<"idle" | "added" | "maxed">("idle");
   const timer = useRef<number | null>(null);
@@ -76,6 +78,22 @@ function Details({ product }: { product: Product }) {
       <p className="sp-pd-word">{LABEL.name}</p>
       <h1 className="sp-pd-name">{nameOf(product, lang)}</h1>
       {price ? <p className="type-mono sp-pd-price">{price}</p> : null}
+      {colours.length > 1 ? (
+        <div className="sp-pd-sizes">
+          <p className="type-label">{t.product.colour}</p>
+          <Segmented
+            aria-label={t.product.colour}
+            className="sp-sizes"
+            value={colour}
+            onChange={(next) => {
+              onColour(next);
+              setPicked(null);
+              setState("idle");
+            }}
+            options={colours.map((c) => ({ value: c, disabled: onSale.filter((v) => v.color === c).every(isSoldOut), label: t.colours[c] ?? c }))}
+          />
+        </div>
+      ) : null}
       {variants.length > 1 ? (
         <div className="sp-pd-sizes">
           <p className="type-label" id="sp-size-label">
@@ -127,10 +145,15 @@ export function ProductScreen({ slug }: { slug: string }) {
   const real = slug === RUNTIME_PARAM ? params.get("slug") ?? "" : slug;
   const product = useStore((s) => s.products.find((p) => p.slug === real && p.status === "active"));
   if (!product) return <NotFoundBody />;
+  return <Piece key={product.id} product={product} />;
+}
+
+function Piece({ product }: { product: Product }) {
+  const [colour, setColour] = useState<string | null>(() => coloursOf(saleVariants(product))[0] ?? null);
   return (
     <article className="sp-product">
-      <Details key={product.id} product={product} />
-      <Gallery product={product} />
+      <Details product={product} colour={colour} onColour={setColour} />
+      <Gallery product={product} tone={toneForColour(product, colour)} />
     </article>
   );
 }

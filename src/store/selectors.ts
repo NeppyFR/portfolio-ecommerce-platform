@@ -4,11 +4,12 @@ import { runningPerMonth } from "@/lib/running-costs";
 import { rotationRows, rotationSummary, lockStatus } from "@/lib/security-rules";
 import { variantStockState } from "@/lib/product-rules";
 import { attention, worstTone } from "@/lib/tones";
-import { canAccess } from "@/lib/features";
+import { SWITCHABLE_FEATURES, canAccess } from "@/lib/features";
+import { addMonths } from "@/lib/dates";
 import { formatChf } from "@/lib/format";
 import { orderHref } from "@/lib/routes";
 import { DEMO_MONTH, DEMO_NOW_MS, DEMO_TODAY } from "./clock";
-import type { HealthRun, Order, Product, Profile, State, Tone, Variant } from "./types";
+import type { Drop, HealthRun, IsoMonth, Order, Person, Product, Profile, State, StaffMember, Tone, Variant } from "./types";
 
 /**
  * Shell and Dashboard read only these. Screens import them and never reimplement them.
@@ -88,6 +89,54 @@ export const stockAlerts = perState((s: State): { low: { product: Product; varia
   }
   return { low, out };
 });
+
+/** What the shop sells right now: active products, and the active variants they come in. */
+export const onSaleCounts = perState((s: State): { products: number; variants: number } => {
+  const active = s.products.filter((p) => p.status === "active");
+  return { products: active.length, variants: active.reduce((sum, p) => sum + p.variants.filter((v) => v.isActive).length, 0) };
+});
+
+/** Returns someone still has to receive or refund. */
+export const openReturnCount = (s: State): number => s.returns.filter((r) => r.status === "requested" || r.status === "received").length;
+
+/** Purchase orders placed and not in the warehouse yet. */
+export const inboundPurchaseCount = (s: State): number => s.purchaseOrders.filter((p) => p.status === "ordered" || p.status === "in_production" || p.status === "shipped").length;
+
+export type NextDrop = { drop: Drop; daysLeft: number; waiting: number; tasksDone: number; tasksTotal: number };
+
+/** The nearest planned launch with a date, with its waitlist and its checklist. */
+export const nextDrop = perState((s: State): NextDrop | null => {
+  const drop = s.drops.filter((d) => d.status === "planned" && d.launchOn !== null && d.launchOn >= DEMO_TODAY).sort((a, b) => (a.launchOn as string).localeCompare(b.launchOn as string))[0];
+  if (!drop) return null;
+  const tasks = s.tasks.filter((t) => t.dropId === drop.id);
+  return {
+    drop,
+    daysLeft: Math.round((Date.parse(drop.launchOn as string) - Date.parse(DEMO_TODAY)) / 86_400_000),
+    waiting: drop.waitlist.length,
+    tasksDone: tasks.filter((t) => t.doneAt !== null).length,
+    tasksTotal: tasks.length,
+  };
+});
+
+/** What left the book in each of the twelve months up to this one, oldest first. */
+export const moneyOutByMonth = perState((s: State): { month: IsoMonth; rappen: number }[] => {
+  const months = Array.from({ length: 12 }, (_, i) => addMonths(DEMO_MONTH, i - 11));
+  return months.map((month) => ({ month, rappen: s.ledger.filter((e) => e.amountRappen < 0 && e.occurredOn.startsWith(month)).reduce((sum, e) => sum - e.amountRappen, 0) }));
+});
+
+export type TeamLoad = { member: StaffMember; openTasks: number; areas: number; areasTotal: number };
+
+/** Each active person's open tasks, and how many of the switchable areas they may open. */
+export const teamLoad = perState((s: State): TeamLoad[] =>
+  s.team
+    .filter((member) => member.isActive)
+    .map((member) => ({
+      member,
+      openTasks: s.tasks.filter((t) => t.doneAt === null && t.assignees.includes(member.profile as Person)).length,
+      areas: SWITCHABLE_FEATURES.filter((feature) => canAccess(member.profile, feature, s.featureSwitches)).length,
+      areasTotal: SWITCHABLE_FEATURES.length,
+    })),
+);
 
 export type SystemArea = { id: "health" | "database" | "payments" | "email" | "security" | "config" | "deploys" | "ci"; tone: Tone };
 

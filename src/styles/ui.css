@@ -242,7 +242,7 @@
   .ui-delta[data-tone="down"],.ui-delta[data-tone="neutral"]{color:var(--ink-3)}
   .ui-delta[data-tone="bad"]{color:var(--rose)}
 
-  /* Garment cluster */
+  /* Product cluster */
   .ui-cluster{display:inline-flex;align-items:center;gap:2px}
   .ui-cluster-item{display:inline-flex;width:28px;height:28px}
   .ui-cluster-item svg{width:100%;height:100%}

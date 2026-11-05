@@ -3,7 +3,7 @@
 import { Plus, Rocket } from "lucide-react";
 import { useMemo, useState } from "react";
 import { compareDrops, launchMs, nextLaunch } from "@/desk/commerce/products/rules";
-import { GarmentThumb, useOpenParam } from "@/desk/commerce/products/shared";
+import { ArtThumb, useOpenParam } from "@/desk/commerce/products/shared";
 import { PageHead } from "@/desk/shell/PageHead";
 import { fmt, plural, useT } from "@/i18n";
 import { drops as dict } from "@/i18n/dict/drops";
@@ -22,7 +22,7 @@ function DropCard({ drop, index, featured, ms, onOpen }: { drop: Drop; index: nu
   const taskLists = useStore((s) => s.taskLists);
   const tasks = useStore((s) => s.tasks);
   const files = useStore((s) => s.files);
-  const garments = useMemo(() => drop.productIds.map((id) => products.find((p) => p.id === id)).filter((p) => p !== undefined), [drop.productIds, products]);
+  const pieces = useMemo(() => drop.productIds.map((id) => products.find((p) => p.id === id)).filter((p) => p !== undefined), [drop.productIds, products]);
   const counts = useMemo(() => {
     const listIds = new Set(taskLists.filter((l) => l.dropId === drop.id).map((l) => l.id));
     const mine = tasks.filter((x) => listIds.has(x.listId) || x.dropId === drop.id);
@@ -52,10 +52,10 @@ function DropCard({ drop, index, featured, ms, onOpen }: { drop: Drop; index: nu
         </span>
         <DropStatusPill status={drop.status} t={t} />
       </span>
-      {garments.length ? (
-        <span className="cat-drop-garments" aria-hidden="true">
-          {garments.slice(0, 5).map((p) => (
-            <GarmentThumb key={p.id} type={p.garment} tone={p.tone} printed={p.printedName || undefined} />
+      {pieces.length ? (
+        <span className="cat-drop-art" aria-hidden="true">
+          {pieces.slice(0, 5).map((p) => (
+            <ArtThumb key={p.id} type={p.art} tone={p.tone} printed={p.printedName || undefined} />
           ))}
         </span>
       ) : null}

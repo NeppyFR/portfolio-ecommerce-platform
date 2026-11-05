@@ -32,7 +32,7 @@ export function searchJump(state: State, query: string, lang: Lang): JumpSection
     const locked = !can(screen.feature);
     return { id: `screen:${screen.id}`, group: "screens", label: screenName(screen, lang), hint: locked ? t.lockedLabel : groupWord(screen, lang), href: screen.route, icon: screen.icon, locked };
   };
-  const visible = SCREENS.filter((s) => s.id !== "slip" && (!s.superUserOnly || state.profile === "superUser"));
+  const visible = SCREENS.filter((s) => s.id !== "slip" && !s.page && (!s.superUserOnly || state.profile === "superUser"));
   const names = (s: Screen) => {
     const nav = navItemFor(s);
     return [s.en, s.de, screenName(s, "en"), screenName(s, "de"), nav?.en ?? null, nav?.de ?? null];

@@ -357,7 +357,7 @@ export const COMMERCE_PREVIEW_LABELS: Record<"en" | "de", CommercePreviewLabels>
   en: {
     illustration: "Simplified illustration",
     fail: "Fail a step",
-    alt: "An online shop beside its staff dashboard. Someone adds a hoodie to the bag, the order is paid and stored, the mail step fails once and passes on the second try, and the order lands on the dashboard as a new row, where staff pack and ship it.",
+    alt: "An online shop beside its staff dashboard. Someone adds a lamp to the bag, the order is paid and stored, the mail step fails once and passes on the second try, and the order lands on the dashboard as a new row, where staff pack and ship it.",
     onlineShop: "Online shop",
     shop: "Shop",
     staffSystem: "Staff system",
@@ -389,7 +389,7 @@ export const COMMERCE_PREVIEW_LABELS: Record<"en" | "de", CommercePreviewLabels>
   de: {
     illustration: "Vereinfachte Darstellung",
     fail: "Fehler auslösen",
-    alt: "Ein Onlineshop neben dem Dashboard des Teams. Jemand legt einen Hoodie in den Warenkorb, die Bestellung wird bezahlt und gespeichert, der Mailschritt scheitert einmal und klappt beim zweiten Versuch, und die Bestellung landet als neue Zeile auf dem Dashboard, wo das Team sie packt und versendet.",
+    alt: "Ein Onlineshop neben dem Dashboard des Teams. Jemand legt eine Lampe in den Warenkorb, die Bestellung wird bezahlt und gespeichert, der Mailschritt scheitert einmal und klappt beim zweiten Versuch, und die Bestellung landet als neue Zeile auf dem Dashboard, wo das Team sie packt und versendet.",
     onlineShop: "Onlineshop",
     shop: "Shop",
     staffSystem: "Team-System",
@@ -473,19 +473,32 @@ function Txt({ x, y, size, w = 500, c = INK, a, l, children }: { x?: number; y?:
   );
 }
 
-const HOODIE_BODY = "M-13-19 L13-19 C20-17 24-14 26-8 L33 17 L24 20 L19 4 L19 27 L-19 27 L-19 4 L-24 20 L-33 17 L-26-8 C-24-14-20-17-13-19Z";
-const HOODIE_HOOD = "M-15-16 C-17-33 17-33 15-16 C9-10-9-10-15-16Z";
-const HOODIE_OPEN = "M-8-19 C-8-27 8-27 8-19 C4-15-4-15-8-19Z";
-const HOODIE_POCKET = "M-11 12 L11 12 L14 24 L-14 24Z";
+/* The shop's lamp, from src/art/ProductArt.tsx. Its stem is a little wider here, so it still reads in an order row. */
+const LAMP_SHADE = "M146 44h108c6 0 11 3 13 9l49 148c3 9-3 17-12 17H96c-9 0-15-8-12-17l49-148c2-6 7-9 13-9Z";
+const LAMP_BASE = "M118 430c0-28 38-44 82-44s82 16 82 44c0 8-6 14-14 14H132c-8 0-14-6-14-14Z";
+const LAMP_STEM = "M188 226h24v176h-24Z";
 
-function Hoodie({ scale, fill, tint = "#04102e", cord = "#fff" }: { scale?: number; fill: string; tint?: string; cord?: string }) {
+/** Centred on its own middle and 60 units tall at scale 1. `beam` is the id of a gradient, and turns the light on. */
+function Lamp({ scale, fill, beam }: { scale?: number; fill: string; beam?: string }) {
   return (
     <g transform={scale === undefined ? undefined : `scale(${scale})`}>
-      <path d={HOODIE_BODY} fill={fill} />
-      <path d={HOODIE_HOOD} fill={fill} />
-      <path d={HOODIE_OPEN} fill={tint} opacity={0.42} />
-      <path d={HOODIE_POCKET} fill={tint} opacity={0.14} />
-      <path d="M-3-14 L-3-5 M3-14 L3-5" stroke={cord} strokeWidth={1.4} strokeLinecap="round" opacity={0.8} fill="none" />
+      <g transform="scale(.15) translate(-200 -244)">
+        {beam ? <path d="M100 222 46 440H354L300 222Z" fill={`url(#${beam})`} /> : null}
+        <path d={LAMP_STEM} fill={fill} />
+        <path d={LAMP_BASE} fill={fill} />
+        <path d={LAMP_SHADE} fill={fill} />
+        {beam ? (
+          <>
+            <path d={LAMP_STEM} fill="#04102e" opacity={0.2} />
+            <path d="M92 218h216c-22 14-194 14-216 0Z" fill={ICE} opacity={0.92} />
+            <circle cx={200} cy={326} r={11} fill={fill} />
+            <path d="M264 230v56" stroke={ICE} strokeOpacity={0.75} strokeWidth={2.5} />
+            <circle cx={264} cy={292} r={6.5} fill={ICE} />
+            <path d="M160 60 124 196" stroke={ICE} strokeOpacity={0.5} strokeWidth={6} strokeLinecap="round" />
+            <path d="M138 414c10-8 30-14 44-14" stroke={ICE} strokeOpacity={0.42} strokeWidth={4} strokeLinecap="round" fill="none" />
+          </>
+        ) : null}
+      </g>
     </g>
   );
 }
@@ -644,7 +657,7 @@ function Row({ u, no, total }: { u: string; no: string; total: string }) {
     <>
       <rect x={666} y={-12} width={24} height={24} rx={6} fill={CHIP} />
       <g transform="translate(678 0)">
-        <Hoodie scale={0.28} fill={`url(#${u}gar)`} />
+        <Lamp scale={0.3} fill={`url(#${u}prod)`} />
       </g>
       <Txt x={700} y={6} size={16} w={650}>
         {no}
@@ -703,7 +716,11 @@ function Defs({ u }: { u: string }) {
         <stop offset=".55" stopColor="#070f26" />
         <stop offset="1" stopColor="#1c1650" />
       </linearGradient>
-      <linearGradient id={`${u}gar`} x1="0" y1="0" x2="1" y2="1">
+      <linearGradient id={`${u}beam`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor={ICE} stopOpacity=".3" />
+        <stop offset="1" stopColor={ICE} stopOpacity="0" />
+      </linearGradient>
+      <linearGradient id={`${u}prod`} x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stopColor={ICE} />
         <stop offset=".5" stopColor={SKY} />
         <stop offset="1" stopColor={VIOLET} />
@@ -820,7 +837,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
       <rect x={44} y={60} width={330} height={342} rx={18} fill={SKY} opacity={0.1} />
       <rect x={40} y={54} width={330} height={342} rx={18} fill={CARD} stroke={`url(#${u}edge)`} strokeWidth={1.4} />
       <text x={58} y={81} fontSize={21} fontStyle="italic" fontFamily="Georgia,'Times New Roman',serif" fill={INK}>
-        Aerloom
+        Aerlo
       </text>
       <Move k="w.bag">
         <Icon x={-11.5} y={-11.5} size={23} color={INK}>
@@ -830,10 +847,10 @@ function WideArt({ u, l }: { u: string; l: L }) {
       <rect x={56} y={96} width={298} height={186} rx={12} fill={`url(#${u}tile)`} stroke={HAIR} />
       <circle cx={205} cy={192} r={92} fill={`url(#${u}halo)`} />
       <Move k="w.bob">
-        <Hoodie fill={`url(#${u}gar)`} />
+        <Lamp fill={`url(#${u}prod)`} beam={`${u}beam`} />
       </Move>
       <Txt x={56} y={308} size={19} w={600}>
-        Essential Hoodie
+        Everyday Lamp
       </Txt>
       <Txt x={354} y={308} size={19} w={600} a="end">
         CHF 89.00
@@ -887,7 +904,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
       <circle cx={509} cy={76} r={3.4} fill={BLUE} />
       <circle cx={522} cy={86} r={3.4} fill={VIOLET} />
       <text x={530} y={86} fontSize={19} fontStyle="italic" fontFamily="Georgia,'Times New Roman',serif" fill={INK}>
-        Aerloom
+        Aerlo
       </text>
       <path d="M640 54 V396" stroke={HAIR} />
       <rect x={492} y={99} width={140} height={32} rx={10} fill={ACTIVE} />
@@ -1074,7 +1091,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
         </Move>
       ))}
       <Move k="w.mini">
-        <Hoodie fill={`url(#${u}gar)`} />
+        <Lamp fill={`url(#${u}prod)`} />
       </Move>
       <Move k="w.tri">
         <Triangle size={30} />
@@ -1085,7 +1102,7 @@ function WideArt({ u, l }: { u: string; l: L }) {
       <Move k="w.pkt">
         <circle r={18} fill={SKY} opacity={0.32} />
         <circle r={11} fill={ICE} stroke="#fff" strokeWidth={2} />
-        <Hoodie scale={0.2} fill={PAGE} tint={ICE} cord={ICE} />
+        <Lamp scale={0.26} fill={PAGE} />
       </Move>
       <Pills prefix="w." l={l} size={17} />
       <Move k="w.cur">
@@ -1138,7 +1155,7 @@ function CompactArt({ u, l }: { u: string; l: L }) {
       <rect x={24} y={54} width={128} height={120} rx={12} fill={`url(#${u}tile)`} stroke={HAIR} />
       <circle cx={88} cy={116} r={60} fill={`url(#${u}halo)`} />
       <Move k="c.bob">
-        <Hoodie fill={`url(#${u}gar)`} />
+        <Lamp fill={`url(#${u}prod)`} beam={`${u}beam`} />
       </Move>
       <Txt x={24} y={203} size={24} w={650}>
         CHF 89
@@ -1203,7 +1220,7 @@ function CompactArt({ u, l }: { u: string; l: L }) {
       <rect x={198} y={204} width={256} height={68} rx={12} fill="none" stroke={HAIR} />
       <rect x={208} y={217} width={42} height={42} rx={9} fill={CHIP} />
       <g transform="translate(229 238)">
-        <Hoodie scale={0.5} fill={`url(#${u}gar)`} />
+        <Lamp scale={0.55} fill={`url(#${u}prod)`} />
       </g>
       <Move k="c.n0">
         <Txt x={260} y={236} size={24} w={650}>
@@ -1244,7 +1261,7 @@ function CompactArt({ u, l }: { u: string; l: L }) {
         <rect x={-128} y={-34} width={256} height={68} rx={12} fill="none" stroke={SKY} strokeWidth={3} />
       </Move>
       <Move k="c.mini">
-        <Hoodie fill={`url(#${u}gar)`} />
+        <Lamp fill={`url(#${u}prod)`} />
       </Move>
       <Move k="c.tri">
         <Triangle size={30} />
@@ -1258,7 +1275,7 @@ function CompactArt({ u, l }: { u: string; l: L }) {
       <Move k="c.pkt">
         <circle r={16} fill={SKY} opacity={0.32} />
         <circle r={10} fill={ICE} stroke="#fff" strokeWidth={2} />
-        <Hoodie scale={0.18} fill={PAGE} tint={ICE} cord={ICE} />
+        <Lamp scale={0.24} fill={PAGE} />
       </Move>
       <Pills prefix="c." l={l} size={24} />
     </svg>

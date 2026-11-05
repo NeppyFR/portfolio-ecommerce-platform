@@ -1,29 +1,30 @@
 import { SKU_PREFIX } from "@/lib/brand";
-import { skuFor } from "@/lib/product-rules";
-import type { Collection, GarmentTone, GarmentType, Order, Product, ProductCategory, ProductStatus, SizeCode, Variant } from "@/store/types";
+import { coloursOf, skuFor } from "@/lib/product-rules";
+import type { Collection, ArtTone, ProductArtType, Order, Product, ProductCategory, ProductStatus, SizeCode, Variant } from "@/store/types";
 
-export const PRODUCT_CATEGORIES: ProductCategory[] = ["hoodie", "tee", "cap", "pants", "beanie", "tote", "other"];
-export const GARMENT_TYPES: GarmentType[] = ["hoodie", "zip", "tee", "pants", "cargo", "cap", "beanie", "tote"];
-export const GARMENT_TONES: GarmentTone[] = ["ice", "sky", "azure", "dusk", "lilac"];
+export const PRODUCT_CATEGORIES: ProductCategory[] = ["drinkware", "lighting", "audio", "plants", "desk", "travel", "other"];
+export const ART_TYPES: ProductArtType[] = ["mug", "bottle", "lamp", "notebook", "candle", "planter", "speaker", "pouch"];
+export const ART_TONES: ArtTone[] = ["ice", "sky", "azure", "dusk", "lilac"];
 
-const TYPE_CODE: Record<GarmentType, string> = { hoodie: "HOOD", zip: "ZIP", tee: "TEE", pants: "TRACK", cargo: "CARGO", cap: "CAP", beanie: "BEAN", tote: "TOTE" };
-const TONE_CODE: Record<GarmentTone, string> = { ice: "ICE", sky: "SKY", azure: "AZU", dusk: "DUS", lilac: "LIL" };
+const TYPE_CODE: Record<ProductArtType, string> = { mug: "MUG", bottle: "BTL", lamp: "LAMP", notebook: "NOTE", candle: "CNDL", planter: "PLNT", speaker: "SPK", pouch: "POUCH" };
+const TONE_CODE: Record<ArtTone, string> = { ice: "ICE", sky: "SKY", azure: "AZU", dusk: "DUS", lilac: "LIL" };
 
-/** The next SKU for a size: the shared stem of the product's SKUs, or one built from its garment and tone. */
-export function suggestSku(product: Pick<Product, "garment" | "tone" | "variants">, size: SizeCode): string {
-  const first = product.variants[0];
+/** The next SKU for a variant: the shared stem of the product's SKUs, or one built from its drawing and tone. */
+export function suggestSku(product: Pick<Product, "art" | "tone" | "variants">, size: SizeCode): string {
+  const main = coloursOf(product.variants)[0];
+  const first = product.variants.find((v) => v.color === main);
   const suffix = size === "ONE_SIZE" ? "OS" : size;
   if (first) {
     const stem = first.sku.slice(0, first.sku.lastIndexOf("-"));
     if (stem.startsWith(SKU_PREFIX)) return `${stem}-${suffix}`;
   }
-  return skuFor(TYPE_CODE[product.garment], TONE_CODE[product.tone], size);
+  return skuFor(TYPE_CODE[product.art], TONE_CODE[product.tone], size);
 }
 
 export const totalStock = (product: Pick<Product, "variants">): number => product.variants.reduce((sum, v) => sum + v.stock, 0);
 export const reservedUnits = (product: Pick<Product, "variants">): number => product.variants.reduce((sum, v) => sum + v.reserved, 0);
 
-/** A product stays for the order history once any size was sold. */
+/** A product stays for the order history once any variant was sold. */
 export function hasOrders(product: Pick<Product, "id" | "variants">, orders: Pick<Order, "items">[]): boolean {
   return product.variants.some((v) => v.ordered > 0) || orders.some((o) => o.items.some((i) => i.productId === product.id));
 }

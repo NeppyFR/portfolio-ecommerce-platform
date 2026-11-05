@@ -50,7 +50,7 @@ export function awaitsBooking(order: Pick<PurchaseOrder, "status" | "financeEntr
   return order.status === "received" && !order.financeEntryId && poTotals(order.lines, order.shippingMinor).totalMinor > 0;
 }
 
-/** What receiving books: the outstanding pieces of sizes that still exist, and the SKUs of sizes deleted since. */
+/** What receiving books: the outstanding pieces of variants that still exist, and the SKUs of variants deleted since. */
 export function toReceive(lines: PurchaseOrderLine[], variantExists: (variantId: string) => boolean): { pieces: number; skipped: string[] } {
   let pieces = 0;
   const skipped: string[] = [];
@@ -63,7 +63,7 @@ export function toReceive(lines: PurchaseOrderLine[], variantExists: (variantId:
   return { pieces, skipped };
 }
 
-/** Pieces on open orders, per size. Inventory prints this as `+{n} incoming`. */
+/** Pieces on open orders, per variant. Inventory prints this as `+{n} incoming`. */
 export function incomingByVariant(orders: PurchaseOrder[]): Map<string, number> {
   const out = new Map<string, number>();
   for (const order of orders) {

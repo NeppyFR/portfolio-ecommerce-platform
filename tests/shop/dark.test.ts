@@ -5,7 +5,7 @@ const shop = readFileSync("src/shop/shop.css", "utf8");
 const print = readFileSync("src/print/print.css", "utf8");
 const slip = readFileSync("src/print/SlipScreen.tsx", "utf8");
 const labels = readFileSync("src/print/LabelsScreen.tsx", "utf8");
-const garment = readFileSync("src/garments/Garment.tsx", "utf8");
+const art = readFileSync("src/art/ProductArt.tsx", "utf8");
 
 /** Every rule of a stylesheet that names this selector exactly. */
 const rule = (css: string, selector: string) => {
@@ -52,11 +52,9 @@ describe("the printed documents", () => {
   });
 });
 
-describe("garments on a night tile", () => {
-  it("keeps the cargo pockets and track stripes inside the leg, where the dark tile cannot show an overhang", () => {
-    expect(garment).not.toContain("M104 212h46");
-    expect(garment).not.toContain("M124 56 102 404");
-    expect(garment).not.toContain("#7286d0");
+describe("products on a night tile", () => {
+  it("draws only with the art's own palette, so a dark tile shows no stray grey", () => {
+    expect(art).not.toContain("#7286d0");
   });
 
   it("names no white or near-white tile", () => {

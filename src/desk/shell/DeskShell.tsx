@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Ellipsis, Hammer, Lock, Map as MapIcon, Menu, Search, ShoppingBag, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Ellipsis, Hammer, Lock, Menu, Search, ShoppingBag, Waypoints, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
@@ -40,7 +40,7 @@ function JumpTrigger() {
 function SideBrand() {
   const t = useT(shell);
   const links = [
-    { href: "/", label: t.startPage, icon: MapIcon },
+    { href: "/", label: t.startPage, icon: Waypoints },
     { href: "/shop/", label: t.shop, icon: ShoppingBag },
     { href: "/built/", label: t.built, icon: Hammer },
   ];
@@ -112,12 +112,18 @@ function SideContent({ screen, onClose }: { screen: Screen; onClose?: () => void
           </button>
         ) : null}
       </div>
+      {/* The way out to the shop sits up here, under the brand, so it stays in view however long the list below grows. */}
+      <Link href="/shop/" className="dk-side-shop">
+        <ShoppingBag size={16} strokeWidth={1.6} aria-hidden="true" />
+        <span>{t.visitShop}</span>
+        <ArrowUpRight size={14} strokeWidth={1.75} aria-hidden="true" />
+      </Link>
       <nav aria-label={t.navLabel} className="dk-side-nav">
         {NAV_GROUPS.map((group) => {
           const items = group.items.filter((item) => !item.superUserOnly || state.profile === "superUser");
           return (
             <div key={group.id} className="dk-side-group">
-              {group.id === "main" ? null : <p className="dk-side-label">{group[lang]}</p>}
+              {group.id === "main" || group.id === "start" ? null : <p className="dk-side-label">{group[lang]}</p>}
               <ul>
                 {items.map((item) => (
                   <li key={item.id}>
@@ -159,7 +165,7 @@ function Drawer({ open, onClose, screen }: { open: boolean; onClose: () => void;
       onClose={onClose}
       onClick={(event) => {
         const target = event.target as Element;
-        if (target === dialog.current || target.closest(".dk-side-item,.dk-pop-link")) onClose();
+        if (target === dialog.current || target.closest(".dk-side-item,.dk-pop-link,.dk-side-shop")) onClose();
       }}
     >
       {open ? (
@@ -311,7 +317,7 @@ function FullShell({ screen, children }: { screen: Screen; children: ReactNode }
       <div className="dk-body">
         <span ref={sentinel} className="dk-sentinel" aria-hidden="true" />
         <TopBand screen={screen} stuck={stuck} clusterRef={cluster} topRef={top} onMenu={openDrawer} />
-        <main ref={main} id="main" tabIndex={-1} className="dk-main">
+        <main ref={main} id="main" tabIndex={-1} className="dk-main" data-bleed={screen.page || undefined}>
           {allowed ? children : <LockedState screen={screen} />}
         </main>
       </div>
@@ -351,7 +357,8 @@ export function DeskShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const lang = useLang();
   const screen = screenForPath(pathname) ?? screenById("dashboard");
-  useDocTitle(screenName(screen, lang));
+  // A public page names the tab itself: the overview carries only the project's name.
+  useDocTitle(screen.page ? undefined : screenName(screen, lang));
   if (screen.id === "enter") return <EnterFrame>{children}</EnterFrame>;
   return <FullShell screen={screen}>{children}</FullShell>;
 }

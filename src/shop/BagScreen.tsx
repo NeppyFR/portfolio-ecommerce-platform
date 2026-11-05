@@ -9,26 +9,27 @@ import { LABEL } from "@/lib/brand";
 import { CODE_MAX_LENGTH, LINE_MAX_QTY } from "@/lib/pricing";
 import { DISCOUNT_MESSAGES } from "@/lib/discount-rules";
 import { formatChf } from "@/lib/format";
-import { sizeLabel } from "@/lib/product-rules";
+import { sizeLabel, toneForColour } from "@/lib/product-rules";
 import { productHref } from "@/lib/routes";
 import { applyCode, clearCode, removeLine, setQuantity, type BagRow } from "@/store/actions/bag";
 import { getState } from "@/store/core";
 import type { DiscountRejection } from "@/store/types";
 import { Button, Empty, IconButton, Input } from "@/ui";
-import { PieceGarment, SummaryList, nameOf, tileFor, useBagView } from "./parts";
+import { PieceArt, SummaryList, colourWord, nameOf, tileFor, useBagView } from "./parts";
 
 function Line({ row }: { row: BagRow }) {
   const lang = useLang();
   const t = useT(shop);
   const product = row.product;
   const name = product ? nameOf(product, lang) : t.bag.unavailable;
-  const size = row.variant?.size === "ONE_SIZE" ? t.bag.oneSize : row.variant ? fmt(t.bag.sizeLine, { size: sizeLabel(row.variant.size, lang) }) : "";
+  const sizeText = row.variant?.size === "ONE_SIZE" ? t.bag.oneSize : row.variant ? fmt(t.bag.sizeLine, { size: sizeLabel(row.variant.size, lang) }) : "";
+  const size = [sizeText, product && row.variant ? colourWord(product, row.variant, t.colours) : null].filter(Boolean).join(" · ");
   const cap = Math.min(LINE_MAX_QTY, row.available);
   const problem = row.problem === "unavailable" ? t.bag.unavailable : row.problem === "soldOut" ? t.bag.soldOut : row.problem === "onlyLeft" ? fmt(t.bag.onlyLeft, { n: row.available }) : null;
   const steppable = row.problem === null || row.problem === "onlyLeft";
   return (
     <li className="sp-line">
-      <span className={`sp-line-thumb ${product ? tileFor(product) : "t-pale"}`}>{product ? <PieceGarment product={product} className="sp-tile-g" /> : null}</span>
+      <span className={`sp-line-thumb ${product ? tileFor(product) : "t-pale"}`}>{product ? <PieceArt product={product} tone={toneForColour(product, row.variant?.color)} className="sp-tile-art" /> : null}</span>
       <div className="sp-line-main">
         <div className="sp-line-top">
           {product && product.status === "active" ? (

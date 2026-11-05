@@ -14,16 +14,16 @@ beforeEach(() => resetStore());
 
 describe("bag", () => {
   it("adds, counts and removes a line", () => {
-    const tee = sizeOf("logo-tee-cloud", "M");
-    expect(addOne(tee.id)).toEqual({ ok: true, data: { added: 1 } });
-    addOne(tee.id);
+    const mug = sizeOf("logo-mug", "M");
+    expect(addOne(mug.id)).toEqual({ ok: true, data: { added: 1 } });
+    addOne(mug.id);
     expect(bagView(getState()).units).toBe(2);
-    removeLine(tee.id);
+    removeLine(mug.id);
     expect(getState().bag.lines).toHaveLength(0);
   });
 
   it("will not add a sold out size, and reports it as nothing added", () => {
-    const zipM = sizeOf("lagoon-zip-hoodie", "M");
+    const zipM = sizeOf("lagoon-speaker", "M");
     expect(zipM.stock).toBe(0);
     const before = getState().bag;
     const result = addOne(zipM.id);
@@ -32,16 +32,16 @@ describe("bag", () => {
   });
 
   it("clamps a quantity to what the size has and removes at zero", () => {
-    const xs = sizeOf("lagoon-zip-hoodie", "XS");
-    addOne(xs.id);
-    const up = setQuantity(xs.id, 9);
-    expect(up.ok && up.data.quantity).toBeLessThanOrEqual(xs.stock);
-    setQuantity(xs.id, 0);
+    const small = sizeOf("lagoon-speaker", "S");
+    addOne(small.id);
+    const up = setQuantity(small.id, 9);
+    expect(up.ok && up.data.quantity).toBeLessThanOrEqual(small.stock);
+    setQuantity(small.id, 0);
     expect(getState().bag.lines).toHaveLength(0);
   });
 
   it("prices a good code and keeps a refused one out of the bag", () => {
-    addOne(sizeOf("lagoon-zip-hoodie", "XS").id);
+    addOne(sizeOf("lagoon-speaker", "S").id);
     expect(applyCode("summer20").ok).toBe(false);
     expect(getState().bag.code).toBeNull();
     const before = total();
@@ -53,9 +53,9 @@ describe("bag", () => {
   });
 
   it("marks a line whose stock ran out meanwhile", () => {
-    const xs = sizeOf("lagoon-zip-hoodie", "XS");
-    addOne(xs.id);
-    update((s) => ({ ...s, products: s.products.map((p) => ({ ...p, variants: p.variants.map((v) => (v.id === xs.id ? { ...v, stock: 0 } : v)) })) }));
+    const small = sizeOf("lagoon-speaker", "S");
+    addOne(small.id);
+    update((s) => ({ ...s, products: s.products.map((p) => ({ ...p, variants: p.variants.map((v) => (v.id === small.id ? { ...v, stock: 0 } : v)) })) }));
     const view = bagView(getState());
     expect(view.rows[0].problem).toBe("soldOut");
     expect(view.hasProblem).toBe(true);
@@ -85,43 +85,43 @@ describe("checkout form", () => {
 
 describe("checkout outcomes", () => {
   const prepare = () => {
-    const tee = sizeOf("logo-tee-cloud", "M");
-    addOne(tee.id);
-    return { tee, stock: stockOf(tee.id), orders: getState().orders.length, shown: total() };
+    const mug = sizeOf("logo-mug", "M");
+    addOne(mug.id);
+    return { mug, stock: stockOf(mug.id), orders: getState().orders.length, shown: total() };
   };
 
   it("Paid creates the order, moves stock and empties the bag", () => {
-    const { tee, stock, orders, shown } = prepare();
+    const { mug, stock, orders, shown } = prepare();
     const outbox = getState().outbox.length;
     const result = endCheckout(demoForm(), "paid", "en", shown);
     expect(result.ok).toBe(true);
     expect(getState().orders.length).toBe(orders + 1);
-    expect(stockOf(tee.id)).toBe(stock - 1);
+    expect(stockOf(mug.id)).toBe(stock - 1);
     expect(getState().bag.lines).toHaveLength(0);
     expect(getState().outbox.length).toBe(outbox + 1);
     expect(getState().outbox.every((mail) => (mail.status as string) !== "sent")).toBe(true);
   });
 
   it.each(["declined", "walked_away", "timed_out"] as const)("%s changes no order and no stock and keeps the bag", (outcome) => {
-    const { tee, stock, orders, shown } = prepare();
+    const { mug, stock, orders, shown } = prepare();
     const outbox = getState().outbox.length;
     const result = endCheckout(demoForm(), outcome, "en", shown);
     expect(result.ok).toBe(true);
     expect(getState().orders.length).toBe(orders);
-    expect(stockOf(tee.id)).toBe(stock);
+    expect(stockOf(mug.id)).toBe(stock);
     expect(getState().bag.lines).toHaveLength(1);
     expect(getState().outbox.length).toBe(outbox);
   });
 
   it("Paid after the hold ran out flags a stock conflict and never goes negative", () => {
-    const { tee, shown } = prepare();
+    const { mug, shown } = prepare();
     const orders = getState().orders.length;
     const result = endCheckout(demoForm(), "paid_after_hold", "en", shown);
     expect(result.ok).toBe(true);
     expect(getState().orders.length).toBe(orders + 1);
-    const conflicts = getState().orders.filter((o) => o.stockConflict && o.items.some((i) => i.variantId === tee.id));
+    const conflicts = getState().orders.filter((o) => o.stockConflict && o.items.some((i) => i.variantId === mug.id));
     expect(conflicts.length).toBeGreaterThan(0);
-    expect(stockOf(tee.id)).toBeGreaterThanOrEqual(0);
+    expect(stockOf(mug.id)).toBeGreaterThanOrEqual(0);
   });
 
   it("refuses a total that moved since it was shown, an empty bag and a broken form", () => {

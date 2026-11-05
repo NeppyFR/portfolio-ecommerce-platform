@@ -70,20 +70,26 @@ describe("catalogue", () => {
     expect(new Set(variants.map((v) => v.sku)).size).toBe(variants.length);
     const bySlug = (slug: string) => s.products.find((p) => p.slug === slug)!;
     const stock = (slug: string, size: string) => bySlug(slug).variants.find((v) => v.size === size)!.stock;
-    expect(stock("rib-beanie-frost", "ONE_SIZE")).toBe(0);
-    expect(stock("lagoon-zip-hoodie", "M")).toBe(0);
-    expect(stock("lagoon-zip-hoodie", "XS")).toBe(1);
-    expect(stock("heavyweight-tee-lilac", "L")).toBe(2);
+    expect(stock("frost-candle", "ONE_SIZE")).toBe(0);
+    expect(stock("lagoon-speaker", "M")).toBe(0);
+    expect(bySlug("lagoon-speaker").variants.find((v) => v.sku === "AL-SPK-ICE-S")!.stock).toBe(1);
+    expect(stock("trail-bottle", "L")).toBe(2);
+    // The draft lamp is still in sampling: two sample pieces from the earlier rounds, no production stock yet.
+    expect(bySlug("tall-lamp").variants.map((v) => v.stock)).toEqual([0, 1, 1, 0, 0]);
     for (const v of variants) {
-      const special = ["AL-BEAN-FRO-OS", "AL-ZIP-LAG-M", "AL-ZIP-LAG-XS", "AL-HVYT-LIL-L"].includes(v.sku);
+      const special = ["AL-CNDL-FRO-OS", "AL-SPK-LAG-M", "AL-SPK-ICE-S", "AL-BTL-LIL-L"].includes(v.sku) || v.sku.startsWith("AL-TALL-");
       if (!special) {
         expect(v.stock, v.sku).toBeGreaterThanOrEqual(4);
         expect(v.stock, v.sku).toBeLessThanOrEqual(30);
       }
     }
-    expect(bySlug("lagoon-zip-hoodie").variants.find((v) => v.size === "XL")!.priceOverrideRappen).toBe(12400);
-    expect(bySlug("lagoon-zip-hoodie").variants.find((v) => v.size === "M")!.sku).toBe("AL-ZIP-LAG-M");
-    expect(bySlug("canvas-tote-cloud").variants[0].sku).toBe("AL-TOTE-CLD-OS");
+    expect(bySlug("lagoon-speaker").variants.find((v) => v.size === "XL")!.priceOverrideRappen).toBe(12400);
+    expect(bySlug("lagoon-speaker").variants.find((v) => v.size === "M")!.sku).toBe("AL-SPK-LAG-M");
+    expect(bySlug("logo-notebook-cloud").variants[0].sku).toBe("AL-NOTE-CLD-OS");
+    expect(variants).toHaveLength(45);
+    for (const v of variants) expect(["S", "M", "L", "XL", "ONE_SIZE"], v.sku).toContain(v.size);
+    expect(bySlug("lagoon-speaker").variants.map((v) => `${v.size}/${v.color}`)).toEqual(["S/Ice", "S/Lagoon", "M/Lagoon", "L/Lagoon", "XL/Lagoon"]);
+    expect(new Set(s.products.map((p) => p.art))).toEqual(new Set(["mug", "bottle", "lamp", "notebook", "candle", "planter", "speaker", "pouch"]));
   });
 });
 

@@ -1,16 +1,16 @@
 export const en = {
   skip: "Skip to content",
-  strip: "Demo shop for the fictional label {label}. Nothing is charged.",
-  stripLink: "Back to the map",
+  strip: "Demo shop for the fictional store {label}. Nothing is charged.",
+  stripLink: "Open the overview",
   nav: { label: "Main navigation", shop: "Shop", all: "All", search: "Search", menu: "Menu", openMenu: "Open menu", footer: "Footer", bag: "Bag", bagWith: "Bag, {n} pieces", bagWithOne: "Bag, 1 piece" },
-  footerDemo: "A fictional label. Every piece is drawn, every price invented.",
+  footerDemo: "A fictional store. Every piece is drawn, every price invented.",
 
   home: {
-    heroLine: "Lagoon is live. Six looks below, and nothing here ever ships.",
+    heroLine: "Lagoon is live. Six picks below, and nothing here ever ships.",
     heroLink: "See all pieces",
-    look: "Look {n}",
-    quote: "Cut roomy, washed soft, and priced in a currency you will never be charged.",
-    cuffCaption: "Rib cuff, close up",
+    pick: "No. {n}",
+    quote: "Built to last, made to be used, and priced in a currency you will never be charged.",
+    closeCaption: "Speaker cone, close up",
     allPieces: "All pieces",
     lagoonDrop: "Lagoon drop",
     piecesLine: "{n} pieces",
@@ -20,6 +20,7 @@ export const en = {
   wall: { allTitle: "Products", count: "{n} pieces", countOne: "1 piece", empty: "No products yet.", from: "from {price}", soldOut: "Sold out" },
 
   product: {
+    colour: "Colour",
     size: "Size",
     sizeSingle: "Size: {size}",
     soldOutSize: "{size}, sold out",
@@ -30,9 +31,11 @@ export const en = {
     maxed: "Your bag already holds as many of this size as we can sell.",
     galleryLabel: "Pictures of this piece",
     stageAlt: "{name}, whole piece",
-    hoodAlt: "{name}, neck and hood close up",
-    cuffAlt: "{name}, cuff close up",
+    topAlt: "{name}, the top close up",
+    detailAlt: "{name}, a detail close up",
   },
+
+  colours: { Cobalt: "Cobalt", Lagoon: "Lagoon", Cloud: "Cloud", Lilac: "Lilac", Ice: "Ice", Frost: "Frost" } as Record<string, string>,
 
   bag: {
     title: "Your bag",
@@ -167,7 +170,7 @@ export const en = {
   notFound: {
     eyebrow: "404",
     title: "Page not found",
-    body: "This page isn't woven yet. Nothing is lost: the shop and the map are both still here.",
+    body: "This page isn't on the shelf yet. Nothing is lost: the shop and the map are both still here.",
     home: "Back to the shop",
     map: "Back to the map",
   },
@@ -175,17 +178,17 @@ export const en = {
 
 export const de: typeof en = {
   skip: "Zum Inhalt springen",
-  strip: "Demo-Shop des erfundenen Labels {label}. Es wird nichts belastet.",
-  stripLink: "Zurück zur Karte",
+  strip: "Demo-Shop des erfundenen Ladens {label}. Es wird nichts belastet.",
+  stripLink: "Zur Übersicht",
   nav: { label: "Hauptnavigation", shop: "Shop", all: "Alle", search: "Suche", menu: "Menü", openMenu: "Menü öffnen", footer: "Fusszeile", bag: "Warenkorb", bagWith: "Warenkorb, {n} Stück", bagWithOne: "Warenkorb, 1 Stück" },
-  footerDemo: "Ein erfundenes Label. Jedes Stück ist gezeichnet, jeder Preis erfunden.",
+  footerDemo: "Ein erfundener Laden. Jedes Stück ist gezeichnet, jeder Preis erfunden.",
 
   home: {
-    heroLine: "Lagoon läuft. Sechs Looks weiter unten, und von hier wird nie etwas versendet.",
+    heroLine: "Lagoon läuft. Sechs Stücke weiter unten, und von hier wird nie etwas versendet.",
     heroLink: "Alle Stücke ansehen",
-    look: "Look {n}",
-    quote: "Weit geschnitten, weich gewaschen und in einer Währung ausgezeichnet, die dir nie belastet wird.",
-    cuffCaption: "Rippbündchen, ganz nah",
+    pick: "Nr. {n}",
+    quote: "Gebaut, um zu halten, gemacht, um benutzt zu werden, und in einer Währung ausgezeichnet, die dir nie belastet wird.",
+    closeCaption: "Lautsprecher-Membran, ganz nah",
     allPieces: "Alle Stücke",
     lagoonDrop: "Lagoon-Drop",
     piecesLine: "{n} Stücke",
@@ -195,6 +198,7 @@ export const de: typeof en = {
   wall: { allTitle: "Produkte", count: "{n} Stücke", countOne: "1 Stück", empty: "Noch keine Produkte.", from: "ab {price}", soldOut: "Ausverkauft" },
 
   product: {
+    colour: "Farbe",
     size: "Grösse",
     sizeSingle: "Grösse: {size}",
     soldOutSize: "{size}, ausverkauft",
@@ -205,9 +209,11 @@ export const de: typeof en = {
     maxed: "Von dieser Grösse hast du schon so viele im Warenkorb, wie wir verkaufen können.",
     galleryLabel: "Bilder dieses Stücks",
     stageAlt: "{name}, ganzes Stück",
-    hoodAlt: "{name}, Ausschnitt und Kapuze nah",
-    cuffAlt: "{name}, Bündchen nah",
+    topAlt: "{name}, der obere Teil ganz nah",
+    detailAlt: "{name}, ein Detail ganz nah",
   },
+
+  colours: { Cobalt: "Kobalt", Lagoon: "Lagoon", Cloud: "Wolke", Lilac: "Flieder", Ice: "Eis", Frost: "Frost" },
 
   bag: {
     title: "Dein Warenkorb",
@@ -342,7 +348,7 @@ export const de: typeof en = {
   notFound: {
     eyebrow: "404",
     title: "Seite nicht gefunden",
-    body: "Diese Seite ist noch nicht gewoben. Verloren ist nichts: Der Shop und die Karte sind beide noch da.",
+    body: "Diese Seite steht noch nicht im Regal. Verloren ist nichts: Der Shop und die Karte sind beide noch da.",
     home: "Zurück zum Shop",
     map: "Zurück zur Karte",
   },

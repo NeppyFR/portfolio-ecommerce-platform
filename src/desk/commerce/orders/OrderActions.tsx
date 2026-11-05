@@ -5,11 +5,10 @@ import { fmt, useLang, useT } from "@/i18n";
 import { orders as ordersDict } from "@/i18n/dict/orders";
 import { CARRIER } from "@/lib/brand";
 import { formatChf } from "@/lib/format";
-import { sizeLabel } from "@/lib/product-rules";
 import { cancelOrder, editTracking, markDelivered, markPacked, MIN_REFUND, recordRefund, resolveAttention, shipOrder, unpack } from "@/store/actions/orders";
 import type { ActionResult, Order } from "@/store/types";
 import { Button, Checkbox, Dialog, Input, MoneyInput, RuleLine, Textarea, toast } from "@/ui";
-import { orderActions, suggestedTracking, trackingHint, type OrderAction } from "./rules/order-rules";
+import { orderActions, sizeAndColour, suggestedTracking, trackingHint, type OrderAction } from "./rules/order-rules";
 import { remainingRappen } from "./rules/returns";
 import { Stepper } from "./Stepper";
 
@@ -131,7 +130,7 @@ function RefundDialog({ order, open, onClose }: { order: Order; open: boolean; o
           <legend className="type-label">{t.refund.restock}</legend>
           {lines.map(({ item, room }) => {
             const name = lang === "de" ? item.nameDe : item.name;
-            const label = fmt(t.refund.restockLabel, { name, size: sizeLabel(item.size, lang) });
+            const label = fmt(t.refund.restockLabel, { name, size: sizeAndColour(item.size, item.color, lang) });
             return (
               <div key={item.id} className="or-step-row">
                 <span className="type-small">{label}</span>

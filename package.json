@@ -2,7 +2,7 @@
   "name": "commerce-platform",
   "version": "0.1.0",
   "private": true,
-  "description": "A static showcase of a clothing shop and its staff system, with invented data.",
+  "description": "A static showcase of a staff system and the online shop it runs, with invented data.",
   "scripts": {
     "dev": "next dev -p 4417",
     "build": "next build && node scan/flatten-segments.mjs",

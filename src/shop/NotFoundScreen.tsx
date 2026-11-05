@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useDocTitle, useT } from "@/i18n";
 import { shop } from "@/i18n/dict/shop";
-import { Garment } from "@/ui";
+import { ProductArt } from "@/ui";
 import { ShopShell } from "./ShopShell";
 
 /** The 404 in the shop's voice, for use inside the shop layout (unknown product or collection). */
@@ -28,8 +28,8 @@ export function NotFoundBody() {
           </Link>
         </div>
       </div>
-      <span className="sp-404-g" aria-hidden="true">
-        <Garment type="beanie" tone="ice" className="sp-tile-g" />
+      <span className="sp-404-art" aria-hidden="true">
+        <ProductArt type="candle" tone="ice" className="sp-tile-art" />
       </span>
     </section>
   );

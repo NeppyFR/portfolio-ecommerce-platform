@@ -45,7 +45,7 @@ export function zurichInstant(day: string, time: string): string {
   return new Date(guess).toISOString();
 }
 
-export const DROP_SIZES: SizeCode[] = ["XS", "S", "M", "L", "XL", "ONE_SIZE"];
+export const DROP_SIZES: SizeCode[] = ["S", "M", "L", "XL", "ONE_SIZE"];
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 export type WaitlistLine = { email: string; size: SizeCode | null; name: string };

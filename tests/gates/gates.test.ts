@@ -5,7 +5,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { checkDeps, isForbidden } from "../../scan/deps.mjs";
 import { genericHits, loadDenylist, placeOf, privateHits, runScan, tokenise } from "../../scan/scan.mjs";
 import { checkOut } from "../../scan/out-check.mjs";
-import { bodyColourProblem, outRoutes, readRegistry, readStates } from "../../scan/crawl.mjs";
+import { bodyColourProblem, inDeskShell, outRoutes, readRegistry, readStates } from "../../scan/crawl.mjs";
 
 const root = mkdtempSync(path.join(tmpdir(), "cp-gates-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));
@@ -138,7 +138,7 @@ describe("generic patterns", () => {
     expect(hit("process." + "env.NODE_ENV")).toEqual([]);
     expect(hit("background:#000;color:black;fill:rgba(0, 0, 0, .3)")).toEqual([]);
     expect(hit("Copyright © and ™ stay")).toEqual([]);
-    expect(hit('name: "lookbook-01.jp' + 'g"')).toEqual([]);
+    expect(hit('name: "catalogue-01.jp' + 'g"')).toEqual([]);
     expect(hit("refetch" + "(x)")).toEqual([]);
     expect(hit("planning the plan")).toEqual([]);
   });
@@ -279,9 +279,14 @@ describe("crawl inputs", () => {
   });
   it("reads every registry screen", () => {
     const rows = readRegistry();
-    expect(rows.length).toBe(42);
+    expect(rows.length).toBe(44);
     expect(rows.find((r) => r.id === "orders")).toEqual({ id: "orders", route: "/desk/orders/", en: "Orders", de: "Bestellungen" });
+    expect(rows.find((r) => r.id === "overview")).toEqual({ id: "overview", route: "/", en: "Overview", de: "Übersicht" });
     expect(rows.find((r) => r.id === "returns")?.route).toBe("/desk/orders/returns/");
+  });
+  it("holds the overview and How it was built to the desk shell's checks, but not the profile choice or the shop", () => {
+    for (const route of ["/", "/built/", "/desk/", "/desk/orders/"]) expect(inDeskShell(route), route).toBe(true);
+    for (const route of ["/desk/enter/", "/shop/", "/print/slip/"]) expect(inDeskShell(route), route).toBe(false);
   });
   it("turns index files into routes, leaving out the framework folders", () => {
     const dir = fixture("routes", { "out/index.html": "", "out/shop/index.html": "", "out/_next/x/index.html": "", "out/404/index.html": "", "out/_not-found/index.html": "" });

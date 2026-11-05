@@ -14,7 +14,7 @@
 .cat-tabcount{display:inline-flex;align-items:baseline;gap:6px}
 .cat-tabcount b{font:500 12px/1 var(--font-mono);color:var(--ink-3)}
 
-/* Garment thumbs: a tinted tile that keeps the drawing inside. */
+/* Product thumbs: a tinted tile that keeps the drawing inside. */
 .cat-thumb{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:var(--r-2);overflow:hidden}
 .cat-thumb svg{display:block;width:78%;height:78%}
 .cat-thumb[data-size="s"]{width:32px;height:32px;border-radius:var(--r-1)}
@@ -54,7 +54,7 @@
 fieldset.cat-fieldset{border:0;margin:0;padding:0;min-width:0}
 fieldset.cat-fieldset legend{font:500 13px/1.3 var(--font-ui);color:var(--ink);padding:0;margin-bottom:6px}
 
-/* Garment pickers replace image upload. */
+/* Product pickers replace image upload. */
 .cat-stage{position:relative;display:grid;place-items:center;min-height:240px;border-radius:var(--r-3);overflow:hidden}
 .cat-stage svg{width:62%;max-width:240px;height:auto;max-height:220px}
 .cat-picks{display:flex;flex-wrap:wrap;gap:var(--s-2)}
@@ -109,7 +109,7 @@ fieldset.cat-fieldset legend{font:500 13px/1.3 var(--font-ui);color:var(--ink);p
 .cat-drop-name{font:650 20px/1.2 var(--font-disp);font-stretch:94%;letter-spacing:-.012em;overflow-wrap:anywhere}
 .cat-drop-1 .cat-drop-name{font-size:30px;line-height:1.08;letter-spacing:-.018em}
 .cat-drop-count{margin-top:auto;display:flex;flex-direction:column;gap:2px}
-.cat-drop-garments{display:flex;gap:var(--s-2);flex-wrap:wrap}
+.cat-drop-art{display:flex;gap:var(--s-2);flex-wrap:wrap}
 .cat-drop-foot{display:flex;flex-wrap:wrap;gap:4px var(--s-4);padding-top:var(--s-3);border-top:1px solid var(--line);color:var(--ink-2)}
 .cat-drop[data-featured] .cat-drop-foot{border-top-color:var(--line-2);color:var(--ink)}
 .cat-drop[data-featured] .cat-sub{color:var(--ink-2)}
@@ -202,7 +202,7 @@ details.cat-details > summary:hover{color:var(--link)}
 .cat-wait-counts{display:inline-flex;flex-wrap:wrap;justify-content:flex-end;gap:2px var(--s-3);text-align:right;font-variant-numeric:tabular-nums}
 .cat-wait-counts b{font-weight:500}
 .cat-drop[data-featured] .cat-drop-name{font-size:30px;line-height:1.08;letter-spacing:-.018em}
-.cat-drop-garments .cat-thumb{width:44px;height:44px}
+.cat-drop-art .cat-thumb{width:44px;height:44px}
 .cat-drop .cat-drop-top{width:100%}
 .cat-drop .cat-drop-count{margin-top:auto}
 .cat-off-tag{display:inline-block;margin-left:var(--s-2);padding:0 6px;border-radius:var(--r-1);background:var(--mist-2);color:var(--ink-2)}

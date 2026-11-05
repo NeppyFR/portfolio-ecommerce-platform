@@ -22,7 +22,7 @@ export { Touches, type TouchesProps } from "./Touches";
 export { JumpBox, openJumpBox } from "./JumpBox";
 export { Money, type MoneyProps } from "./Money";
 export { Pager, usePageSize, PAGE_SIZE_DESKTOP, PAGE_SIZE_PHONE, type PagerProps } from "./Pager";
-export { Garment, GlyphCluster, type GarmentProps, type GlyphClusterProps } from "@/garments/Garment";
+export { ProductArt, GlyphCluster, type ProductArtProps, type GlyphClusterProps } from "@/art/ProductArt";
 export { RuleLine } from "./RuleLine";
 export { DemoPill, type DemoPillProps } from "./DemoPill";
 export { LangToggle } from "./LangToggle";

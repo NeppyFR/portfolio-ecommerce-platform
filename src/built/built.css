@@ -2,7 +2,6 @@
 
 .bt{--bt-col:1100px}
 .bt-col{max-width:calc(var(--bt-col) + 2*var(--gutter));margin-inline:auto;padding-inline:var(--gutter)}
-.bt-top-rail{max-width:calc(1360px + 2*var(--gutter));margin-inline:auto;padding-inline:var(--gutter)}
 .bt-hero{padding-block:var(--s-8) var(--s-10);scroll-margin-top:64px}
 .bt-h1{max-width:900px;margin-top:var(--s-3)!important;font-family:var(--font-disp);font-weight:660;font-size:clamp(36px,5vw,72px);line-height:1.02;letter-spacing:-.024em;font-stretch:92%;text-wrap:balance;color:var(--ink)}
 .bt-intro{max-width:640px;margin-top:var(--s-5)!important;font:400 16px/1.5 var(--font-ui);color:var(--ink);text-wrap:pretty}
@@ -32,7 +31,10 @@
 /* The band sits between two black sections, so it fades at the top as well. */
 .bt-map-band.f-landing{background:linear-gradient(0deg,transparent calc(100% - min(120px,24%)),#000),linear-gradient(180deg,transparent calc(100% - min(140px,30%)),#000),var(--f-sky),#000}
 .bt-map-wide{max-width:1760px;margin-inline:auto}
+.bt-map-snug{display:none;max-width:1760px;margin-inline:auto}
 .bt-map-phone{display:none}
+/* A map under 1276 px wide, as beside the desk sidebar, takes the snug drawing: see landing.css. */
+@media (min-width:1280px){@container (max-width:1275.98px){.bt-map-wide{display:none}.bt-map-snug{display:block}}}
 .bt-staff{max-width:760px;font:400 14px/1.5 var(--font-ui);color:var(--ink-2);text-wrap:pretty}
 .bt-hint{margin-top:var(--s-1)!important;margin-bottom:var(--s-5)!important;font:500 12px/1.35 var(--font-mono);color:var(--ink-3)}
 .bt-conn-card{display:flex;flex-direction:column;gap:3px}
@@ -146,7 +148,7 @@
 
 /* Under 1280 the drawn map text would fall under the floor, so the phone map takes over */
 @media (max-width:1279px){
-  .bt-map-wide{display:none}
+  .bt-map-wide,.bt-map-snug{display:none}
   .bt-map-phone{display:block;max-width:520px;margin-inline:auto;padding-block:var(--s-5)}
 }
 

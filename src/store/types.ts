@@ -31,16 +31,16 @@ export type AccessChange = { id: string; at: IsoTime; actor: string; profile: Pe
 
 export type NodeId = "customers" | "staff" | "mail" | "dns" | "code" | "payments" | "app" | "files" | "database" | "inbox" | "mailbox";
 
-export type GarmentType = "hoodie" | "zip" | "tee" | "pants" | "cargo" | "cap" | "beanie" | "tote";
-export type GarmentTone = "ice" | "sky" | "azure" | "dusk" | "lilac";
-export type GarmentView = "full" | "crop-cuff" | "crop-hood" | "mini";
+export type ProductArtType = "mug" | "bottle" | "lamp" | "notebook" | "candle" | "planter" | "speaker" | "pouch";
+export type ArtTone = "ice" | "sky" | "azure" | "dusk" | "lilac";
+export type ArtView = "full" | "crop-detail" | "crop-top" | "mini";
 
 /* Catalogue */
-export type SizeCode = "XS" | "S" | "M" | "L" | "XL" | "ONE_SIZE";
+export type SizeCode = "S" | "M" | "L" | "XL" | "ONE_SIZE";
 export type ProductStatus = "active" | "draft" | "archived";
-export type ProductCategory = "hoodie" | "tee" | "cap" | "pants" | "beanie" | "tote" | "other";
+export type ProductCategory = "drinkware" | "lighting" | "audio" | "plants" | "desk" | "travel" | "other";
 export type Variant = { id: string; productId: string; size: SizeCode; color: string; sku: string; priceOverrideRappen: Rappen | null; threshold: number | null; isActive: boolean; stock: number; reserved: number; ordered: number; updatedAt: IsoTime };
-export type Product = { id: string; slug: string; nameEn: string; nameDe: string; descriptionEn: string; descriptionDe: string; status: ProductStatus; category: ProductCategory; priceRappen: Rappen; costRappen: Rappen | null; garment: GarmentType; tone: GarmentTone; printedName: boolean; collectionIds: string[]; tagIds: string[]; variants: Variant[]; createdAt: IsoTime; updatedAt: IsoTime; publishedAt: IsoTime | null };
+export type Product = { id: string; slug: string; nameEn: string; nameDe: string; descriptionEn: string; descriptionDe: string; status: ProductStatus; category: ProductCategory; priceRappen: Rappen; costRappen: Rappen | null; art: ProductArtType; tone: ArtTone; printedName: boolean; collectionIds: string[]; tagIds: string[]; variants: Variant[]; createdAt: IsoTime; updatedAt: IsoTime; publishedAt: IsoTime | null };
 export type Collection = { id: string; slug: string; nameEn: string; nameDe: string; descriptionEn: string; descriptionDe: string; isActive: boolean; updatedAt: IsoTime };
 export type ProductTag = { id: string; label: string };
 
@@ -52,7 +52,7 @@ export type Customer = { id: string; fullName: string; email: string; phone: str
 export type OrderStatus = "pending" | "paid" | "packed" | "shipped" | "delivered" | "cancelled" | "refunded";
 export type OrderStop = OrderStatus | "attention";
 export type AttentionReason = "stock_conflict" | "amount_mismatch" | "code_over_limit";
-export type OrderItem = { id: string; productId: string; variantId: string; name: string; nameDe: string; color: string; size: SizeCode; sku: string; garment: GarmentType; tone: GarmentTone; quantity: number; unitPriceRappen: Rappen; lineTotalRappen: Rappen; discountRappen: Rappen; restocked: number; shortfall: number };
+export type OrderItem = { id: string; productId: string; variantId: string; name: string; nameDe: string; color: string; size: SizeCode; sku: string; art: ProductArtType; tone: ArtTone; quantity: number; unitPriceRappen: Rappen; lineTotalRappen: Rappen; discountRappen: Rappen; restocked: number; shortfall: number };
 export type OrderEventType =
   | "placed" | "paid" | "packed" | "unpacked" | "shipped" | "tracking_updated" | "delivered" | "cancelled"
   | "refund_recorded" | "restocked" | "stock_conflict" | "needs_attention" | "attention_resolved" | "note_added" | "email_queued"

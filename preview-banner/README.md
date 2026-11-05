@@ -34,9 +34,9 @@ The portfolio has a cinematic section for its big project: `CinematicSection({ p
 4. The frame is a `div`, so the banner's button is valid there. Text inherits the page's light ink, so the label and button read on the dark frame.
 5. The wide art shows from 900 px of its own width. The frame gives it about 1246 px at a 1440 px window, so wide art is what most desktops get. Phones get the compact art.
 
-Blurb EN: `A complete online shop with its staff system, finances and hosting map, rebuilt as a static demo with invented data.`
+Blurb EN: `A complete staff system with finances and a hosting map, and the online shop it runs, rebuilt as a static demo with invented data.`
 
-Blurb DE: `Ein kompletter Onlineshop mit Team-System, Finanzen und Hosting-Karte, als statische Demo mit erfundenen Daten nachgebaut.`
+Blurb DE: `Ein komplettes Team-System mit Finanzen und Hosting-Karte, dazu der Onlineshop, den es betreibt, als statische Demo mit erfundenen Daten nachgebaut.`
 
 ## How it behaves
 
@@ -45,5 +45,5 @@ Blurb DE: `Ein kompletter Onlineshop mit Team-System, Finanzen und Hosting-Karte
 - **Reduced motion.** A still at `t = 9.45` with no rAF. The button shows the fault still at `t = 5`.
 - **Props.** `lang: "en" | "de"`, `labels?`, `className`. The ref gives `{ seek(t), play(), pause(), t }`, and the root's `data-t` follows each seek.
 - **Numbers.** The KPI values before the order are what `/desk/` shows on a fresh load: CHF 2'237, 19 and 15. The order adds CHF 89, one order and one customer. If the seed changes, change them here too.
-- **Colours.** The field is black with an aurora of `#2f6bff`, `#6fd3ff`, `#b9f3ff` and `#8c7bff` moving through it, with a soft blue glow outside the frame, so the banner glows on the portfolio's black section instead of vanishing into it. Windows are near-black cards (`#0b0c10`, inner cards `#14161c`) with a bright sky-to-violet edge, and words are white. The button runs from blue to violet. Its violet end is deepened to `#6a55f5` so white words keep AA. The hoodie, packets, wire, chart line and numbers are the bright end of the palette. Status chips are the light green, amber, violet and sky on dark tints.
+- **Colours.** The field is black with an aurora of `#2f6bff`, `#6fd3ff`, `#b9f3ff` and `#8c7bff` moving through it, with a soft blue glow outside the frame, so the banner glows on the portfolio's black section instead of vanishing into it. Windows are near-black cards (`#0b0c10`, inner cards `#14161c`) with a bright sky-to-violet edge, and words are white. The button runs from blue to violet. Its violet end is deepened to `#6a55f5` so white words keep AA. The lamp, packets, wire, chart line and numbers are the bright end of the palette. Status chips are the light green, amber, violet and sky on dark tints.
 - **Mail.** The word for the mail step is `rendered | gerendert`, because the real system renders mail and does not send it.

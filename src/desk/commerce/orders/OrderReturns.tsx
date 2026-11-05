@@ -5,7 +5,7 @@ import { Undo2 } from "lucide-react";
 import { fmt, useLang, useT } from "@/i18n";
 import { orders as ordersDict } from "@/i18n/dict/orders";
 import { formatChf, formatDateTime } from "@/lib/format";
-import { sizeLabel } from "@/lib/product-rules";
+import { sizeAndColour } from "./rules/order-rules";
 import { closeReturn, receiveReturn, refundReturn, startReturn } from "@/store/actions/orders";
 import { useStore } from "@/store/core";
 import type { ActionResult, Order, ReturnReason, ReturnRecord } from "@/store/types";
@@ -78,7 +78,7 @@ function ReturnCard({ ret, order }: { ret: ReturnRecord; order: Order }) {
           const extra = ret.status === "refunded" ? (line.restockQuantity > 0 ? fmt(t.ret.backInStock, { n: line.restockQuantity }) : null) : ret.status === "received" ? fmt(t.ret.resellable, { n: line.restockQuantity }) : null;
           return (
             <li key={line.orderItemId}>
-              {fmt(t.ret.pieces, { n: line.quantity, name: lang === "de" ? item.nameDe : item.name, size: sizeLabel(item.size, lang) })}
+              {fmt(t.ret.pieces, { n: line.quantity, name: lang === "de" ? item.nameDe : item.name, size: sizeAndColour(item.size, item.color, lang) })}
               {extra ? <span className="or-muted"> · {extra}</span> : null}
             </li>
           );
@@ -140,7 +140,7 @@ function StartDialog({ order, returns, open, onClose }: { order: Order; returns:
           return (
             <div key={item.id} className="or-step-row">
               <span className="type-small">
-                {name} ({sizeLabel(item.size, lang)}) <span className="or-muted">{fmt(t.ret.of, { n: max })}</span>
+                {name} ({sizeAndColour(item.size, item.color, lang)}) <span className="or-muted">{fmt(t.ret.of, { n: max })}</span>
               </span>
               <Stepper value={pieces[item.id] ?? 0} max={max} onChange={(v) => { setPieces((p) => ({ ...p, [item.id]: v })); setError(null); }} lessLabel={fmt(t.ret.less, { name })} moreLabel={fmt(t.ret.more, { name })} />
             </div>
@@ -186,7 +186,7 @@ function ReceiveDialog({ ret, order, open, onClose }: { ret: ReturnRecord; order
           return (
             <div key={line.orderItemId} className="or-step-row">
               <span className="type-small">
-                {name} ({sizeLabel(item.size, lang)}) <span className="or-muted">{fmt(t.ret.of, { n: line.quantity })}</span>
+                {name} ({sizeAndColour(item.size, item.color, lang)}) <span className="or-muted">{fmt(t.ret.of, { n: line.quantity })}</span>
               </span>
               <Stepper value={restock[line.orderItemId] ?? 0} max={line.quantity} onChange={(v) => setRestock((r) => ({ ...r, [line.orderItemId]: v }))} lessLabel={fmt(t.ret.less, { name })} moreLabel={fmt(t.ret.more, { name })} />
             </div>

@@ -544,7 +544,7 @@ export const en = {
     summary: "What",
     code: "Code",
     entity: {
-      product: "Products", variant: "Sizes and stock", collection: "Collections", order: "Orders", customer: "Customers", discount: "Discount codes",
+      product: "Products", variant: "Variants and stock", collection: "Collections", order: "Orders", customer: "Customers", discount: "Discount codes",
       campaign: "Campaigns", settings: "Settings", team: "Team", session: "Sign-ins", email: "Emails", inbox: "Inbox", file: "Files, drops and categories",
       calendar: "Calendar", task: "Checklist", finance: "Finances", production: "Production", danger: "Danger zone",
     },
@@ -1100,7 +1100,7 @@ export const de: typeof en = {
     summary: "Was",
     code: "Code",
     entity: {
-      product: "Produkte", variant: "Grössen und Lager", collection: "Kollektionen", order: "Bestellungen", customer: "Kundschaft", discount: "Rabattcodes",
+      product: "Produkte", variant: "Varianten und Lager", collection: "Kollektionen", order: "Bestellungen", customer: "Kundschaft", discount: "Rabattcodes",
       campaign: "Kampagnen", settings: "Einstellungen", team: "Team", session: "Anmeldungen", email: "E-Mails", inbox: "Posteingang", file: "Dateien, Drops und Kategorien",
       calendar: "Kalender", task: "Checkliste", finance: "Finanzen", production: "Produktion", danger: "Gefahrenzone",
     },

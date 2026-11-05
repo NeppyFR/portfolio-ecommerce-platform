@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Minus, PackageCheck, RotateCcw, ScanBarcode } from "lucide-react";
 import { fmt, useLang, useT } from "@/i18n";
 import { orders as ordersDict } from "@/i18n/dict/orders";
-import { sizeLabel } from "@/lib/product-rules";
+import { sizeAndColour } from "./rules/order-rules";
 import { markPacked, onePieceLess, packStateOf, restartPack, scanIntoBox, usePackState } from "@/store/actions/orders";
 import type { Order } from "@/store/types";
 import { Button, IconButton, toast } from "@/ui";
@@ -29,7 +29,7 @@ export function PackByScan({ order }: { order: Order }) {
     setOverItem(outcome.kind === "over" ? outcome.line.itemId : null);
     switch (outcome.kind) {
       case "counted":
-        setMessage({ tone: "ok", text: fmt(t.scanPack.counted, { name: name(outcome.line), size: sizeLabel(outcome.line.size, lang), packed: outcome.packed, need: outcome.line.need }) });
+        setMessage({ tone: "ok", text: fmt(t.scanPack.counted, { name: name(outcome.line), size: sizeAndColour(outcome.line.size, outcome.line.color, lang), packed: outcome.packed, need: outcome.line.need }) });
         break;
       case "complete":
         setMessage({ tone: "ok", text: t.scanPack.complete });
@@ -38,7 +38,7 @@ export function PackByScan({ order }: { order: Order }) {
         setMessage({ tone: "bad", text: fmt(t.scanPack.wrong, { sku: outcome.sku }) });
         break;
       case "over":
-        setMessage({ tone: "bad", text: fmt(t.scanPack.over, { name: name(outcome.line), size: sizeLabel(outcome.line.size, lang), need: outcome.line.need }) });
+        setMessage({ tone: "bad", text: fmt(t.scanPack.over, { name: name(outcome.line), size: sizeAndColour(outcome.line.size, outcome.line.color, lang), need: outcome.line.need }) });
         break;
       case "unknown":
         setMessage({ tone: "bad", text: fmt(t.scanPack.unknown, { code: outcome.code }) });
@@ -73,7 +73,7 @@ export function PackByScan({ order }: { order: Order }) {
       <ul className="or-pack-lines">
         {lines.map((line) => {
           const count = state[line.itemId] ?? 0;
-          const size = sizeLabel(line.size, lang);
+          const size = sizeAndColour(line.size, line.color, lang);
           return (
             <li key={line.itemId} className="or-pack-line" data-over={overItem === line.itemId || undefined} data-full={(line.need > 0 && count >= line.need) || undefined}>
               <span className="or-pack-name">

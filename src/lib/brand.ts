@@ -2,13 +2,13 @@ import type { Profile, Tier } from "@/store/types";
 
 export const PROJECT = {
   title: "Commerce Platform",
-  description: "A real online shop and the 53-screen staff system behind it, rebuilt as a static showcase for the fictional label Aerloom.",
+  description: "The 53-screen staff system of a real online shop, with the shop in front of it, rebuilt as a static showcase for the fictional store Aerlo.",
   repo: "example/commerce-platform",
 };
 
 export const LABEL = {
-  name: "Aerloom",
-  tagline: { en: "Woven from thin air.", de: "Aus dünner Luft gewoben." },
+  name: "Aerlo",
+  tagline: { en: "Useful things, well made.", de: "Nützliche Dinge, gut gemacht." },
 };
 
 export const ORDER_PREFIX = "AL-";

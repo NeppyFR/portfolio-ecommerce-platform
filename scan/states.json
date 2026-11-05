@@ -3,7 +3,7 @@
   "/desk/orders/?o=AL-1150",
   "/desk/inventory/?tab=history",
   "/desk/products/?open=new",
-  "/desk/products/?open=prod_lagoon-zip-hoodie",
+  "/desk/products/?open=prod_lagoon-speaker",
   "/desk/products/collections/?open=col_lagoon",
   "/desk/customers/?open=cus_001",
   "/desk/discounts/?open=dis_1",
@@ -23,7 +23,7 @@
   "/shop/checkout/result/?state=unknown",
   "/shop/c/x/?handle=unknown",
   "/shop/p/x/?slug=unknown",
-  "/shop/search/?q=hoodie",
+  "/shop/search/?q=lamp",
   "/print/slip/?o=AL-1147",
   "/print/labels/?copies=1",
   { "path": "/desk/su/danger/", "click": "[data-danger-open=\"demo\"]" }

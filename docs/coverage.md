@@ -72,6 +72,7 @@ Cross-links noted from the real system, checked in this demo's source: bell and 
 - **Sign-in.** All login, session and rate-limit messages are gone, because there is no sign-in.
 - **Providers.** Failure paths that need a live provider do not exist. "Not connected", "could not be read", "key is live" and similar sentences are left out. The seed shows all five tones through fixtures, and one System toggle demonstrates `unknown`.
 - **Carrier.** Tracking validates the invented carrier's format. The real long dotted format is merged into it.
+- **Catalogue.** The real store's range is not carried. The fictional store sells useful things for home, desk and travel, and every product is drawn. Products with sizes use S, M, L and XL, and their second colour run gets a Colour selector above Size on the product page.
 
 ## Cut on purpose
 
@@ -80,7 +81,7 @@ Cross-links noted from the real system, checked in this demo's source: bell and 
 | Inventory and Orders | Scan sounds, camera and global key capture are cut. Fields take typed input plus `Scan next` |
 | Checklist | Reorder by buttons. Week view is read-only |
 | Files | No fullscreen viewer. Logos are a filter. Drawers do not resize. Picking a file records its name, size and type only |
-| Products | Garment and tone pickers replace image upload. Collections are a plain list |
+| Products | Product art and tone pickers replace image upload. Collections are a plain list |
 | Marketing | Board cards have no drag |
 | Costs | The storage card shows the database estimate plus one provider block, with no bucket parsing. Connector states are one fixture. The Prices dialog has no history |
 | System | History is a plain list |
