@@ -38,7 +38,7 @@
 .db-range[aria-pressed="true"]{background:var(--tint);color:var(--ice);font-weight:600}
 
 .db-chart{position:relative;margin-top:auto;touch-action:pan-y;border-radius:var(--r-2);cursor:crosshair}
-.db-chart-svg{display:block;overflow:visible}
+.db-chart-svg{display:block;overflow:visible;max-width:100%;height:auto}
 .db-grid{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
 .db-axis{font:400 12px var(--font-ui);fill:var(--ink-3)}
 .db-guide{stroke:var(--line-2);stroke-width:1;stroke-dasharray:2 3}

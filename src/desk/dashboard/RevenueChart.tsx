@@ -27,24 +27,28 @@ const TIP_CEILING = -32;
 function useWidth(fallback: number) {
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(fallback);
+  const [measured, setMeasured] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const read = () => {
       const w = el.getBoundingClientRect().width;
-      if (w > 0) setWidth(Math.round(w));
+      if (w > 0) {
+        setWidth(Math.round(w));
+        setMeasured(true);
+      }
     };
     read();
     const observer = new ResizeObserver(read);
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
-  return { ref, width };
+  return { ref, width, measured };
 }
 
 /** Hand-drawn area chart. It rests on the newest point; hover, touch or the arrow keys move the tooltip. */
 export function RevenueChart({ points, series, caption, emptyText, headLabel, headValue }: Props) {
-  const { ref, width } = useWidth(640);
+  const { ref, width, measured } = useWidth(640);
   const tipRef = useRef<HTMLDivElement>(null);
   const [tipWidth, setTipWidth] = useState(124);
   const [hoverKey, setHoverKey] = useState<string | null>(null);
@@ -74,7 +78,7 @@ export function RevenueChart({ points, series, caption, emptyText, headLabel, he
   useEffect(() => {
     const w = tipRef.current?.offsetWidth;
     if (w) setTipWidth(w);
-  }, [point?.tip, point?.money]);
+  }, [point?.tip, point?.money, measured]);
 
   const pick = (event: PointerEvent<HTMLDivElement>) => {
     if (count === 0) return;
@@ -148,7 +152,7 @@ export function RevenueChart({ points, series, caption, emptyText, headLabel, he
         ) : null}
       </svg>
       {highest === 0 ? <p className="db-chart-empty type-small">{emptyText}</p> : null}
-      {point && at && highest > 0 ? (
+      {measured && point && at && highest > 0 ? (
         <div ref={tipRef} className="db-tip" style={{ transform: `translate(${tipX}px,${tipY}px) translate(-50%,-100%)` }}>
           <span className="db-tip-when">{point.tip}</span>
           <span className="db-tip-value">{point.money}</span>

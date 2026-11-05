@@ -88,6 +88,13 @@ const initScript = ([langKey, lang, profileKey, profile]) => {
   } catch {
     /* a blocked store only hides the check that needs it */
   }
+  // A page can be too wide only until its scripts have measured it, so keep sampling from the start.
+  // Ten times a second: measuring on every frame slows the pages enough to fail other checks.
+  window.__widest = 0;
+  setInterval(() => {
+    const root = document.documentElement;
+    if (root) window.__widest = Math.max(window.__widest, root.scrollWidth - window.innerWidth);
+  }, 100);
 };
 
 function readStorageKeys(root = ROOT) {
@@ -159,7 +166,7 @@ async function visit(page, entry, ctx) {
       await page.waitForTimeout(150);
     }
     const facts = await page.evaluate(() => ({
-      over: document.documentElement.scrollWidth - window.innerWidth,
+      over: Math.max(document.documentElement.scrollWidth - window.innerWidth, window.__widest ?? 0),
       forms: document.querySelectorAll('input[type=password], [autocomplete^="cc-"]').length,
       stub: document.querySelectorAll("[data-screen-stub]").length,
       locked: document.querySelectorAll("[data-screen-locked]").length,
